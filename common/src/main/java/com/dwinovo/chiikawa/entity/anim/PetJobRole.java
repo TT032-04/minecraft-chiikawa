@@ -6,7 +6,8 @@ public enum PetJobRole {
     FARMER,
     FENCER,
     ARCHER,
-    MUSICIAN;
+    MUSICIAN,
+    LANCER;
 
     public static PetJobRole fromId(int jobId) {
         return switch (jobId) {
@@ -14,6 +15,7 @@ public enum PetJobRole {
             case 2 -> FENCER;
             case 3 -> ARCHER;
             case 4 -> MUSICIAN;
+            case 5 -> LANCER;
             default -> NONE;
         };
     }

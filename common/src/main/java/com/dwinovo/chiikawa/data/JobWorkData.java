@@ -27,6 +27,8 @@ public final class JobWorkData {
                 WorkData.PICK_MUSHROOM), Optional.of(field)),
             JobIds.FENCER, new JobWork(List.of(WorkData.MELEE, WorkData.HUNT_MELEE), Optional.empty()),
             JobIds.ARCHER, new JobWork(List.of(WorkData.RANGED, WorkData.HUNT_RANGED), Optional.empty()),
-            JobIds.MUSICIAN, new JobWork(List.of(WorkData.PLAY_MUSIC), Optional.empty()));
+            JobIds.MUSICIAN, new JobWork(List.of(WorkData.PLAY_MUSIC), Optional.empty()),
+            // A lancer fights as a fencer does, with a trident in its hand.
+            JobIds.LANCER, new JobWork(List.of(WorkData.MELEE, WorkData.HUNT_MELEE), Optional.empty()));
     }
 }

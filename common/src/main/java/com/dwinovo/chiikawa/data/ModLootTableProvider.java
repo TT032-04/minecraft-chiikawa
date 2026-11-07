@@ -109,6 +109,7 @@ public final class ModLootTableProvider extends LootTableProvider {
             // Hunting pays most: it is the only work a pet can fail by falling.
             reward(output, PetTaskTypeData.MELEE_HUNTING, 4, 7, Items.COOKED_BEEF, 1, 2);
             reward(output, PetTaskTypeData.RANGED_HUNTING, 4, 7, Items.ARROW, 4, 8);
+            reward(output, PetTaskTypeData.LANCE_HUNTING, 4, 7, Items.COOKED_BEEF, 1, 2);
         }
 
         private static void reward(BiConsumer<ResourceLocation, LootTable.Builder> output, ResourceLocation type,

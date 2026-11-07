@@ -74,6 +74,7 @@ public final class PetAnimationResolver {
                 case FENCER -> List.of("work_idle_fencer", "idle");
                 case ARCHER -> List.of("work_idle_archer", "idle");
                 case MUSICIAN -> List.of("work_idle_musician", "idle");
+                case LANCER -> List.of("work_idle_lancer", "work_idle_fencer", "idle");
                 case NONE -> IDLE;
             };
         }

@@ -18,6 +18,7 @@ public final class InitRegistry {
     public static final int FENCER_ID = 2;
     public static final int ARCHER_ID = 3;
     public static final int MUSICIAN_ID = 4;
+    public static final int LANCER_ID = 5;
 
     public static final ResourceKey<Registry<PetCapability>> PET_JOB_KEY = ResourceKey.createRegistryKey(
         new ResourceLocation(Constants.MOD_ID, "pet_jobs")
@@ -70,6 +71,15 @@ public final class InitRegistry {
             InitTag.ENTITY_MUSICIAN_TOOLS
         )
     );
+    public static final Supplier<PetCapability> LANCER = Services.REGISTRY.register(
+        PET_JOB_KEY,
+        JobIds.LANCER,
+        () -> new BasicJob(
+            LANCER_ID,
+            10,
+            InitTag.ENTITY_LANCER_TOOLS
+        )
+    );
 
     private InitRegistry() {
     }
@@ -90,6 +100,9 @@ public final class InitRegistry {
         }
         if (id == MUSICIAN_ID) {
             return MUSICIAN.get();
+        }
+        if (id == LANCER_ID) {
+            return LANCER.get();
         }
         return NONE.get();
     }

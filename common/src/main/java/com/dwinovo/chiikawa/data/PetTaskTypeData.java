@@ -20,6 +20,7 @@ public final class PetTaskTypeData {
     public static final ResourceLocation STREET_PERFORMANCE = id("street_performance");
     public static final ResourceLocation MELEE_HUNTING = id("melee_hunting");
     public static final ResourceLocation RANGED_HUNTING = id("ranged_hunting");
+    public static final ResourceLocation LANCE_HUNTING = id("lance_hunting");
     public static final ResourceLocation ADVANCED_WEEDING = id("advanced_weeding");
     /** The level a board reaches before it dares put hunting up. */
     private static final int HUNTING_LEVEL = 2;
@@ -47,6 +48,8 @@ public final class PetTaskTypeData {
                 UniformInt.of(3, 6), reward(MELEE_HUNTING), 2, HUNTING_LEVEL, Optional.empty()),
             RANGED_HUNTING, new PetTaskType(JobIds.ARCHER, PetWorkCounters.SLAY, vanilla("bow"),
                 UniformInt.of(3, 6), reward(RANGED_HUNTING), 2, HUNTING_LEVEL, Optional.empty()),
+            LANCE_HUNTING, new PetTaskType(JobIds.LANCER, PetWorkCounters.SLAY, vanilla("trident"),
+                UniformInt.of(3, 6), reward(LANCE_HUNTING), 2, HUNTING_LEVEL, Optional.empty()),
             // Twice the weeds for two and a half times the pay, for a farmer with grade 3 of
             // the weeding licence or better: what the licence is for, beyond a little more
             // for every slip. Goes up on a board paid up as far as hunting.

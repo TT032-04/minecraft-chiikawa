@@ -13,6 +13,7 @@ public final class JobIds {
     public static final ResourceLocation FENCER = id("fencer");
     public static final ResourceLocation ARCHER = id("archer");
     public static final ResourceLocation MUSICIAN = id("musician");
+    public static final ResourceLocation LANCER = id("lancer");
 
     private JobIds() {
     }

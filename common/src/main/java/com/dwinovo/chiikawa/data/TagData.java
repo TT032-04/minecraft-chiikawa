@@ -64,6 +64,7 @@ public final class TagData {
             InitItems.USAGI_WEAPON.get(), InitItems.HACHIWARE_WEAPON.get(), InitItems.CHIIKAWA_WEAPON.get(),
             InitItems.RAKKO_SWORD.get());
         tags.add(InitTag.ENTITY_ARCHER_TOOLS, Items.BOW);
+        tags.add(InitTag.ENTITY_LANCER_TOOLS, Items.TRIDENT);
         tags.add(InitTag.ENTITY_MUSICIAN_TOOLS, InitItems.MUSIC_BOX.get());
         tags.add(InitTag.ENTITY_TAME_FOODS,
             Items.APPLE, Items.BAKED_POTATO, Items.BREAD, Items.CARROT, Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_COD,

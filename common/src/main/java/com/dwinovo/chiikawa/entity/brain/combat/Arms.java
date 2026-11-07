@@ -67,7 +67,7 @@ public record Arms(boolean wielding, Optional<Weapon> swap) {
     }
 
     private static Kind kindOf(ItemStack stack) {
-        if (stack.is(InitTag.ENTITY_FENCER_TOOLS)) {
+        if (stack.is(InitTag.ENTITY_FENCER_TOOLS) || stack.is(InitTag.ENTITY_LANCER_TOOLS)) {
             return Kind.SWORD;
         }
         return stack.is(InitTag.ENTITY_ARCHER_TOOLS) ? Kind.BOW : Kind.OTHER;
