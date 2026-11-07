@@ -1,0 +1,69 @@
+package com.dwinovo.chiikawa.init;
+
+import com.dwinovo.chiikawa.Constants;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+
+public final class InitTag {
+    public static final TagKey<Item> ENTITY_FARMER_TOOLS = tag("entity_farmer_tools");
+    public static final TagKey<Item> ENTITY_FENCER_TOOLS = tag("entity_fencer_tools");
+    public static final TagKey<Item> ENTITY_ARCHER_TOOLS = tag("entity_archer_tools");
+    public static final TagKey<Item> ENTITY_MUSICIAN_TOOLS = tag("entity_musician_tools");
+    public static final TagKey<Item> ENTITY_LANCER_TOOLS = tag("entity_lancer_tools");
+    public static final TagKey<Item> ENTITY_TAME_FOODS = tag("entity_tame_foods");
+    public static final TagKey<Item> ENTITY_PLANT_CROPS = tag("entity_plant_crops");
+    public static final TagKey<Item> ENTITY_DELIVER_ITEMS = tag("entity_deliver_items");
+    public static final TagKey<Item> ENTITY_PICKABLE_ITEMS = tag("entity_pickable_items");
+    /**
+     * What money is: slips pay in it, shops price in it, boards are bought with it. Any item
+     * a pack puts here, each worth one; the first is what is paid out and pictured.
+     */
+    public static final TagKey<Item> CURRENCY = tag("currency");
+    /** What a pet treats another to out of its own backpack, see {@code pet_interaction}. */
+    public static final TagKey<Item> PET_TREATS = tag("pet_treats");
+    /** The flowers any pet gives its owner, see {@code pet_gifting}. */
+    public static final TagKey<Item> GIFT_FLOWERS = tag("gift_flowers");
+    /** What a pet is glad to have found when it picks it up, and may give its owner for it. */
+    public static final TagKey<Item> GIFT_FINDS = tag("gift_finds");
+    /** The sweets Rakko gives its owner, see {@code pet_gifting}. */
+    public static final TagKey<Item> SWEETS = tag("sweets");
+    /** What no pet gives as a present, whatever else the gifting settings say; empty, for a pack to fill. */
+    public static final TagKey<Item> NEVER_GIFTED = tag("never_gifted");
+
+    public static final TagKey<EntityType<?>> ENTITY_HOSTILE_ENTITY = tagEntity("entity_hostile_entity");
+    /** The eight characters, as a pet's pastimes see them about. */
+    public static final TagKey<EntityType<?>> PETS = tagEntity("pets");
+    /** The pets creepers keep away from, as they do from cats: see {@code CreeperMixin}. */
+    public static final TagKey<EntityType<?>> CREEPERS_AVOID = tagEntity("creepers_avoid");
+
+    // Blocks pets can harvest, defined by the entity_harvest_crops tag file.
+    public static final TagKey<Block> ENTITY_HARVEST_CROPS = tagBlock("entity_harvest_crops");
+
+    public static final TagKey<Block> ENTITY_DELEVER_CONTAINER = tagBlock("entity_delever_container");
+
+    // Wild plants a farmer pulls up, and mushrooms it picks.
+    public static final TagKey<Block> ENTITY_WEEDS = tagBlock("entity_weeds");
+    public static final TagKey<Block> ENTITY_MUSHROOMS = tagBlock("entity_mushrooms");
+
+    private InitTag() {
+    }
+
+    public static void init() {
+    }
+
+    private static TagKey<Item> tag(String name) {
+        return TagKey.create(Registries.ITEM, new ResourceLocation(Constants.MOD_ID, name));
+    }
+
+    private static TagKey<EntityType<?>> tagEntity(String name) {
+        return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(Constants.MOD_ID, name));
+    }
+
+    private static TagKey<Block> tagBlock(String name) {
+        return TagKey.create(Registries.BLOCK, new ResourceLocation(Constants.MOD_ID, name));
+    }
+}

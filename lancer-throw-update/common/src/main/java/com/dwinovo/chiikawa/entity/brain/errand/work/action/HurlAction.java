@@ -1,0 +1,101 @@
+package com.dwinovo.chiikawa.entity.brain.errand.work.action;
+
+import com.dwinovo.chiikawa.Constants;
+import com.dwinovo.chiikawa.entity.brain.errand.Check;
+import com.dwinovo.chiikawa.entity.brain.errand.ErrandSettings;
+import com.dwinovo.chiikawa.entity.brain.errand.ErrandTunings;
+import com.dwinovo.chiikawa.entity.brain.errand.Offer;
+import com.dwinovo.chiikawa.entity.brain.errand.Offers;
+import com.dwinovo.chiikawa.entity.brain.errand.rest.RestStore;
+import com.dwinovo.chiikawa.entity.brain.errand.run.Routine;
+import com.dwinovo.chiikawa.entity.brain.errand.step.Heft;
+import com.dwinovo.chiikawa.entity.brain.errand.step.Hurl;
+import com.dwinovo.chiikawa.entity.brain.errand.step.Skirmish;
+import com.dwinovo.chiikawa.entity.brain.errand.step.Stance;
+import com.dwinovo.chiikawa.entity.brain.errand.view.AttackTarget;
+import com.dwinovo.chiikawa.entity.brain.errand.view.PetView;
+import com.dwinovo.chiikawa.entity.brain.errand.work.Work;
+import com.dwinovo.chiikawa.entity.brain.errand.work.WorkAction;
+import com.dwinovo.chiikawa.entity.brain.errand.work.WorkTarget;
+import com.mojang.serialization.Codec;
+import java.util.Optional;
+import java.util.UUID;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.resources.ResourceLocation;
+
+/**
+ * Fights a foe that is some way off by throwing the trident at it, as a drowned does: footwork to a distance, an aim,
+ * and a throw. Offered only for a foe at a distance, since a foe up close is better answered with the trident in
+ * the hand, which is the strike; and the fight ends when the foe comes close, so that the next decision picks the
+ * jab. The trident that flies is a copy that cannot be picked up, so nothing is ever lost.
+ */
+public final class HurlAction implements WorkAction<Duel, ErrandTunings.Ranged> {
+    public static final ResourceLocation ID = new ResourceLocation(Constants.MOD_ID, "hurl");
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public Codec<ErrandTunings.Ranged> tuningCodec() {
+        return ErrandTunings.Ranged.CODEC;
+    }
+
+    @Override
+    public Optional<String> refuses(Optional<WorkTarget> target) {
+        return WorkTarget.neededBy("hurl", target, WorkTarget.Kind.FOE);
+    }
+
+    @Override
+    public Offers<Duel> offers(Work<Duel, ErrandTunings.Ranged> work, ResourceLocation errand, PetView view,
+            ErrandTunings.Ranged tuning) {
+        WorkTarget.Foe target = work.targetOf(WorkTarget.Foe.class);
+        Optional<AttackTarget> foe = target.in(view);
+        if (foe.isEmpty()) {
+            return Offers.none(Check.fail(target.missing()));
+        }
+        if (view.attackCoolingDown()) {
+            return Offers.none(Check.fail("attack_cooling_down"));
+        }
+        // Too near, or too far for a throw to reach, is a foe for a jab, or for the footwork of another errand.
+        double distance = between(view.pos(), foe.get().where());
+        if (distance < Heft.THROWS_FROM || distance > tuning.range()) {
+            return Offers.none(Check.fail(target.missing()));
+        }
+        return Offers.of(Offer.of(new Duel(foe.get().id())));
+    }
+
+    @Override
+    public Routine routine(Work<Duel, ErrandTunings.Ranged> work, Duel plan,
+            ErrandSettings<ErrandTunings.Ranged> settings) {
+        return Routine.of(fight(plan.foe(), settings.tuning()));
+    }
+
+    /**
+     * @param foe the creature the fight is about
+     * @param tuning how the pet throws
+     * @return the fight itself: round after round of footwork, an aim and a throw, for as long as the sensor names the
+     *         foe, it is alive and it is not up close
+     */
+    public static Routine.Part fight(UUID foe, ErrandTunings.Ranged tuning) {
+        Stance stance = new Stance(tuning.footwork(), true);
+        return Routine.repeatWhile(Skirmish.whileHunting(foe).and(Skirmish.whileBeyond(foe, Heft.JABS_WITHIN)),
+            () -> Skirmish.hurling(foe, stance, tuning.range()),
+            () -> new Heft(foe, stance, tuning.range(), tuning.drawTicks()),
+            () -> new Hurl(foe, tuning.range(), tuning.cooldownTicks()));
+    }
+
+    /** @return how far apart two places are, and no end of it when they are not in the same world */
+    private static double between(GlobalPos from, GlobalPos to) {
+        if (!from.dimension().equals(to.dimension())) {
+            return Double.POSITIVE_INFINITY;
+        }
+        return Math.sqrt(from.pos().distSqr(to.pos()));
+    }
+
+    @Override
+    public RestStore.Kind restStore() {
+        return RestStore.shared();
+    }
+}

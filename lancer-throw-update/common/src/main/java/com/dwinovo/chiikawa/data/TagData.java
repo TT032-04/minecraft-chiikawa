@@ -1,0 +1,157 @@
+package com.dwinovo.chiikawa.data;
+
+import com.dwinovo.chiikawa.init.InitBlocks;
+import com.dwinovo.chiikawa.init.InitEntity;
+import com.dwinovo.chiikawa.init.InitItems;
+import com.dwinovo.chiikawa.init.InitTag;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+
+public final class TagData {
+    private TagData() {
+    }
+
+    @FunctionalInterface
+    public interface TagAppenderProvider<T> {
+        void add(TagKey<T> key, T... values);
+
+        /**
+         * Includes another tag (referenced by id) into {@code key}. Used to pull in
+         * cross-mod convention tags like {@code c:seeds}. Optional include, so datagen
+         * won't fail if nothing populates the referenced tag. Default no-op — only
+         * providers that need tag-includes (the item provider) override it.
+         */
+        default void addOptionalTag(TagKey<T> key, ResourceLocation includedTagId) {
+        }
+    }
+
+    /** Biome tags name biomes by key: there is no biome object for datagen to hold. */
+    public interface BiomeTagAppender {
+        @SuppressWarnings("unchecked")
+        void add(TagKey<Biome> key, ResourceKey<Biome>... biomes);
+
+        void addOptionalTag(TagKey<Biome> key, ResourceLocation includedTagId);
+    }
+
+    public static void addBlockTags(TagAppenderProvider<Block> tags) {
+        tags.add(InitTag.ENTITY_HARVEST_CROPS,
+            Blocks.WHEAT, Blocks.POTATOES, Blocks.CARROTS, Blocks.BEETROOTS, Blocks.PUMPKIN, Blocks.MELON);
+        tags.add(InitTag.ENTITY_DELEVER_CONTAINER,
+            Blocks.CHEST, Blocks.TRAPPED_CHEST, Blocks.BARREL, Blocks.HOPPER);
+        tags.add(InitTag.ENTITY_WEEDS,
+            Blocks.GRASS, Blocks.TALL_GRASS, Blocks.FERN, Blocks.LARGE_FERN);
+        tags.add(InitTag.ENTITY_MUSHROOMS,
+            Blocks.RED_MUSHROOM, Blocks.BROWN_MUSHROOM);
+        tags.add(BlockTags.MINEABLE_WITH_AXE, InitBlocks.LABOR_BOARD.get(), InitBlocks.SHOP.get(), InitBlocks.EXAM_DESK.get());
+    }
+
+    public static void addItemTags(TagAppenderProvider<Item> tags) {
+        tags.add(InitTag.ENTITY_FARMER_TOOLS,
+            Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE);
+        tags.add(InitTag.ENTITY_FENCER_TOOLS,
+            Items.WOODEN_SWORD, Items.STONE_SWORD, Items.IRON_SWORD, Items.GOLDEN_SWORD, Items.DIAMOND_SWORD, Items.NETHERITE_SWORD,
+            InitItems.USAGI_WEAPON.get(), InitItems.HACHIWARE_WEAPON.get(), InitItems.CHIIKAWA_WEAPON.get(),
+            InitItems.RAKKO_SWORD.get());
+        tags.add(InitTag.ENTITY_ARCHER_TOOLS, Items.BOW);
+        tags.add(InitTag.ENTITY_LANCER_TOOLS, Items.TRIDENT);
+        tags.add(InitTag.ENTITY_MUSICIAN_TOOLS, InitItems.MUSIC_BOX.get());
+        tags.add(InitTag.ENTITY_TAME_FOODS,
+            Items.APPLE, Items.BAKED_POTATO, Items.BREAD, Items.CARROT, Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_COD,
+            Items.COOKED_MUTTON, Items.COOKED_PORKCHOP, Items.COOKED_RABBIT, Items.COOKED_SALMON, Items.COOKIE, Items.GLOW_BERRIES,
+            Items.GOLDEN_APPLE, Items.GOLDEN_CARROT, Items.HONEY_BOTTLE, Items.MELON_SLICE, Items.MUSHROOM_STEW, Items.PUMPKIN_PIE,
+            Items.POTATO, Items.BEETROOT, Items.RABBIT_STEW, Items.SWEET_BERRIES);
+        // The vanilla seeds are in no tag that both loaders have: Forge's is forge:seeds and Fabric's
+        // API has none, whereas later versions ship c:seeds. So it is made here, as they have it.
+        TagKey<Item> seeds = TagKey.create(Registries.ITEM, new ResourceLocation("c", "seeds"));
+        tags.add(seeds, Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS,
+            Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD);
+        tags.addOptionalTag(seeds, new ResourceLocation("forge", "seeds"));
+        tags.add(InitTag.ENTITY_PLANT_CROPS,
+            Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS, Items.POTATO, Items.CARROT);
+        // Pull in the cross-loader seeds convention tag so well-behaved farming mods
+        // are recognised without per-mod work (see DefaultCropHandler#isSeed).
+        tags.addOptionalTag(InitTag.ENTITY_PLANT_CROPS, new ResourceLocation("c", "seeds"));
+        // 1.20.6-era Forge/NeoForge mods commonly tag seeds under forge:seeds instead.
+        tags.addOptionalTag(InitTag.ENTITY_PLANT_CROPS, new ResourceLocation("forge", "seeds"));
+        tags.add(InitTag.ENTITY_DELIVER_ITEMS,
+            Items.WHEAT, Items.BEETROOT, Items.POTATO, Items.CARROT, Items.MELON_SLICE, Items.PUMPKIN);
+        // Emeralds, as the villagers have it; a pack can make money of anything.
+        tags.add(InitTag.CURRENCY, Items.EMERALD);
+        // Something to share, starting with the hamburg steak Rakko treats the others to in
+        // the series; the sweets it buys for itself are among them.
+        tags.add(InitTag.PET_TREATS,
+            Items.COOKED_BEEF, Items.PUMPKIN_PIE, Items.SWEET_BERRIES, Items.COOKIE, Items.BREAD, Items.BAKED_POTATO);
+        // Flowers are the little things a pet is glad to find, and picks up for it.
+        tags.addOptionalTag(InitTag.GIFT_FLOWERS, ItemTags.SMALL_FLOWERS.location());
+        tags.addOptionalTag(InitTag.GIFT_FINDS, InitTag.GIFT_FLOWERS.location());
+        // Sweets, which Rakko gives its owner out of its bag; a pack can add to them.
+        tags.add(InitTag.SWEETS,
+            Items.CAKE, Items.COOKIE, Items.PUMPKIN_PIE, Items.HONEY_BOTTLE, Items.SWEET_BERRIES);
+        tags.add(InitTag.NEVER_GIFTED);
+        tags.add(InitTag.ENTITY_PICKABLE_ITEMS,
+            Items.WHEAT, Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT, Items.MELON_SLICE, Items.PUMPKIN);
+        tags.addOptionalTag(InitTag.ENTITY_PICKABLE_ITEMS, InitTag.GIFT_FINDS.location());
+    }
+
+    /**
+     * The conventional biome tags that wild pets spawn by, which later versions ship in the form
+     * {@code c:is_plains}: Forge's are {@code forge:is_desert} and the like, Fabric's
+     * {@code c:desert}, and neither names the savanna or snowy plains the same. They are made here from
+     * what each loader has, so a pack and the {@code pet_spawn} data read the same on every version.
+     * Forge's plains tag is left out because it holds the meadow too, where the pets do not live.
+     */
+    public static void addBiomeTags(BiomeTagAppender tags) {
+        TagKey<Biome> plains = conventional("is_plains");
+        tags.add(plains, Biomes.PLAINS, Biomes.SUNFLOWER_PLAINS);
+        tags.addOptionalTag(plains, new ResourceLocation("c", "plains"));
+        TagKey<Biome> savanna = conventional("is_savanna");
+        tags.addOptionalTag(savanna, new ResourceLocation("minecraft", "is_savanna"));
+        tags.addOptionalTag(savanna, new ResourceLocation("c", "savanna"));
+        TagKey<Biome> desert = conventional("is_desert");
+        tags.add(desert, Biomes.DESERT);
+        tags.addOptionalTag(desert, new ResourceLocation("forge", "is_desert"));
+        tags.addOptionalTag(desert, new ResourceLocation("c", "desert"));
+        TagKey<Biome> swamp = conventional("is_swamp");
+        tags.add(swamp, Biomes.SWAMP, Biomes.MANGROVE_SWAMP);
+        tags.addOptionalTag(swamp, new ResourceLocation("forge", "is_swamp"));
+        tags.addOptionalTag(swamp, new ResourceLocation("c", "swamp"));
+        TagKey<Biome> snowyPlains = conventional("is_snowy_plains");
+        tags.add(snowyPlains, Biomes.SNOWY_PLAINS);
+        tags.addOptionalTag(snowyPlains, new ResourceLocation("c", "snowy_plains"));
+    }
+
+    private static TagKey<Biome> conventional(String path) {
+        return TagKey.create(Registries.BIOME, new ResourceLocation("c", path));
+    }
+
+    public static void addEntityTags(TagAppenderProvider<EntityType<?>> tags) {
+        // Creepers are in the list now. They are not something a pet with a sword walks
+        // up to — a pet's reach is a block and a half, well inside the distance at which a
+        // creeper starts swelling — but a pet has to be able to see one to keep away from
+        // it, and an archer can answer one from outside the blast. (1.20.1 has no bogged
+        // or breeze yet.)
+        tags.add(InitTag.ENTITY_HOSTILE_ENTITY,
+            EntityType.BLAZE, EntityType.CAVE_SPIDER, EntityType.CREEPER,
+            EntityType.DROWNED, EntityType.ENDERMITE, EntityType.EVOKER, EntityType.GUARDIAN, EntityType.HOGLIN,
+            EntityType.HUSK,
+            EntityType.ILLUSIONER, EntityType.MAGMA_CUBE, EntityType.PHANTOM, EntityType.PIGLIN, EntityType.PIGLIN_BRUTE,
+            EntityType.PILLAGER, EntityType.SILVERFISH, EntityType.SKELETON, EntityType.SLIME, EntityType.SPIDER, EntityType.STRAY,
+            EntityType.VEX, EntityType.VINDICATOR, EntityType.WITCH, EntityType.WITHER_SKELETON, EntityType.ZOGLIN,
+            EntityType.ZOMBIE, EntityType.ZOMBIE_VILLAGER);
+        tags.add(InitTag.PETS, InitEntity.USAGI_PET.get(), InitEntity.HACHIWARE_PET.get(), InitEntity.CHIIKAWA_PET.get(),
+            InitEntity.SHISA_PET.get(), InitEntity.MOMONGA_PET.get(), InitEntity.KURIMANJU_PET.get(), InitEntity.RAKKO_PET.get(),
+            InitEntity.FURUHONYA_PET.get());
+        tags.add(InitTag.CREEPERS_AVOID, InitEntity.HACHIWARE_PET.get());
+    }
+}

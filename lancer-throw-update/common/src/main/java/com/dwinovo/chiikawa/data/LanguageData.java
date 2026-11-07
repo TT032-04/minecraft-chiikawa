@@ -1,0 +1,1902 @@
+package com.dwinovo.chiikawa.data;
+
+import com.dwinovo.chiikawa.voice.VoiceMoment;
+import java.util.List;
+
+public final class LanguageData {
+    /** The languages the mod is written in; English is also what the others are held to. */
+    public static final List<String> LOCALES = List.of("en_us", "zh_cn", "ja_jp", "pt_br", "ko_kr");
+
+    private LanguageData() {
+    }
+
+    @FunctionalInterface
+    public interface Adder {
+        void add(String key, String value);
+    }
+
+    public static void addTranslations(String locale, Adder adder) {
+        if ("zh_cn".equals(locale)) {
+            addCommonTranslations(adder, "Chiikawa", "背包", "跟随", "坐下", "自由活动",
+                "%s：跟着你", "%s：坐下", "%s：自由活动");
+            addDollTooltipTranslations(adder, "把玩偶放到蛋糕上，它就能回来");
+            addHandbookTranslations(adder, "吉伊的打工手册", "右键打开，查看宠物的各种玩法", "这本手册还是空白的");
+            addHandbookChapter(adder, "meet", "遇见吉伊",
+                "在平原、热带草原、沙漠、沼泽和雪原里能遇到野生宠物。拿着面包、曲奇这类食物右键它，就有机会驯服。潜行右键在跟随、坐下、自由活动之间切换，直接右键打开它的界面。吹一颗口哨糖，能一次指挥附近所有宠物。");
+            addHandbookChapter(adder, "work", "去打工",
+                "放一块劳动公告板，每天日出会贴出几张工作牌。宠物按手里的工具领牌：拿锄头的除草，拿剑或弓的讨伐，小八拿着八音盒去街头演奏。报酬直接放进宠物的背包。在公告板上花绿宝石升级，每天的工作牌更多，2级起还有讨伐牌。");
+            addHandbookChapter(adder, "shop", "商店和礼物",
+                "放一个商店，宠物会用自己背包里的绿宝石去买喜欢的东西。拿着绿宝石右键宠物，就是给它零花钱。你对它好、或者它领到报酬时，它会想送你礼物；它拿着礼物过来时，空手右键就能收下。你也可以在商店里买卖东西。");
+            addHandbookChapter(adder, "care", "照顾宠物",
+                "给宠物背上双肩包或挎包，背包多10格；喂它简单料理，干活更起劲。宠物倒下会变成玩偶，拿着玩偶右键放好的蛋糕，它就会回来。宠物走丢了，就摇一摇宠物铃铛。");
+            addHandbookChapter(adder, "camera", "小八的相机",
+                "给小八一台相机和胶卷，它会找机会拍你、拍别的宠物、拍风景。一卷胶卷拍8张，拍满了会送给你。右键胶卷，就能翻看这一卷的照片。");
+            addHandbookChapter(adder, "licence", "考除草证",
+                "放一张考试桌，右键给宠物报名，报名费1颗钻石。宠物白天去考试，第二天早上出成绩。多做除草工作牌、读参考书，都能提高通过率。考过的宠物除草报酬更高，3级起还能领高级除草工作牌。");
+            adder.add("manual.chiikawa.more", "更多玩法见官网 →");
+            addJobTranslations(adder, "职业：%s", "无", "农夫", "剑士", "弓箭手", "音乐家", "未知");
+            addEntityTranslations(adder, "乌萨奇", "小八", "吉伊", "狮萨", "飞鼠", "栗子馒头", "獭师父", "古本屋");
+            addItemTagTranslations(adder, "农夫工具", "剑士工具", "弓箭手工具", "音乐家工具", "驯服食物", "种子", "运送物品", "可拾取物品", "请客用的零食", "箭");
+            addItemTranslations(
+                adder,
+                "乌萨奇刷怪蛋",
+                "小八刷怪蛋",
+                "吉伊刷怪蛋",
+                "狮萨刷怪蛋",
+                "飞鼠刷怪蛋",
+                "栗子馒头刷怪蛋",
+                "獭师父刷怪蛋",
+                "古本屋刷怪蛋",
+                "乌萨奇玩偶",
+                "小八玩偶",
+                "吉伊玩偶",
+                "狮萨玩偶",
+                "飞鼠玩偶",
+                "栗子馒头玩偶",
+                "獭师父玩偶",
+                "古本屋玩偶",
+                "乌萨奇的讨伐棒",
+                "小八的刺叉",
+                "吉伊的刺叉",
+                "獭师父的剑"
+            );
+            addMusicBoxTranslations(adder, "八音盒", "未选择歌曲", "歌曲：%s", "选择歌曲", "导入中", "导入失败", "没有可播放的歌曲",
+                "把MP3/WAV文件放入文件夹后点击刷新", "请把MP3/WAV放进服务器的config/chiikawa/music文件夹，再点刷新", "部分歌曲导入失败", "请使用MP3格式的音频", "打开文件夹", "刷新", "上一页", "下一页");
+            addMusicBoxModeTranslations(adder, "播放模式：%s", "单次播放", "列表循环", "随机播放", "单曲循环");
+            addIntentFailureTranslations(adder, "找不到你", "你就在附近", "没事可做", "目标太远了",
+                "目标跑出了活动范围", "走出了活动范围", "附近没有掉落的物品", "没有可收割的作物", "附近没有能种的耕地", "附近没有箱子可放",
+                "没有要打的怪", "刚出过手，缓一缓", "没有箭", "没有新曲子可弹", "有更要紧的事",
+                "附近没有野草", "附近没有蘑菇", "得先领到工作牌", "天还没黑",
+                "手上已经有工作牌了", "公告板上没有它能做的活",
+                "商店里没有它想要又买得起的", "手上没有要送的东西");
+            addBlockTranslations(adder, "劳动公告板", "商店", "等级%s");
+            addSupplyTranslations(adder, "双肩包", "小熊挎包", "鲸鱼挎包", "星星挎包", "给宠物背上后，背包多10格",
+                    "简单料理", "喂给宠物，一段时间内干活更起劲",
+                    "宠物铃铛", "叫回你的宠物，跨维度也听得见；响过一次要等半分钟");
+            addLicenceTranslations(adder, "除草证参考书", "对你的宠物右键，让它读一读，下次考除草证更容易通过。考完就用掉了。",
+                "除草证", "%1$s考过了%2$s%3$s级！", "%1$s没考过%2$s%3$s级",
+                "已为%1$s报名%2$s%3$s级考试", "%1$s交卷了，%2$s的成绩明早公布", "%1$s错过了今天的%2$s考试",
+                "考试桌不见了，%1$s的%2$s考试只好取消",
+                "去考试", "去看成绩", "附近没有考试桌");
+            addLicenceScreenTranslations(adder, "%s级", "无", "%s：%s级", "%s：还没有", "已经是最高级",
+                "明天早上出成绩", "今天要去考试", "练习还不够，暂时不能报考", "可以去考试桌报名了");
+            addExamDeskStatusTranslations(adder, "考试桌", "选一只宠物报名", "白天才能报名", "已经有宠物在这里考试",
+                "桌后没有空位，坐不下", "%1$s正在考%2$s%3$s级", "%1$s交卷了，明早出成绩",
+                "%1$s：%2$s%3$s级，考过了", "%1$s：%2$s%3$s级，没考过");
+            addExamDeskPetTranslations(adder, "报名费%s", "报名%s", "考%s级", "附近没有你的宠物", "（%s级）", "（还没有证）",
+                "已经是最高级", "练习还不够", "已报名或在等成绩", "正坐着", "离得太远");
+            addExamDeskOddsTranslations(adder, "基础%s%%", "练习 +%s%%", "之前没考过 +%s%%", "读过参考书 +%s%%",
+                "性格 ×%s", "通过率%s（最高%s%%）");
+            addPetNewsTranslations(adder, "%1$s把%2$s送给了你");
+            addGiftTranslations(adder, "准备礼物", "还没想送礼物", "今天已经送过了", "背包里没有能送的东西", "%1$s把%2$s放在了你的床边");
+            addRecallTranslations(adder, "叫回了%s只宠物", "你还没有宠物",
+                    "%s没有回应，可能已经不在原来的地方了");
+            addShopScreenTranslations(adder, "商店", "买%s", "卖%s", "今天什么都不卖",
+                    "上一页", "下一页");
+            addIntentNameTranslations(adder, "跟着你", "坐着", "闲逛", "拾取物品", "去领工作牌",
+                "收割", "种地", "存放收获", "拔草", "采蘑菇", "讨伐", "射箭讨伐", "演奏", "去买东西", "送礼物");
+            addCombatTranslations(adder, "巡逻讨伐", "巡逻讨伐", "自卫", "躲开",
+                "没有谁在打它", "手里已经有武器", "背包里没有武器", "能还手，不用躲");
+            addRhythmTranslations(adder, "睡觉", "躲雨", "玩雨", "看你干活",
+                "你还没睡", "现在没这个兴致", "附近没有躲雨的地方", "附近没什么好看的");
+            addPastimeTranslations(adder, "吓得发抖", "撒欢乱叫", "讨夸奖", "傍晚小酌", "递咖啡", "盯着甜食", "练剑", "迎接你");
+            addSocialTranslations(adder, "找宠物玩", "陪宠物玩", "附近没有想一起玩的宠物", "没有宠物过来找它");
+            addTaskTypeTranslations(adder, "除草", "%s株", "街头演奏", "%s秒",
+                "近身讨伐", "远程讨伐", "%s只", "高级除草");
+            addLancerTranslations(adder, "枪术师", "枪术师工具", "枪术讨伐", "%s只", "投掷三叉戟", "巡逻投掷三叉戟");
+            addBoardScreenTranslations(adder, "劳动公告板", "%s张", "今天没有工作牌",
+                    "限%s", "待领", "已领", "%s已领",
+                    "Lv.%s", "每天%s张", "升级%s",
+                    "升到Lv.%1$s：每天%2$s张", "解锁：%s",
+                    "已满级", "你有%1$s个%2$s");
+            addPetStatusTranslations(adder, "闲着", "背上双肩包或挎包，可以多装10格");
+            addPetScreenTranslations(adder,
+                    "干劲十足：还剩%s",
+                    "零花钱：%1$s个%2$s",
+                    "有礼物",
+                    "它会自己走过来递给你",
+                    "自动拾取",
+                    "自由活动时，把附近掉落的物品收进背包");
+            addPetOutlookTranslations(adder,
+                    "需要%s",
+                    "接下来想做");
+            // What the pets say (design 0.1.1, section 3), in the words Chinese fans know the lines by.
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TAME, "哇……");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HURT, "不要！！", "呜……呜……");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HUNT, "呀——！！！");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PAID, "！！");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SHOP, "哇……！");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIFT, "嗯……！");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.REVIVE, "啊……！");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.IDLE, "嘿咻……", "呼……");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TAME, "也就是说……！？");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HURT, "痛痛痛……");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HUNT, "总会有办法的——！！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PAID, "太好啦～！！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SHOP, "这不就是……最棒的嘛！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIFT, "给，这个送你！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.REVIVE, "哭出来了！！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.IDLE, "哼哼～♪");
+            addVoiceLines(adder, "usagi", VoiceMoment.TAME, "呀哈！");
+            addVoiceLines(adder, "usagi", VoiceMoment.HURT, "哈啊？");
+            addVoiceLines(adder, "usagi", VoiceMoment.HUNT, "乌拉——！！");
+            addVoiceLines(adder, "usagi", VoiceMoment.PAID, "噗噜噜噜");
+            addVoiceLines(adder, "usagi", VoiceMoment.SHOP, "噗噜呀");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIFT, "乌拉");
+            addVoiceLines(adder, "usagi", VoiceMoment.REVIVE, "呀哈——！！");
+            addVoiceLines(adder, "usagi", VoiceMoment.IDLE, "哼嗯", "噗噜噜噜", "乌拉");
+            addVoiceLines(adder, "momonga", VoiceMoment.TAME, "终于成功啦！！");
+            addVoiceLines(adder, "momonga", VoiceMoment.HURT, "快安慰我。");
+            addVoiceLines(adder, "momonga", VoiceMoment.PAID, "快夸我。");
+            addVoiceLines(adder, "momonga", VoiceMoment.SHOP, "给我！");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIFT, "快夸我。");
+            addVoiceLines(adder, "momonga", VoiceMoment.REVIVE, "快安慰我。");
+            addVoiceLines(adder, "momonga", VoiceMoment.IDLE, "快夸我。", "给我！");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SHOP, "哈——……");
+            addVoiceLines(adder, "rakko", VoiceMoment.TAME, "……还不错。");
+            addVoiceLines(adder, "rakko", VoiceMoment.HUNT, "上了。");
+            addVoiceLines(adder, "rakko", VoiceMoment.PAID, "哼。");
+            addVoiceLines(adder, "rakko", VoiceMoment.SHOP, "……好吃。");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIFT, "……给你。");
+            addVoiceLines(adder, "rakko", VoiceMoment.REVIVE, "……还差得远呢。");
+            addVoiceLines(adder, "shisa", VoiceMoment.TAME, "嗨赛！", "请多关照！");
+            addVoiceLines(adder, "shisa", VoiceMoment.HURT, "好痛！");
+            addVoiceLines(adder, "shisa", VoiceMoment.HUNT, "我、我会加油的……！");
+            addVoiceLines(adder, "shisa", VoiceMoment.PAID, "开心狮萨！");
+            addVoiceLines(adder, "shisa", VoiceMoment.SHOP, "我开动啦！");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIFT, "请收下！");
+            addVoiceLines(adder, "shisa", VoiceMoment.REVIVE, "没事的啦～");
+            addVoiceLines(adder, "shisa", VoiceMoment.IDLE, "嗨赛！", "好想喝香片茶～");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.TAME, "蟹蟹！");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIFT, "给你……");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.IDLE, "蟹蟹");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.CLUNG_TO, "不要！！");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TREATED, "哇……！");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIVEN_COFFEE, "哇……");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.LISTEN, "哇……");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CLUNG_TO, "诶，怎么了怎么了！？");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CRAB_GREETING, "蟹蟹～！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TREATED, "谢谢老师！！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIVEN_COFFEE, "谢谢～！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.LISTEN, "好好听啊！");
+            addVoiceLines(adder, "usagi", VoiceMoment.CLUNG_TO, "哈啊？");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIVEN_COFFEE, "呀哈");
+            addVoiceLines(adder, "usagi", VoiceMoment.LISTEN, "噗噜噜噜");
+            addVoiceLines(adder, "momonga", VoiceMoment.CLING, "快夸我。");
+            addVoiceLines(adder, "momonga", VoiceMoment.TURNED_DOWN, "快安慰我。");
+            addVoiceLines(adder, "momonga", VoiceMoment.CRAB_GREETING, "蟹！");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIVEN_COFFEE, "再给我点！");
+            addVoiceLines(adder, "momonga", VoiceMoment.LISTEN, "再弹一首！");
+            addVoiceLines(adder, "rakko", VoiceMoment.TREAT, "……吃吧。");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIVEN_COFFEE, "……帮大忙了。");
+            addVoiceLines(adder, "shisa", VoiceMoment.CLUNG_TO, "那、那个……");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIVEN_COFFEE, "谢谢您！");
+            addVoiceLines(adder, "shisa", VoiceMoment.LISTEN, "弹得真好～！");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.CRAB_GREETING, "蟹蟹");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIVEN_COFFEE, "谢谢……");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_PASS, "哇……哇啊……！！");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_FAIL, "呜……呜……");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_PASS, "考过了……也就是说！？");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_FAIL, "下次一定没问题！");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_PASS, "乌拉——！！");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_FAIL, "哈啊？");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_PASS, "考过了！快夸我！！");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_FAIL, "快安慰我。");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.EXAM_PASS, "哈啊——……");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_PASS, "……当然。");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_FAIL, "……还差得远。");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_PASS, "超级开心的说！");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_FAIL, "不要紧的啦～下次加油！");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_PASS, "多亏了书呢。");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_FAIL, "再读一遍吧。");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.WHISTLE, "哇……！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.WHISTLE, "叫我吗～？");
+            addVoiceLines(adder, "usagi", VoiceMoment.WHISTLE, "呀哈——！！");
+            addVoiceLines(adder, "momonga", VoiceMoment.WHISTLE, "给我！");
+            addVoiceLines(adder, "rakko", VoiceMoment.WHISTLE, "……走吧。");
+            addVoiceLines(adder, "shisa", VoiceMoment.WHISTLE, "来啦～！");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.WHISTLE, "来了……");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PHOTO, "拍啦～！");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PHOTOGRAPHED, "嗯……");
+            addVoiceLines(adder, "usagi", VoiceMoment.PHOTOGRAPHED, "呀哈——！");
+            addVoiceLines(adder, "momonga", VoiceMoment.PHOTOGRAPHED, "要拍得可爱哦。");
+            addVoiceLines(adder, "rakko", VoiceMoment.PHOTOGRAPHED, "……拍吧。");
+            addVoiceLines(adder, "shisa", VoiceMoment.PHOTOGRAPHED, "拍好看一点哦～");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.PHOTOGRAPHED, "蟹蟹");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SCARED, "呜哇——！！");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SCARED, "怎、怎么办啊……！");
+            addVoiceLines(adder, "usagi", VoiceMoment.SCARED, "乌拉乌拉乌拉——！！");
+            addVoiceLines(adder, "momonga", VoiceMoment.SCARED, "吓到我了，快安慰我。");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SCARED, "……哎。");
+            addVoiceLines(adder, "shisa", VoiceMoment.SCARED, "哇、哇啊……！");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SCARED, "呀……");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.MISSING, "呜…没有%s了…");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TROUBLE, "总会有办法的！");
+            addVoiceLines(adder, "usagi", VoiceMoment.MISSING, "呀哈！？%s！乌拉！");
+            addVoiceLines(adder, "momonga", VoiceMoment.MISSING, "没有%s！快想办法！");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.MISSING, "……%s没有了啊。");
+            addVoiceLines(adder, "rakko", VoiceMoment.MISSING, "喂，%s没了。");
+            addVoiceLines(adder, "shisa", VoiceMoment.MISSING, "那个…%s没有了呢…");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.MISSING, "……想要%s。");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SLEEPY, "哈啊……");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SLEEPY, "困了……");
+            addVoiceLines(adder, "usagi", VoiceMoment.SLEEPY, "呀……哈……");
+            addVoiceLines(adder, "momonga", VoiceMoment.SLEEPY, "困了！我的被子呢！");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SLEEPY, "……哈啊。");
+            addVoiceLines(adder, "rakko", VoiceMoment.SLEEPY, "……困。");
+            addVoiceLines(adder, "shisa", VoiceMoment.SLEEPY, "哈啊……好困……");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SLEEPY, "哈……");
+            addVoiceLines(adder, "usagi", VoiceMoment.FRENZY, "乌拉！！", "呀哈——！", "乌拉乌拉乌拉！！");
+            addVoiceLines(adder, "momonga", VoiceMoment.PRAISE_ME, "夸我！快夸我嘛～", "我很可爱吧？快夸我！");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SIGH, "哈——");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.OFFER_COFFEE, "……辛苦了。给。");
+            addVoiceLines(adder, "rakko", VoiceMoment.SWEETS, "……喂，那个看着挺甜。");
+            addVoiceLines(adder, "shisa", VoiceMoment.GREET, "欢迎回来！请多指教～");
+            addWhistleTranslations(adder, "口哨糖", "口哨糖（%s）", "按住右键吹响，附近的宠物会照当前指令行动；潜行右键切换指令。", "口哨糖切换为：%s", "%d只宠物跑过来了", "%d只宠物坐下了", "%d只宠物自由活动去了", "%d只野生宠物好奇地凑了过来", "附近没有宠物听到口哨", "凑过去看看", "没听到口哨");
+            addSettingsTranslations(adder, "Chiikawa设置", "野生宠物生成：%s", "说话频率：%s", "闲暇活动：%s", "对话气泡：%s", "开", "关",
+                "这些是世界设置，进入世界后才能修改", "这些是世界设置，只有管理员能改",
+                "宠物音量请在 选项 → 音乐和声音 → 友好生物 里调整");
+            addAlbumTranslations(adder, "%1$s拍的 · 第%2$s天 · %3$s", "%1$s拍的 · 第%2$s天 · 风景", "已拍%1$s/%2$s",
+                "冲洗中……", "这张照片找不到了", "上一张", "下一张");
+            addCameraTranslations(adder, "小八的相机", "放进小八的背包，有胶卷的时候它会自己找时机拍照", "胶卷",
+                "放进带着相机的小八的背包，拍满后小八会送给你。右键查看照片。");
+            addPhotoIntentTranslations(adder, "拍照", "只有小八会拍照", "背包里没有相机", "背包里没有胶卷", "离你太远",
+                "你正忙着", "现在没有想拍的");
+        } else if ("ja_jp".equals(locale)) {
+            addCommonTranslations(adder, "ちいかわ", "持ち物", "ついてく", "おすわり", "自由",
+                "%s：ついていく", "%s：おすわり", "%s：自由行動");
+            addDollTooltipTranslations(adder, "ぬいぐるみをケーキの上に置くと、その子が戻ってくる");
+            addHandbookTranslations(adder, "ちいかわのお仕事ハンドブック", "右クリックで開いて、遊び方を確認できます",
+                "このハンドブックはまだまっしろ");
+            addHandbookChapter(adder, "meet", "ちいかわに出会う",
+                "平原、サバンナ、砂漠、湿地帯、雪原では、野生のなかまに出会えます。パンやクッキーなどの食べ物を持って右クリックすると、テイムできることがあります。スニークしながら右クリックで「ついてくる」「おすわり」「自由行動」を切り替え、右クリックでその子の画面が開きます。フエラムネを吹けば、近くのなかまみんなに一度に指示できます。");
+            addHandbookChapter(adder, "work", "お仕事",
+                "労働掲示板を置くと、毎朝何枚かのお仕事カードが貼り出されます。なかまは手に持った道具でカードを選びます。クワなら草むしり、剣や弓なら討伐、オルゴールを持ったハチワレなら路上演奏です。報酬はそのまま持ち物に入ります。エメラルドで掲示板をレベルアップすると、毎日のカードが増え、レベル2からは討伐カードも出ます。");
+            addHandbookChapter(adder, "shop", "お店とプレゼント",
+                "お店を置くと、なかまは自分の持ち物のエメラルドで好きなものを買いに行きます。エメラルドを持って右クリックすると、おこづかいをあげられます。やさしくしたり、お給料をもらったりすると、プレゼントをくれることがあります。持ってきてくれたら、素手で右クリックして受け取りましょう。お店ではあなたも売り買いできます。");
+            addHandbookChapter(adder, "care", "お世話",
+                "リュックやポーチを持たせると、持ち物が10マス増えます。かんたんごはんを食べさせると、お仕事にやる気が出ます。倒れたなかまはぬいぐるみになります。ぬいぐるみを持って、置いたケーキを右クリックすると戻ってきます。迷子になったら、ペットベルを鳴らしましょう。");
+            addHandbookChapter(adder, "camera", "ハチワレのカメラ",
+                "ハチワレにカメラとフィルムを渡すと、いいタイミングであなたやなかま、景色を撮ってくれます。フィルム1本で8枚撮れて、撮り終えたらプレゼントしてくれます。フィルムを右クリックすると、その1本の写真を見返せます。");
+            addHandbookChapter(adder, "licence", "草むしり検定",
+                "試験机を置いて右クリックし、ダイヤモンド1個でなかまを申し込みます。昼間に席について答案を書き、次の朝に結果が出ます。草むしりカードをこなしたり参考書を読んだりすると、合格しやすくなります。合格したなかまは草むしりの報酬が増え、3級からは上級草むしりカードも受けられます。");
+            adder.add("manual.chiikawa.more", "詳しくは公式サイトへ →");
+            addJobTranslations(adder, "職業: %s", "なし", "農家", "剣士", "弓使い", "音楽家", "不明");
+            addEntityTranslations(adder, "うさぎ", "ハチワレ", "ちいかわ", "シーサー", "モモンガ", "くりまんじゅう", "ラッコ", "古本屋");
+            addItemTagTranslations(adder, "農家の道具", "剣士の道具", "弓使いの道具", "音楽家の道具", "なつかせる食べ物", "種", "運ぶアイテム", "拾えるアイテム", "おごる食べ物", "矢");
+            addItemTranslations(
+                adder,
+                "うさぎのスポーンエッグ",
+                "ハチワレのスポーンエッグ",
+                "ちいかわのスポーンエッグ",
+                "シーサーのスポーンエッグ",
+                "モモンガのスポーンエッグ",
+                "くりまんじゅうのスポーンエッグ",
+                "ラッコのスポーンエッグ",
+                "古本屋のスポーンエッグ",
+                "うさぎのぬいぐるみ",
+                "ハチワレのぬいぐるみ",
+                "ちいかわのぬいぐるみ",
+                "シーサーのぬいぐるみ",
+                "モモンガのぬいぐるみ",
+                "くりまんじゅうのぬいぐるみ",
+                "ラッコのぬいぐるみ",
+                "古本屋のぬいぐるみ",
+                "うさぎの討伐棒",
+                "ハチワレのさすまた",
+                "ちいかわのさすまた",
+                "ラッコの剣"
+            );
+            addMusicBoxTranslations(adder, "オルゴール", "曲が選ばれていません", "曲：%s", "曲を選ぶ", "読み込み中", "読み込み失敗", "再生できる曲がありません",
+                "MP3・WAVファイルをフォルダに入れて、更新を押してください", "サーバーの config/chiikawa/music フォルダにMP3・WAVを入れて、更新を押してください", "一部の曲を読み込めませんでした", "MP3形式の音声を使ってください", "フォルダを開く", "更新", "前のページ", "次のページ");
+            addMusicBoxModeTranslations(adder, "再生モード：%s", "1回だけ再生", "全曲リピート", "シャッフル再生", "1曲リピート");
+            addIntentFailureTranslations(adder, "あなたが見つからない", "あなたがすぐ近くにいる", "することがない", "目標が遠すぎる",
+                "目標が行動範囲の外に出た", "行動範囲の外に出た", "近くに落ちているアイテムがない", "収穫できる作物がない", "近くに種をまける耕地がない", "近くにしまえる箱がない",
+                "戦う敵がいない", "ひと息ついている", "矢がない", "新しく演奏できる曲がない",
+                "もっと大事なことが先", "近くに雑草がない", "近くにキノコがない",
+                "先にお仕事カードを取る必要がある", "まだ暗くなっていない",
+                "もうお仕事カードを持っている", "掲示板にこの子ができるお仕事がない",
+                "お店に欲しくて買えるものがない", "渡すものを持っていない");
+            addBlockTranslations(adder, "労働掲示板", "お店", "レベル%s");
+            addSupplyTranslations(adder, "リュック", "くまのポーチ", "くじらのポーチ", "星のポーチ", "ペットに背負わせると、持ち物が10マス増える",
+                    "かんたんごはん", "ペットに食べさせると、しばらくお仕事にやる気が出る",
+                    "ペットベル", "ペットを呼び戻す。別のディメンションでも聞こえる。一度鳴らすと30秒待つ");
+            addLicenceTranslations(adder, "草むしり検定の参考書", "自分の子を右クリックすると読ませられる。次の草むしり検定に受かりやすくなり、試験で使い切る。",
+                "草むしり検定", "%1$sが%2$s%3$s級に合格した", "%1$sは%2$s%3$s級に落ちた",
+                "%1$sを%2$s%3$s級に申し込んだ", "%1$sが%2$sの答案を出した。結果は明日の朝", "%1$sは今日の%2$sに間に合わなかった",
+                "試験机がなくなり、%1$sの%2$sは中止になった",
+                "試験を受けに行く", "結果を見に行く", "近くに試験机がない");
+            addLicenceScreenTranslations(adder, "%s級", "なし", "%s：%s級", "%s：まだない", "もう最上級",
+                "明日の朝に結果が出る", "今日は試験を受けに行く", "練習がまだ足りないので、まだ受験できない", "受験できる：試験机で申し込もう");
+            addExamDeskStatusTranslations(adder, "試験机", "申し込む子を選んでね", "申し込みは昼のあいだだけ", "この机ではもうペットが受験中",
+                "机の後ろに座る場所がない", "%1$sが%2$s%3$s級を受験中", "%1$sは答案を出した。結果は明日の朝",
+                "%1$sの%2$s%3$s級：合格", "%1$sの%2$s%3$s級：不合格");
+            addExamDeskPetTranslations(adder, "受験料 %s", "申し込む %s", "%s級を受ける", "近くにあなたの子がいない", "（%s級）", "（まだない）",
+                "もう最上級", "練習が足りない", "申し込み済みか結果待ち", "おすわり中", "遠すぎる");
+            addExamDeskOddsTranslations(adder, "基本 %s%%", "練習 +%s%%", "前に落ちた +%s%%", "参考書を読んだ +%s%%",
+                "性格 ×%s", "合格率 %s（最高 %s%%）");
+            addPetNewsTranslations(adder, "%1$sが%2$sをくれた");
+            addGiftTranslations(adder, "プレゼントを用意する", "プレゼントを考えていない", "今日はもうプレゼントした", "持ち物の中にあげられるものがない", "%1$sが%2$sをベッドのそばに置いていった");
+            addRecallTranslations(adder, "ペットが%s匹戻ってきた", "まだペットがいない",
+                    "%sから返事がない。もとの場所にはもういないかもしれない");
+            addShopScreenTranslations(adder, "お店", "買う %s", "売る %s", "今日は売り物がありません",
+                    "前のページ", "次のページ");
+            addIntentNameTranslations(adder, "あなたについていく", "おすわり中", "ぶらぶら", "アイテムを拾う", "仕事カードを取りに行く",
+                "収穫", "種まき", "収穫物をしまう", "草むしり", "キノコ採り", "討伐", "敵を弓で射る", "演奏", "お買い物", "プレゼントを渡す");
+            addCombatTranslations(adder, "見回って討伐", "見回って討伐", "身を守る", "逃げる",
+                "襲ってくる相手がいない", "もう武器を持っている", "持ち物に武器がない", "反撃できるから逃げなくていい");
+            addRhythmTranslations(adder, "ねる", "あめやどり", "あめあそび", "あなたの仕事を見る",
+                "あなたはまだ起きている", "今はそんな気分じゃない", "雨宿りできる所がない", "近くに見に行くものがない");
+            addPastimeTranslations(adder, "ふるえる", "はしゃぎまわる", "褒めてもらう", "夕べの一杯", "コーヒーを渡す", "あまいものを見る", "剣のけいこ", "おむかえ");
+            addSocialTranslations(adder, "なかまのところへ", "なかまに付き合う", "近くに遊びたいなかまがいない", "誰も来ていない");
+            addTaskTypeTranslations(adder, "草むしり", "%s本", "路上演奏", "%s秒",
+                "近接討伐", "遠距離討伐", "%s体", "上級草むしり");
+            addLancerTranslations(adder, "槍使い", "槍使いの道具", "槍討伐", "%s体", "トライデントを投げる", "見回ってトライデントを投げる");
+            addBoardScreenTranslations(adder, "労働掲示板", "%s枚", "今日はお仕事カードがありません",
+                    "%s限定", "募集中", "受注済み", "%sが受けた",
+                    "Lv.%s", "1日%s枚", "レベルアップ %s",
+                    "Lv.%1$sで1日%2$s枚", "新しいお仕事：%s",
+                    "最大レベル", "%2$sを%1$s個持っています");
+            addPetStatusTranslations(adder, "ひま", "リュックかポーチを背負うと、持ち物が10マス増える");
+            addPetScreenTranslations(adder,
+                    "やる気まんまん：残り%s",
+                    "おこづかい：%2$s%1$s個",
+                    "贈り物",
+                    "自分で持ってきて渡してくれる",
+                    "自動回収",
+                    "自由行動のとき、近くに落ちている物を持ち物に入れる");
+            addPetOutlookTranslations(adder,
+                    "%sが必要",
+                    "次にやりたいこと");
+            // What the pets say (design 0.1.1, section 3): the series' own lines.
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TAME, "ワァ…");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HURT, "ヤダッ!!", "ウッ…ウッ…");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HUNT, "ヤーッ!!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PAID, "!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SHOP, "ワァ…!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIFT, "ン…!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.REVIVE, "ハッ…!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.IDLE, "ンショ…", "フゥ…");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TAME, "ってコト!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HURT, "イテテ…");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HUNT, "なんとかなれーッ!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PAID, "ヤッタ〜!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SHOP, "これって…最高じゃん!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIFT, "はい、これ!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.REVIVE, "泣いちゃった!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.IDLE, "フンフ〜ン♪");
+            addVoiceLines(adder, "usagi", VoiceMoment.TAME, "ヤハ!");
+            addVoiceLines(adder, "usagi", VoiceMoment.HURT, "ハァ？");
+            addVoiceLines(adder, "usagi", VoiceMoment.HUNT, "ウラァ!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.PAID, "プルルル");
+            addVoiceLines(adder, "usagi", VoiceMoment.SHOP, "プルャ");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIFT, "ウラ");
+            addVoiceLines(adder, "usagi", VoiceMoment.REVIVE, "ヤハーッ!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.IDLE, "フゥン", "プルルル", "ウラ");
+            addVoiceLines(adder, "momonga", VoiceMoment.TAME, "ついにやったゾ!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.HURT, "慰めろ");
+            addVoiceLines(adder, "momonga", VoiceMoment.PAID, "褒めろ");
+            addVoiceLines(adder, "momonga", VoiceMoment.SHOP, "よこせッ");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIFT, "褒めろ");
+            addVoiceLines(adder, "momonga", VoiceMoment.REVIVE, "慰めろ");
+            addVoiceLines(adder, "momonga", VoiceMoment.IDLE, "褒めろ", "よこせッ");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SHOP, "ハーッ…");
+            addVoiceLines(adder, "rakko", VoiceMoment.TAME, "…悪くない");
+            addVoiceLines(adder, "rakko", VoiceMoment.HUNT, "いくぞ");
+            addVoiceLines(adder, "rakko", VoiceMoment.PAID, "フッ");
+            addVoiceLines(adder, "rakko", VoiceMoment.SHOP, "…うまい");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIFT, "…やる");
+            addVoiceLines(adder, "rakko", VoiceMoment.REVIVE, "…まだまだだな");
+            addVoiceLines(adder, "shisa", VoiceMoment.TAME, "はいさい!", "よろしくお願いします!");
+            addVoiceLines(adder, "shisa", VoiceMoment.HURT, "アガッ!");
+            addVoiceLines(adder, "shisa", VoiceMoment.HUNT, "が、がんばります…!");
+            addVoiceLines(adder, "shisa", VoiceMoment.PAID, "うれシーサー!");
+            addVoiceLines(adder, "shisa", VoiceMoment.SHOP, "いただきます!");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIFT, "これ、どうぞ!");
+            addVoiceLines(adder, "shisa", VoiceMoment.REVIVE, "なんくるないさ〜");
+            addVoiceLines(adder, "shisa", VoiceMoment.IDLE, "はいさい!", "さんぴん茶、飲みたいな〜");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.TAME, "カニ!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIFT, "どうぞ…");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.IDLE, "カニ");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.CLUNG_TO, "ヤダッ!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TREATED, "ワァ…!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIVEN_COFFEE, "ワァ…");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.LISTEN, "ワァ…");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CLUNG_TO, "えっ、なになに!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CRAB_GREETING, "カニ〜!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TREATED, "ありがとうございます、先生!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIVEN_COFFEE, "ありがと〜!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.LISTEN, "いい曲じゃん!");
+            addVoiceLines(adder, "usagi", VoiceMoment.CLUNG_TO, "ハァ？");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIVEN_COFFEE, "ヤハ");
+            addVoiceLines(adder, "usagi", VoiceMoment.LISTEN, "プルルル");
+            addVoiceLines(adder, "momonga", VoiceMoment.CLING, "褒めろ");
+            addVoiceLines(adder, "momonga", VoiceMoment.TURNED_DOWN, "慰めろ");
+            addVoiceLines(adder, "momonga", VoiceMoment.CRAB_GREETING, "カニッ");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIVEN_COFFEE, "もっとよこせッ");
+            addVoiceLines(adder, "momonga", VoiceMoment.LISTEN, "もっと弾け");
+            addVoiceLines(adder, "rakko", VoiceMoment.TREAT, "…食え");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIVEN_COFFEE, "…助かる");
+            addVoiceLines(adder, "shisa", VoiceMoment.CLUNG_TO, "あ、あの…");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIVEN_COFFEE, "ありがとうございます!");
+            addVoiceLines(adder, "shisa", VoiceMoment.LISTEN, "じょうずですね〜!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.CRAB_GREETING, "カニ");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIVEN_COFFEE, "ありがとう…");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_PASS, "ワ…ワァ…!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_FAIL, "ウッ…ウッ…");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_PASS, "受かったってコト!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_FAIL, "次はきっと大丈夫!");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_PASS, "ウラーッ!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_FAIL, "ハァ？");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_PASS, "受かったゾ! 褒めろ!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_FAIL, "慰めろ");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.EXAM_PASS, "ハァ〜…");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_PASS, "…当然だ");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_FAIL, "…まだまだだな");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_PASS, "でーじ嬉しいさー!");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_FAIL, "なんくるないさー! 次がんばります!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_PASS, "本のおかげだね");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_FAIL, "もう一度読み直そう");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.WHISTLE, "ワッ…!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.WHISTLE, "呼んだ〜？");
+            addVoiceLines(adder, "usagi", VoiceMoment.WHISTLE, "ヤハーッ!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.WHISTLE, "よこせッ");
+            addVoiceLines(adder, "rakko", VoiceMoment.WHISTLE, "…行くか");
+            addVoiceLines(adder, "shisa", VoiceMoment.WHISTLE, "はーい!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.WHISTLE, "はい…");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PHOTO, "撮るよ〜!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PHOTOGRAPHED, "ン…");
+            addVoiceLines(adder, "usagi", VoiceMoment.PHOTOGRAPHED, "ヤハーッ!");
+            addVoiceLines(adder, "momonga", VoiceMoment.PHOTOGRAPHED, "かわいく撮れ");
+            addVoiceLines(adder, "rakko", VoiceMoment.PHOTOGRAPHED, "…撮れ");
+            addVoiceLines(adder, "shisa", VoiceMoment.PHOTOGRAPHED, "きれいに撮ってくださいね〜");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.PHOTOGRAPHED, "カニ");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SCARED, "ウワーン…!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SCARED, "ど、どうしよう…!");
+            addVoiceLines(adder, "usagi", VoiceMoment.SCARED, "ウラウラウラーッ!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.SCARED, "こわい 慰めろ");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SCARED, "…はぁ");
+            addVoiceLines(adder, "shisa", VoiceMoment.SCARED, "ひ、ひえっ…!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SCARED, "ひゃ…");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.MISSING, "うぅ…%sが ないよぅ…");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TROUBLE, "なんとかなれー！");
+            addVoiceLines(adder, "usagi", VoiceMoment.MISSING, "ヤハ！？ %s！ ウラ〜！");
+            addVoiceLines(adder, "momonga", VoiceMoment.MISSING, "%sが ない！ なんとかしろ");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.MISSING, "…%s、ないのか");
+            addVoiceLines(adder, "rakko", VoiceMoment.MISSING, "おい、%sがねぇぞ");
+            addVoiceLines(adder, "shisa", VoiceMoment.MISSING, "あのぅ、%sが ないさー…");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.MISSING, "…%s、ほしいな");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SLEEPY, "ふぁ…");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SLEEPY, "ねむいなぁ…");
+            addVoiceLines(adder, "usagi", VoiceMoment.SLEEPY, "ヤ…ハァ…");
+            addVoiceLines(adder, "momonga", VoiceMoment.SLEEPY, "ねむい！ ふとんは！");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SLEEPY, "…ふぁ");
+            addVoiceLines(adder, "rakko", VoiceMoment.SLEEPY, "…ねみぃ");
+            addVoiceLines(adder, "shisa", VoiceMoment.SLEEPY, "ふぁ…ねむいさー");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SLEEPY, "ふあ…");
+            addVoiceLines(adder, "usagi", VoiceMoment.FRENZY, "ウラ!!", "ヤハー!!", "ウラウラウラー!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.PRAISE_ME, "褒めろ〜！", "かわいいでしょ？ 褒めろ！");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SIGH, "ハーッ…");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.OFFER_COFFEE, "…おつかれ。ほら");
+            addVoiceLines(adder, "rakko", VoiceMoment.SWEETS, "…おい、それ…甘そうだな");
+            addVoiceLines(adder, "shisa", VoiceMoment.GREET, "おかえりなさいさー！ よろしくお願いします〜");
+            addWhistleTranslations(adder, "フエラムネ", "フエラムネ（%s）", "右クリック長押しで吹くと、近くのペットが今の指示どおりに動く。スニークしながら右クリックで指示を切り替え。", "フエラムネを切り替え：%s", "%d匹が駆け寄ってきた", "%d匹がおすわりした", "%d匹が自由行動に戻った", "野生の%d匹が気になって寄ってきた", "近くに聞こえたペットはいない", "気になって寄っていく", "笛は聞こえない");
+            addSettingsTranslations(adder, "ちいかわの設定", "野生の子の出現：%s", "おしゃべりの頻度：%s", "ひまつぶし：%s", "ふきだし：%s", "オン", "オフ",
+                "これらはワールドの設定です。ワールドに入ってから変更できます", "これらはワールドの設定です。変更できるのは管理者だけです",
+                "鳴き声の音量は、設定 → サウンド設定 → 友好的Mob で調整できます");
+            addAlbumTranslations(adder, "%1$sが撮影 · %2$s日目 · %3$s", "%1$sが撮影 · %2$s日目 · 風景", "撮影済み %1$s/%2$s",
+                "現像中…", "この写真は見つかりません", "前の写真", "次の写真");
+            addCameraTranslations(adder, "ハチワレのカメラ", "ハチワレのリュックに入れると、フィルムがあれば自分でシャッターチャンスを探します", "フィルム",
+                "カメラを持ったハチワレのリュックに入れると、撮り終えたときにハチワレが渡してくれます。右クリックで写真を見られます。");
+            addPhotoIntentTranslations(adder, "写真を撮る", "写真を撮るのはハチワレだけ", "リュックにカメラがない", "リュックにフィルムがない",
+                "あなたから遠すぎる", "あなたが忙しそう", "撮りたいものがない");
+        } else if ("pt_br".equals(locale)) {
+            addCommonTranslations(adder, "Chiikawa", "Mochila do Pet", "Seguir", "Sentar", "Livre",
+                "%s: seguindo você", "%s: sentando", "%s: livre para passear");
+            addDollTooltipTranslations(adder, "Coloque a pelúcia em cima de um bolo e o pet volta");
+            addHandbookTranslations(adder, "Manual de Trabalho do Chiikawa", "Clique com o botão direito para abrir: como tudo funciona",
+                "Este manual ainda está em branco");
+            addHandbookChapter(adder, "meet", "Conhecendo o Chiikawa",
+                "Pets selvagens vivem em planícies, savanas, desertos, pântanos e planícies nevadas. Clique com o botão direito em um pet selvagem segurando comida, como pão ou biscoito, para tentar domá-lo. Agache e clique com o botão direito para alternar entre Seguir, Sentar e Livre; clique com o botão direito para abrir a tela do pet. Sopre uma Bala de Apito para dar a mesma ordem a todos os pets por perto.");
+            addHandbookChapter(adder, "work", "Ao Trabalho",
+                "Coloque um Quadro de Trabalho e ele afixa algumas fichas a cada nascer do sol. Os pets pegam fichas de acordo com a ferramenta na mão: enxada para capina, espada ou arco para caça e, com a Caixa de Música, o Hachiware faz apresentações de rua. O pagamento vai direto para a mochila do pet. Gaste esmeraldas no quadro para melhorá-lo: mais fichas por dia e fichas de caça a partir do nível 2.");
+            addHandbookChapter(adder, "shop", "A Loja e os Presentes",
+                "Coloque uma Loja e seus pets gastam em coisas de que gostam as esmeraldas que levam na mochila. Clique com o botão direito em um pet com uma esmeralda para dar uma mesada. Um carinho seu ou um pagamento recebido pode dar a um pet vontade de te dar um presente; quando vier trazê-lo, clique com o botão direito com a mão vazia para pegar. Você também pode comprar e vender na Loja.");
+            addHandbookChapter(adder, "care", "Cuidando dos Pets",
+                "Uma Mochila de Costas ou uma bolsa dá ao pet mais 10 espaços, e um Prato Simples deixa o pet com mais vontade de trabalhar. Um pet que cai vira uma pelúcia: clique com o botão direito em um bolo colocado, com a pelúcia na mão, e o pet volta. Se algum se perder, toque o Sino do Pet.");
+            addHandbookChapter(adder, "camera", "A Câmera do Hachiware",
+                "Dê uma câmera e filme ao Hachiware para que tire fotos de você, dos amigos e da paisagem quando surge o momento certo. Um rolo tem 8 fotos, e o rolo cheio chega até você de presente. Clique com o botão direito em um rolo para ver as fotos dele.");
+            addHandbookChapter(adder, "licence", "A Licença de Capina",
+                "Coloque uma Mesa de Exame e clique com o botão direito nela para inscrever um pet por 1 diamante. O pet faz a prova durante o dia e recebe o resultado na manhã seguinte. Fichas de capina e o guia de estudo aumentam as chances. Um pet com licença ganha mais com a capina e, a partir do grau 3, pode pegar fichas de Capina Avançada.");
+            adder.add("manual.chiikawa.more", "Mais no site →");
+            addJobTranslations(adder, "Trabalho: %s", "Nenhum", "Cultivo", "Esgrima", "Arqueria", "Música", "Incerto");
+            addEntityTranslations(adder, "Usagi", "Hachiware", "Chiikawa", "Shisa", "Momonga", "Kurimanju", "Rakko", "Furuhonya");
+            addItemTagTranslations(adder, "Ferramentas de Agricultura", "Ferramentas de Esgrima", "Ferramentas de Arqueria", "Ferramentas de Música", "Comidas para Domar", "Sementes", "Itens para Entregar", "Itens Coletáveis", "Petiscos para Pets", "Flechas");
+            addItemTranslations(
+                adder,
+                "Ovo de Usagi",
+                "Ovo de Hachiware",
+                "Ovo de Chiikawa",
+                "Ovo de Shisa",
+                "Ovo de Momonga",
+                "Ovo de Kurimanju",
+                "Ovo de Rakko",
+                "Ovo de Furuhonya",
+                "Pelúcia de Usagi",
+                "Pelúcia de Hachiware",
+                "Pelúcia de Chiikawa",
+                "Pelúcia de Shisa",
+                "Pelúcia de Momonga",
+                "Pelúcia de Kurimanju",
+                "Pelúcia de Rakko",
+                "Pelúcia de Furuhonya",
+                "Bastão de Subjugação do Usagi",
+                "Sasumata do Hachiware",
+                "Sasumata do Chiikawa",
+                "Espada do Rakko"
+            );
+            addMusicBoxTranslations(adder, "Caixa de Música", "Nenhuma música selecionada", "Música: %s", "Escolher Música", "Importando", "Falhou", "Nenhuma música para tocar",
+                "Coloque arquivos MP3 / WAV na pasta e depois recarregue", "Coloque MP3 / WAV na pasta config/chiikawa/music do servidor e recarregue", "Algumas músicas não puderam ser importadas", "Use arquivos de áudio MP3", "Abrir Pasta", "Recarregar", "Página anterior", "Próxima página");
+            addMusicBoxModeTranslations(adder, "Reprodução: %s", "Tocar uma vez", "Repetir tudo", "Aleatório", "Repetir uma");
+            addIntentFailureTranslations(adder, "Não encontra você", "Você está por perto", "Nada para fazer", "O alvo está longe demais",
+                "O alvo saiu da área permitida", "Saiu da área permitida", "Nenhum item caído por perto", "Nenhuma plantação para colher", "Nenhuma terra arada por perto", "Nenhum baú por perto",
+                "Nenhum monstro para enfrentar", "Tomando fôlego", "Sem flechas", "Nenhuma música nova para tocar",
+                "Algo mais urgente vem primeiro", "Sem ervas daninhas por perto", "Sem cogumelos por perto",
+                "Precisa pegar uma ficha antes", "Ainda não escureceu",
+                "Já está com uma ficha", "Nenhuma ficha para o pet no quadro",
+                "Nada aqui que queira e possa pagar", "Nada para dar");
+            addBlockTranslations(adder, "Quadro de Trabalho", "Loja", "Nível %s");
+            addSupplyTranslations(adder, "Mochila de Costas", "Bolsa do Urso", "Bolsa da Baleia", "Bolsa da Estrela", "Coloque em um pet para ganhar mais dez espaços na mochila",
+                    "Prato Simples", "Dê a um pet para que trabalhe com mais vontade por um tempo",
+                    "Sino do Pet", "Chama seus pets para casa, até de outra dimensão; meio minuto entre os toques");
+            addLicenceTranslations(adder, "Guia de Estudo da Licença de Capina", "Clique com o botão direito no seu pet para que leia o guia: fica mais fácil passar na próxima prova da licença de capina. O guia é consumido na prova.",
+                "Licença de Capina", "%1$s passou na prova de %2$s, grau %3$s", "%1$s não passou na prova de %2$s, grau %3$s",
+                "Você inscreveu %1$s na prova de %2$s, grau %3$s", "%1$s entregou a prova de %2$s; resultado amanhã de manhã",
+                "%1$s perdeu a prova de %2$s de hoje", "A mesa de exame sumiu; a prova de %2$s de %1$s foi cancelada",
+                "Indo fazer a prova", "Vendo o resultado", "Nenhuma mesa de exame por perto");
+            addLicenceScreenTranslations(adder, "Gr. %s", "Nenh.", "%s: grau %s", "%s: ainda nenhum", "Tem o grau máximo",
+                "Resultado amanhã de manhã", "Fazendo a prova hoje", "Precisa de mais prática antes de poder fazer a prova",
+                "Pode se inscrever em uma mesa de exame");
+            addExamDeskStatusTranslations(adder, "Mesa de Exame", "Escolha um pet para inscrever", "Inscrições só durante o dia",
+                "Já há um pet fazendo prova aqui", "Não há lugar para sentar atrás da mesa",
+                "%1$s está fazendo a prova de %2$s, grau %3$s", "%1$s entregou; resultado amanhã de manhã",
+                "%1$s, %2$s grau %3$s: passou", "%1$s, %2$s grau %3$s: não passou");
+            addExamDeskPetTranslations(adder, "Taxa %s", "Inscrever %s", "Grau %s", "Nenhum dos seus pets por perto", " (grau %s)",
+                " (sem licença ainda)", "Tem o grau máximo", "Precisa de mais prática", "Inscrição feita ou aguardando o resultado", "Na ordem Sentar",
+                "Longe demais");
+            addExamDeskOddsTranslations(adder, "Base %s%%", "Prática +%s%%", "Reprovações anteriores +%s%%", "Leu o guia +%s%%",
+                "Personalidade ×%s", "Chance de passar %s (máx. %s%%)");
+            addPetNewsTranslations(adder, "%1$s deu %2$s para você");
+            addGiftTranslations(adder, "Separando presente", "Não pensa em dar um presente", "Já deu um presente hoje", "Nada na mochila para dar", "%1$s deixou %2$s ao lado da sua cama");
+            addRecallTranslations(adder, "%s veio correndo", "Você ainda não tem pets",
+                    "%s não respondeu; talvez não esteja mais onde estava");
+            addShopScreenTranslations(adder, "Loja", "Comprar %s", "Vender %s", "Nada à venda hoje",
+                    "Página anterior", "Próxima página");
+            addIntentNameTranslations(adder, "Seguindo você", "Sentando", "Passeando", "Pegando um item",
+                "Buscando uma ficha", "Colhendo", "Plantando", "Guardando colheita", "Capinando", "Colhendo cogumelos",
+                "Lutando", "Atirando em monstro", "Se apresentando", "Fazendo compras", "Trazendo presente");
+            addCombatTranslations(adder, "Caça em patrulha", "Caça em patrulha", "Se defendendo", "Se afastando",
+                "Nada está atacando", "Já está com uma arma na mão", "Nenhuma arma na mochila", "Pode revidar, não precisa fugir");
+            addRhythmTranslations(adder, "Dormindo", "Fugindo da chuva", "Brincando na chuva", "Vendo seu trabalho",
+                "Você ainda não foi dormir", "Sem vontade agora", "Nenhum abrigo da chuva por perto", "Nada de interessante por perto");
+            addPastimeTranslations(adder, "Tremendo de medo", "Fazendo bagunça", "Pedindo elogio", "Bebida da tarde", "Levando café", "De olho nos doces", "Treino de espada", "Recebendo você");
+            addSocialTranslations(adder, "Visitando um amigo", "Brincando junto", "Ninguém por perto com quem queira brincar",
+                "Ninguém está vindo");
+            addTaskTypeTranslations(adder, "Capina", "%s ervas daninhas", "Show de Rua", "%ss",
+                "Caça a Monstros", "Tiro em Monstros", "%s abatidos", "Capina Avançada");
+            addLancerTranslations(adder, "Lanceiro", "Ferramentas de Lanceiro", "Caça com Lança", "%s abatidos", "Arremessando o tridente", "Arremessando o tridente em patrulha");
+            addBoardScreenTranslations(adder, "Quadro de Trabalho", "%s no quadro", "Nenhuma ficha hoje",
+                    "Só %s", "Aberta", "Pega", "Pega por %s",
+                    "Nv.%s", "%s por dia", "Melhorar %s",
+                    "No Nv.%1$s: %2$s por dia", "Novo trabalho: %s",
+                    "Totalmente melhorado", "Você tem %1$s × %2$s");
+            addPetStatusTranslations(adder, "Sem fazer nada", "Uma mochila de costas ou uma bolsa adiciona mais dez espaços");
+            addPetScreenTranslations(adder,
+                    "Com vontade de trabalhar: faltam %s",
+                    "Mesada: %1$s × %2$s",
+                    "Mimo",
+                    "Vai trazer por conta própria",
+                    "Coleta automática",
+                    "Quando está livre, guarda na mochila o que cair por perto");
+            addPetOutlookTranslations(adder,
+                    "Falta %s",
+                    "O que quer fazer em seguida");
+            // What the pets say (design 0.1.1, section 3), in Portuguese: the sounds stay as they are and the words carry the same meaning.
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TAME, "Wah...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HURT, "Nooo!!", "Hic... hic...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HUNT, "Yaaah!!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PAID, "!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SHOP, "Wah...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIFT, "Mm...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.REVIVE, "Hah...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.IDLE, "Hup...", "Phew...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TAME, "Isso quer dizer...!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HURT, "Ai, ai, ai...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HUNT, "Vai dar certo de algum jeito!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PAID, "Eeeba!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SHOP, "Isso não é... o melhor!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIFT, "Toma, é pra você!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.REVIVE, "Estou chorando!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.IDLE, "Hmm hmm~♪");
+            addVoiceLines(adder, "usagi", VoiceMoment.TAME, "Yaha!");
+            addVoiceLines(adder, "usagi", VoiceMoment.HURT, "Haah?");
+            addVoiceLines(adder, "usagi", VoiceMoment.HUNT, "Uraaa!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.PAID, "Prrrrr");
+            addVoiceLines(adder, "usagi", VoiceMoment.SHOP, "Purya");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIFT, "Ura");
+            addVoiceLines(adder, "usagi", VoiceMoment.REVIVE, "Yahaaa!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.IDLE, "Hmmn", "Prrrrr", "Ura");
+            addVoiceLines(adder, "momonga", VoiceMoment.TAME, "Finalmente consegui!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.HURT, "Me consola.");
+            addVoiceLines(adder, "momonga", VoiceMoment.PAID, "Me elogia.");
+            addVoiceLines(adder, "momonga", VoiceMoment.SHOP, "Me dá!");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIFT, "Me elogia.");
+            addVoiceLines(adder, "momonga", VoiceMoment.REVIVE, "Me consola.");
+            addVoiceLines(adder, "momonga", VoiceMoment.IDLE, "Me elogia.", "Me dá!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SHOP, "Haaah...");
+            addVoiceLines(adder, "rakko", VoiceMoment.TAME, "...Nada mal.");
+            addVoiceLines(adder, "rakko", VoiceMoment.HUNT, "Vamos.");
+            addVoiceLines(adder, "rakko", VoiceMoment.PAID, "Heh.");
+            addVoiceLines(adder, "rakko", VoiceMoment.SHOP, "...Gostoso.");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIFT, "...Toma.");
+            addVoiceLines(adder, "rakko", VoiceMoment.REVIVE, "...Ainda falta muito.");
+            addVoiceLines(adder, "shisa", VoiceMoment.TAME, "Haisai!", "Muito prazer!");
+            addVoiceLines(adder, "shisa", VoiceMoment.HURT, "Ai!");
+            addVoiceLines(adder, "shisa", VoiceMoment.HUNT, "E-eu vou me esforçar...!");
+            addVoiceLines(adder, "shisa", VoiceMoment.PAID, "Feliz-shisa!");
+            addVoiceLines(adder, "shisa", VoiceMoment.SHOP, "Agradeço pelo agrado!");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIFT, "Por favor, aceite isto!");
+            addVoiceLines(adder, "shisa", VoiceMoment.REVIVE, "Vai dar tudo certo~");
+            addVoiceLines(adder, "shisa", VoiceMoment.IDLE, "Haisai!", "Que vontade de um chá sanpin~");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.TAME, "Caranguejo!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIFT, "Para você...");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.IDLE, "Caranguejo");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.CLUNG_TO, "Nooo!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TREATED, "Wah...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIVEN_COFFEE, "Wah...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.LISTEN, "Wah...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CLUNG_TO, "Hã, o que foi!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CRAB_GREETING, "Caranguejo~!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TREATED, "Agradeço, Sensei!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIVEN_COFFEE, "Valeu~!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.LISTEN, "Que música!");
+            addVoiceLines(adder, "usagi", VoiceMoment.CLUNG_TO, "Haah?");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIVEN_COFFEE, "Yaha");
+            addVoiceLines(adder, "usagi", VoiceMoment.LISTEN, "Prrrrr");
+            addVoiceLines(adder, "momonga", VoiceMoment.CLING, "Me elogia.");
+            addVoiceLines(adder, "momonga", VoiceMoment.TURNED_DOWN, "Me consola.");
+            addVoiceLines(adder, "momonga", VoiceMoment.CRAB_GREETING, "Caranguejo!");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIVEN_COFFEE, "Mais! Me dá!");
+            addVoiceLines(adder, "momonga", VoiceMoment.LISTEN, "Toca outra!");
+            addVoiceLines(adder, "rakko", VoiceMoment.TREAT, "...Come.");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIVEN_COFFEE, "...Agradeço.");
+            addVoiceLines(adder, "shisa", VoiceMoment.CLUNG_TO, "A-ah...");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIVEN_COFFEE, "Agradeço muito!");
+            addVoiceLines(adder, "shisa", VoiceMoment.LISTEN, "Você toca tão bem~!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.CRAB_GREETING, "Caranguejo");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIVEN_COFFEE, "Agradeço...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_PASS, "Wa... wah...!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_FAIL, "Hic... hic...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_PASS, "Passei... isso quer dizer...!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_FAIL, "Da próxima, com certeza!");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_PASS, "Uraaa!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_FAIL, "Haah?");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_PASS, "Passei! Me elogia!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_FAIL, "Me consola.");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.EXAM_PASS, "Haaah...");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_PASS, "...Naturalmente.");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_FAIL, "...Ainda falta muito.");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_PASS, "Tão, tão feliz!");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_FAIL, "Nankurunaisa! Vou me esforçar mais da próxima vez!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_PASS, "Tudo graças aos livros.");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_FAIL, "Vou ler de novo.");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.WHISTLE, "Wah...!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.WHISTLE, "Me chamou~?");
+            addVoiceLines(adder, "usagi", VoiceMoment.WHISTLE, "Yahaaa!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.WHISTLE, "Me dá!");
+            addVoiceLines(adder, "rakko", VoiceMoment.WHISTLE, "...Vamos.");
+            addVoiceLines(adder, "shisa", VoiceMoment.WHISTLE, "Já vou!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.WHISTLE, "Já vou...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PHOTO, "Digam xis~!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PHOTOGRAPHED, "Mm...");
+            addVoiceLines(adder, "usagi", VoiceMoment.PHOTOGRAPHED, "Yahaaa!");
+            addVoiceLines(adder, "momonga", VoiceMoment.PHOTOGRAPHED, "Quero uma foto fofa!");
+            addVoiceLines(adder, "rakko", VoiceMoment.PHOTOGRAPHED, "...Pode ir.");
+            addVoiceLines(adder, "shisa", VoiceMoment.PHOTOGRAPHED, "Faz uma bem bonita~");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.PHOTOGRAPHED, "Caranguejo");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SCARED, "Buaaa...!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SCARED, "C-como eu faço...!");
+            addVoiceLines(adder, "usagi", VoiceMoment.SCARED, "Ura ura uraaa!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.SCARED, "Que medo! Me consola!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SCARED, "...Ai.");
+            addVoiceLines(adder, "shisa", VoiceMoment.SCARED, "A-ai...!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SCARED, "Ah...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.MISSING, "Buaa... sem %s...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TROUBLE, "Vai dar um jeito!");
+            addVoiceLines(adder, "usagi", VoiceMoment.MISSING, "Iaha!? %s! Ura!");
+            addVoiceLines(adder, "momonga", VoiceMoment.MISSING, "Cadê %s?! Dá um jeito!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.MISSING, "...Sem %s, é?");
+            addVoiceLines(adder, "rakko", VoiceMoment.MISSING, "Ei. Cadê %s?");
+            addVoiceLines(adder, "shisa", VoiceMoment.MISSING, "Hum... acabou %s...");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.MISSING, "...Preciso de %s.");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SLEEPY, "Aaah...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SLEEPY, "Que sono...");
+            addVoiceLines(adder, "usagi", VoiceMoment.SLEEPY, "Iaa... haa...");
+            addVoiceLines(adder, "momonga", VoiceMoment.SLEEPY, "Sono! Cadê minha cama?!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SLEEPY, "...Aah.");
+            addVoiceLines(adder, "rakko", VoiceMoment.SLEEPY, "...Sono.");
+            addVoiceLines(adder, "shisa", VoiceMoment.SLEEPY, "Aah... que sono...");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SLEEPY, "...Aah.");
+            addVoiceLines(adder, "usagi", VoiceMoment.FRENZY, "Ura!!", "Iaaa-ha!!", "Ura ura ura!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.PRAISE_ME, "Me elogia! Me elogia!", "Que fofura, né? Me elogia!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SIGH, "Haaah...");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.OFFER_COFFEE, "...Bom trabalho. Toma.");
+            addVoiceLines(adder, "rakko", VoiceMoment.SWEETS, "...Ei, isso parece doce.");
+            addVoiceLines(adder, "shisa", VoiceMoment.GREET, "Que bom que voltou! Conte comigo~");
+            addWhistleTranslations(adder, "Bala de Apito", "Bala de Apito (%s)", "Segure o botão direito para soprar; os pets por perto seguem a ordem atual. Agache e clique com o botão direito para trocar a ordem.", "Bala de apito trocada para: %s", "%d pets vieram correndo", "%d pets se sentaram", "%d pets saíram para passear", "%d pets selvagens vieram dar uma olhada", "Nenhum pet ouviu o apito", "Indo dar uma olhada", "Nenhum apito ouvido");
+            addSettingsTranslations(adder, "Configurações do Chiikawa", "Aparição de pets selvagens: %s", "Conversa: %s", "Passatempos: %s", "Balões de fala: %s", "Ligado", "Desligado",
+                "Estas são configurações do mundo; só dá para mudá-las de dentro de um mundo", "Estas são configurações do mundo; só operadores podem mudá-las",
+                "O volume dos pets fica em Opções → Música e sons → Criaturas inofensivas");
+            addAlbumTranslations(adder, "Foto de %1$s · Dia %2$s · %3$s", "Foto de %1$s · Dia %2$s · Paisagem", "Foto %1$s/%2$s",
+                "Revelando...", "Esta foto não foi encontrada", "Foto anterior", "Próxima foto");
+            addCameraTranslations(adder, "A Câmera do Hachiware", "Coloque na mochila do Hachiware com um pouco de filme para que procure bons momentos para tirar fotos", "Filme",
+                "Coloque na mochila de um Hachiware que tenha uma câmera; quando o rolo encher, o Hachiware entrega a você. Clique com o botão direito para ver as fotos.");
+            addPhotoIntentTranslations(adder, "Tirar uma foto", "Só o Hachiware tira fotos", "Sem câmera na mochila",
+                "Sem filme na mochila", "Longe demais de você", "Você está sem tempo",
+                "Nada que valha uma foto agora");
+        } else if ("ko_kr".equals(locale)) {
+            addCommonTranslations(adder, "치이카와", "가방", "따라오기", "앉아", "자유 행동",
+                "%s: 너를 따라가", "%s: 앉아 있어", "%s: 자유롭게 돌아다녀");
+            addDollTooltipTranslations(adder, "인형을 케이크 위에 놓으면 돌아와");
+            addHandbookTranslations(adder, "치이카와의 알바 수첩", "우클릭해서 열어. 펫을 어떻게 쓰는지 적혀 있어",
+                "이 수첩은 아직 비어 있어");
+            addHandbookChapter(adder, "meet", "치이카와를 만나기",
+                "평원, 사바나, 사막, 늪, 눈 덮인 벌판에는 야생 펫이 살아. 빵이나 쿠키 같은 음식을 들고 우클릭하면 길들일 수 있을지도 몰라. 웅크리고 우클릭하면 따라오기, 앉아, 자유 행동이 바뀌고, 그냥 우클릭하면 그 펫의 화면이 열려. 피리 사탕을 불면 근처 펫 모두에게 한꺼번에 지시할 수 있어.");
+            addHandbookChapter(adder, "work", "일하러 가기",
+                "알바 게시판을 놓으면 해가 뜰 때마다 전표가 몇 장 붙어. 펫은 손에 든 도구에 맞는 전표를 받아 가. 괭이를 들면 잡초 뽑기, 검이나 활을 들면 토벌, 오르골을 든 하치와레는 길거리 연주야. 보상은 곧바로 펫의 가방에 들어가. 게시판에 에메랄드를 쓰면 레벨이 올라서 하루에 붙는 전표가 늘고, 2레벨부터는 토벌 전표도 나와.");
+            addHandbookChapter(adder, "shop", "상점과 선물",
+                "상점을 놓으면 펫이 자기 가방에 든 에메랄드로 마음에 드는 물건을 사러 가. 에메랄드를 들고 우클릭하면 용돈을 줄 수 있어. 잘해 주거나 보수를 받으면 선물을 주고 싶어 하기도 해. 선물을 들고 오면 빈손으로 우클릭해서 받아. 상점에서는 너도 사고팔 수 있어.");
+            addHandbookChapter(adder, "care", "돌보기",
+                "배낭이나 가방을 메게 하면 가방이 10칸 늘어나고, 간단한 요리를 먹이면 일할 의욕이 올라. 쓰러진 펫은 인형이 돼. 인형을 들고 놓아 둔 케이크를 우클릭하면 돌아와. 펫이 길을 잃었다면 펫 방울을 울려 봐.");
+            addHandbookChapter(adder, "camera", "하치와레의 카메라",
+                "하치와레에게 카메라와 필름을 주면 알맞은 때에 너와 친구들, 풍경을 찍어 줘. 필름 한 롤에는 8장이 들어가고, 다 찍으면 선물로 건네줘. 필름을 우클릭하면 그 롤의 사진을 넘겨 볼 수 있어.");
+            addHandbookChapter(adder, "licence", "잡초 뽑기 자격증",
+                "시험 책상을 놓고 우클릭해서 다이아몬드 1개로 펫을 접수해. 낮에 책상에 앉아 답안을 쓰고, 결과는 다음 날 아침에 나와. 잡초 뽑기 전표를 해내거나 참고서를 읽으면 합격 확률이 올라가. 합격한 펫은 잡초 뽑기 보상이 늘고, 3급부터는 상급 잡초 뽑기 전표도 받을 수 있어.");
+            adder.add("manual.chiikawa.more", "더 자세한 내용은 웹사이트에서 →");
+            addJobTranslations(adder, "직업: %s", "없음", "농부", "검사", "궁수", "음악가", "알 수 없음");
+            addEntityTranslations(adder, "우사기", "하치와레", "치이카와", "시사", "모몽가", "쿠리만쥬", "랏코", "후루혼야");
+            addItemTagTranslations(adder, "농부 도구", "검사 도구", "궁수 도구", "음악가 도구", "길들이기 음식", "씨앗", "배달 아이템", "주울 수 있는 아이템", "펫 간식", "화살");
+            addItemTranslations(
+                adder,
+                "우사기 생성 알",
+                "하치와레 생성 알",
+                "치이카와 생성 알",
+                "시사 생성 알",
+                "모몽가 생성 알",
+                "쿠리만쥬 생성 알",
+                "랏코 생성 알",
+                "후루혼야 생성 알",
+                "우사기 인형",
+                "하치와레 인형",
+                "치이카와 인형",
+                "시사 인형",
+                "모몽가 인형",
+                "쿠리만쥬 인형",
+                "랏코 인형",
+                "후루혼야 인형",
+                "우사기의 토벌봉",
+                "하치와레의 사스마타",
+                "치이카와의 사스마타",
+                "랏코의 검"
+            );
+            addMusicBoxTranslations(adder, "오르골", "선택된 곡 없음", "곡: %s", "곡 고르기", "가져오는 중", "실패", "재생할 곡이 없어",
+                "폴더에 MP3 / WAV를 넣고 새로고침해", "서버의 config/chiikawa/music 폴더에 MP3 / WAV를 넣고 새로고침해", "일부 곡을 가져오지 못했어", "MP3 파일을 써 줘", "폴더 열기", "새로고침", "이전 페이지", "다음 페이지");
+            addMusicBoxModeTranslations(adder, "재생: %s", "한 번 재생", "목록 반복", "무작위", "한 곡 반복");
+            addIntentFailureTranslations(adder, "널 찾을 수 없어", "네가 바로 옆에 있어", "할 일이 없어", "목표가 너무 멀어",
+                "목표가 활동 범위를 벗어났어", "활동 범위를 벗어났어", "근처에 떨어진 물건이 없어", "수확할 작물이 없어", "근처에 심을 밭이 없어", "근처에 넣을 상자가 없어",
+                "싸울 몬스터가 없어", "숨 돌리는 중이야", "화살이 없어", "새로 연주할 곡이 없어", "더 급한 일이 먼저야",
+                "근처에 잡초가 없어", "근처에 버섯이 없어", "먼저 전표를 받아야 해", "아직 어두워지지 않았어",
+                "이미 전표를 들고 있어", "게시판에 할 수 있는 일이 없어",
+                "사고 싶고 살 수 있는 물건이 없어", "건넬 것이 없어");
+            addBlockTranslations(adder, "알바 게시판", "상점", "레벨 %s");
+            addSupplyTranslations(adder, "배낭", "곰 가방", "고래 가방", "별 가방", "펫에게 입히면 가방이 10칸 늘어",
+                    "간단한 요리", "펫에게 먹이면 한동안 일을 더 하려 해",
+                    "펫 방울", "펫을 불러. 다른 차원에서도 들려. 한 번 울리면 30초를 기다려");
+            addLicenceTranslations(adder, "잡초 뽑기 자격증 참고서", "자기 펫을 우클릭하면 읽게 할 수 있어. 다음 잡초 뽑기 자격 시험에서 합격하기 쉬워지고, 시험이 끝나면 사라져.",
+                "잡초 뽑기 자격증", "%1$s(이)가 %2$s %3$s급 시험에 합격했어", "%1$s(이)가 %2$s %3$s급 시험에 떨어졌어",
+                "%1$s(을)를 %2$s %3$s급 시험에 접수했어", "%1$s(이)가 %2$s 답안을 냈어. 결과는 내일 아침", "%1$s(이)가 오늘 %2$s 시험을 놓쳤어",
+                "시험 책상이 없어서 %1$s의 %2$s 시험이 취소됐어",
+                "시험 보러 가는 중", "결과 보러 가는 중", "근처에 시험 책상이 없어");
+            addLicenceScreenTranslations(adder, "%s급", "없음", "%s: %s급", "%s: 아직 없음", "이미 최고 등급이야",
+                "결과는 내일 아침", "오늘 시험을 봐", "연습이 더 필요해서 아직 응시할 수 없어", "준비됨: 시험 책상에서 접수해");
+            addExamDeskStatusTranslations(adder, "시험 책상", "접수할 펫을 골라", "낮에만 접수할 수 있어", "이 책상에서는 이미 펫이 시험 중이야",
+                "책상 뒤에 앉을 자리가 없어", "%1$s(이)가 %2$s %3$s급 시험 중", "%1$s(이)가 답안을 냈어. 결과는 내일 아침",
+                "%1$s, %2$s %3$s급: 합격", "%1$s, %2$s %3$s급: 불합격");
+            addExamDeskPetTranslations(adder, "응시료 %s", "%s 접수", "%s급", "근처에 네 펫이 없어", " (%s급)", " (자격증 없음)",
+                "이미 최고 등급이야", "연습이 더 필요해", "접수했거나 결과를 기다리는 중", "앉아 있어", "너무 멀어");
+            addExamDeskOddsTranslations(adder, "기초 %s%%", "연습 +%s%%", "이전에 낙방 +%s%%", "참고서를 읽음 +%s%%",
+                "성격 ×%s", "합격 확률 %s (최대 %s%%)");
+            addPetNewsTranslations(adder, "%1$s(이)가 너에게 %2$s을(를) 줬어");
+            addGiftTranslations(adder, "선물 꺼내기", "선물할 생각이 없어", "오늘은 이미 선물했어", "가방에 줄 만한 게 없어", "%1$s(이)가 침대 옆에 %2$s을(를) 두고 갔어");
+            addRecallTranslations(adder, "%s마리가 달려왔어", "아직 펫이 없어",
+                    "%s(은)는 대답이 없어. 원래 있던 곳에 없을지도 몰라");
+            addShopScreenTranslations(adder, "상점", "%s 사기", "%s 팔기", "오늘은 파는 게 없어",
+                    "이전 페이지", "다음 페이지");
+            addIntentNameTranslations(adder, "너를 따라가는 중", "앉아 있기", "어슬렁", "물건 줍기",
+                "전표 받으러 가기", "수확", "심기", "수확물 넣기", "잡초 뽑기", "버섯 따기",
+                "토벌", "몬스터에게 활 쏘기", "연주", "쇼핑", "선물 전달");
+            addCombatTranslations(adder, "순찰하며 토벌", "순찰하며 토벌", "스스로 지키기", "피하기",
+                "공격하는 상대가 없어", "이미 무기를 들고 있어", "가방에 무기가 없어", "맞서 싸울 수 있어서 안 피해도 돼");
+            addRhythmTranslations(adder, "잠자기", "비 피하기", "빗속 놀이", "네가 일하는 걸 구경",
+                "네가 아직 안 자", "지금은 그럴 기분이 아니야", "비 피할 곳이 없어", "근처에 볼 만한 게 없어");
+            addPastimeTranslations(adder, "움츠리기", "날뛰기", "칭찬 받기", "저녁 한 잔", "커피 전하기", "단것 쳐다보기", "검 연습", "마중 나가기");
+            addSocialTranslations(adder, "친구 만나러", "같이 놀기", "같이 놀 친구가 근처에 없어",
+                "아무도 안 왔어");
+            addTaskTypeTranslations(adder, "잡초 뽑기", "잡초 %s포기", "길거리 연주", "%s초",
+                "근접 토벌", "원거리 토벌", "%s마리", "상급 잡초 뽑기");
+            addLancerTranslations(adder, "창술사", "창술사 도구", "창 토벌", "%s마리", "삼지창 던지기", "순찰하며 삼지창 던지기");
+            addBoardScreenTranslations(adder, "알바 게시판", "%s장", "오늘은 전표가 없어",
+                    "%s만", "모집", "수락", "%s(이)가 받음",
+                    "Lv.%s", "하루 %s장", "강화 %s",
+                    "Lv.%1$s이면 하루 %2$s장", "새 일: %s",
+                    "최고 레벨", "%2$s %1$s개 보유");
+            addPetStatusTranslations(adder, "한가함", "배낭이나 가방을 메면 10칸이 더 생겨");
+            addPetScreenTranslations(adder,
+                    "일할 기분: %s 남음",
+                    "용돈: %2$s %1$s개",
+                    "선물!",
+                    "직접 가져올 거야",
+                    "자동 줍기",
+                    "자유 행동 중에 근처에 떨어진 물건을 가방에 넣어");
+            addPetOutlookTranslations(adder,
+                    "%s 필요",
+                    "다음에 하고 싶은 일");
+            // What the pets say, in the words Korean-speaking fans know the lines by.
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TAME, "와아...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HURT, "싫어!!", "윽... 윽...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HUNT, "야아!!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PAID, "!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SHOP, "와아...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIFT, "응...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.REVIVE, "핫...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.IDLE, "영차...", "후우...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TAME, "라는 거야!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HURT, "아야야...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HUNT, "어떻게든 될 거야!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PAID, "해냈다~!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SHOP, "이거... 최고잖아!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIFT, "자, 이거!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.REVIVE, "울어버렸어!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.IDLE, "흐음흐음~♪");
+            addVoiceLines(adder, "usagi", VoiceMoment.TAME, "야하!");
+            addVoiceLines(adder, "usagi", VoiceMoment.HURT, "하아?");
+            addVoiceLines(adder, "usagi", VoiceMoment.HUNT, "우나아!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.PAID, "푸루루루");
+            addVoiceLines(adder, "usagi", VoiceMoment.SHOP, "푸루야");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIFT, "우나");
+            addVoiceLines(adder, "usagi", VoiceMoment.REVIVE, "야하아!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.IDLE, "훈", "푸루루루", "우나");
+            addVoiceLines(adder, "momonga", VoiceMoment.TAME, "드디어 해냈다!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.HURT, "위로해.");
+            addVoiceLines(adder, "momonga", VoiceMoment.PAID, "칭찬해.");
+            addVoiceLines(adder, "momonga", VoiceMoment.SHOP, "내놔!");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIFT, "칭찬해.");
+            addVoiceLines(adder, "momonga", VoiceMoment.REVIVE, "위로해.");
+            addVoiceLines(adder, "momonga", VoiceMoment.IDLE, "칭찬해.", "내놔!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SHOP, "하아...");
+            addVoiceLines(adder, "rakko", VoiceMoment.TAME, "...나쁘지 않군.");
+            addVoiceLines(adder, "rakko", VoiceMoment.HUNT, "간다.");
+            addVoiceLines(adder, "rakko", VoiceMoment.PAID, "훗.");
+            addVoiceLines(adder, "rakko", VoiceMoment.SHOP, "...맛있군.");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIFT, "...가져.");
+            addVoiceLines(adder, "rakko", VoiceMoment.REVIVE, "...아직 멀었다.");
+            addVoiceLines(adder, "shisa", VoiceMoment.TAME, "하이사이!", "잘 부탁해!");
+            addVoiceLines(adder, "shisa", VoiceMoment.HURT, "아얏!");
+            addVoiceLines(adder, "shisa", VoiceMoment.HUNT, "히, 힘낼게요...!");
+            addVoiceLines(adder, "shisa", VoiceMoment.PAID, "기쁘시사!");
+            addVoiceLines(adder, "shisa", VoiceMoment.SHOP, "잘 먹겠습니다!");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIFT, "이거, 받으세요!");
+            addVoiceLines(adder, "shisa", VoiceMoment.REVIVE, "난쿠루나이사~");
+            addVoiceLines(adder, "shisa", VoiceMoment.IDLE, "하이사이!", "산핀차가 마시고 싶어~");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.TAME, "카니!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIFT, "여기...");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.IDLE, "카니");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.CLUNG_TO, "싫어!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TREATED, "와아...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIVEN_COFFEE, "와아...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.LISTEN, "와아...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CLUNG_TO, "어, 뭐야 뭐야!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CRAB_GREETING, "카니~!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TREATED, "감사합니다, 선생님!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIVEN_COFFEE, "고마워~!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.LISTEN, "좋은 곡이잖아!");
+            addVoiceLines(adder, "usagi", VoiceMoment.CLUNG_TO, "하아?");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIVEN_COFFEE, "야하");
+            addVoiceLines(adder, "usagi", VoiceMoment.LISTEN, "푸루루루");
+            addVoiceLines(adder, "momonga", VoiceMoment.CLING, "칭찬해.");
+            addVoiceLines(adder, "momonga", VoiceMoment.TURNED_DOWN, "위로해.");
+            addVoiceLines(adder, "momonga", VoiceMoment.CRAB_GREETING, "카닛!");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIVEN_COFFEE, "더 내놔!");
+            addVoiceLines(adder, "momonga", VoiceMoment.LISTEN, "한 곡 더!");
+            addVoiceLines(adder, "rakko", VoiceMoment.TREAT, "...먹어.");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIVEN_COFFEE, "...도움이 되는군.");
+            addVoiceLines(adder, "shisa", VoiceMoment.CLUNG_TO, "저, 저기...");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIVEN_COFFEE, "감사합니다!");
+            addVoiceLines(adder, "shisa", VoiceMoment.LISTEN, "잘 치시네요~!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.CRAB_GREETING, "카니");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIVEN_COFFEE, "고마워...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_PASS, "와... 와아...!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_FAIL, "윽... 윽...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_PASS, "합격... 라는 거야!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_FAIL, "다음엔 꼭 될 거야!");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_PASS, "우나아!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_FAIL, "하아?");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_PASS, "합격했어! 칭찬해!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_FAIL, "위로해.");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.EXAM_PASS, "하아아...");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_PASS, "...당연하지.");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_FAIL, "...아직 멀었다.");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_PASS, "엄청 기뻐서!");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_FAIL, "난쿠루나이사~! 다음에 더 힘낼게요!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_PASS, "책 덕분이야.");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_FAIL, "한 번 더 읽어 보자.");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.WHISTLE, "와아...!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.WHISTLE, "불렀어~?");
+            addVoiceLines(adder, "usagi", VoiceMoment.WHISTLE, "야하아!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.WHISTLE, "내놔!");
+            addVoiceLines(adder, "rakko", VoiceMoment.WHISTLE, "...가자.");
+            addVoiceLines(adder, "shisa", VoiceMoment.WHISTLE, "네에~!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.WHISTLE, "갈게...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PHOTO, "찍을게~!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PHOTOGRAPHED, "응...");
+            addVoiceLines(adder, "usagi", VoiceMoment.PHOTOGRAPHED, "야하아!");
+            addVoiceLines(adder, "momonga", VoiceMoment.PHOTOGRAPHED, "귀엽게 찍어.");
+            addVoiceLines(adder, "rakko", VoiceMoment.PHOTOGRAPHED, "...찍어.");
+            addVoiceLines(adder, "shisa", VoiceMoment.PHOTOGRAPHED, "예쁘게 찍어 주세요~");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.PHOTOGRAPHED, "카니");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SCARED, "으아앙...!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SCARED, "어, 어떡해...!");
+            addVoiceLines(adder, "usagi", VoiceMoment.SCARED, "우라우라우라!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.SCARED, "무서워! 위로해!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SCARED, "...하아.");
+            addVoiceLines(adder, "shisa", VoiceMoment.SCARED, "히, 히익...!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SCARED, "헉...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.MISSING, "흑... %s 없어어...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TROUBLE, "어떻게든 되겠지!");
+            addVoiceLines(adder, "usagi", VoiceMoment.MISSING, "야하!? %s! 우라!");
+            addVoiceLines(adder, "momonga", VoiceMoment.MISSING, "%s 없어! 어떻게 좀 해!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.MISSING, "...%s, 없네.");
+            addVoiceLines(adder, "rakko", VoiceMoment.MISSING, "야. %s 떨어졌어.");
+            addVoiceLines(adder, "shisa", VoiceMoment.MISSING, "저기... %s 다 떨어졌어요...");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.MISSING, "...%s 필요해.");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SLEEPY, "하아암...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SLEEPY, "졸리다...");
+            addVoiceLines(adder, "usagi", VoiceMoment.SLEEPY, "야... 하아...");
+            addVoiceLines(adder, "momonga", VoiceMoment.SLEEPY, "졸려! 이불은?!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SLEEPY, "...하아.");
+            addVoiceLines(adder, "rakko", VoiceMoment.SLEEPY, "...졸려.");
+            addVoiceLines(adder, "shisa", VoiceMoment.SLEEPY, "하아... 졸려요...");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SLEEPY, "...하아.");
+            addVoiceLines(adder, "usagi", VoiceMoment.FRENZY, "우라!!", "야하—!!", "우라우라우라!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.PRAISE_ME, "칭찬해줘! 칭찬해줘~", "나 귀엽지? 칭찬해!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SIGH, "하아—");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.OFFER_COFFEE, "...수고했어. 자.");
+            addVoiceLines(adder, "rakko", VoiceMoment.SWEETS, "...어이, 그거 달아 보이는데.");
+            addVoiceLines(adder, "shisa", VoiceMoment.GREET, "어서 오세요! 잘 부탁드려요~");
+            addWhistleTranslations(adder, "피리 사탕", "피리 사탕 (%s)", "우클릭을 길게 누르면 불어. 근처 펫이 지금 지시대로 움직여. 웅크리고 우클릭하면 지시가 바뀌어.", "피리 사탕 전환: %s", "펫 %d마리가 달려왔어", "펫 %d마리가 앉았어", "펫 %d마리가 자유롭게 돌아다녀", "야생 펫 %d마리가 구경하러 왔어", "호루라기를 들은 펫이 없어", "구경하러 가는 중", "호루라기가 안 들려");
+            addSettingsTranslations(adder, "치이카와 설정", "야생 펫 등장: %s", "수다 빈도: %s", "소일거리: %s", "말풍선: %s", "켜짐", "꺼짐",
+                "이건 월드 설정이야. 월드에 들어가야 바꿀 수 있어", "이건 월드 설정이야. 관리자만 바꿀 수 있어",
+                "펫 소리 크기는 설정 → 음악 및 소리 → 친화적 몹에서 조절할 수 있어");
+            addAlbumTranslations(adder, "%1$s 촬영 · %2$s일째 · %3$s", "%1$s 촬영 · %2$s일째 · 풍경", "촬영 %1$s/%2$s",
+                "현상 중...", "이 사진을 찾을 수 없어", "이전 사진", "다음 사진");
+            addCameraTranslations(adder, "하치와레의 카메라", "필름과 함께 하치와레의 가방에 넣으면 사진 찍기 좋은 순간을 알아서 찾아", "필름",
+                "카메라를 가진 하치와레의 가방에 넣어 줘. 다 찍으면 하치와레가 너에게 건네줘. 우클릭하면 사진을 볼 수 있어.");
+            addPhotoIntentTranslations(adder, "사진 찍기", "사진은 하치와레만 찍어", "가방에 카메라가 없어", "가방에 필름이 없어",
+                "너한테서 너무 멀어", "네가 바빠 보여", "지금은 찍을 만한 게 없어");
+        } else {
+            addCommonTranslations(adder, "Chiikawa", "Pet Backpack", "Follow", "Sit", "Free Roam",
+                "%s: following you", "%s: sitting", "%s: roaming free");
+            addDollTooltipTranslations(adder, "Place the doll on a cake and it will come back");
+            addHandbookTranslations(adder, "Chiikawa's Work Handbook", "Right-click to open: how everything works",
+                "This handbook is still blank");
+            addHandbookChapter(adder, "meet", "Meeting Chiikawa",
+                "Wild pets live in plains, savannas, deserts, swamps and snowy plains. Right-click one with food such as bread or a cookie and you may tame it. Sneak and right-click to switch between Follow, Sit and Free Roam; right-click to open its screen. Blow a Whistle Candy to give every pet nearby the same order.");
+            addHandbookChapter(adder, "work", "Off to Work",
+                "Place a Labor Board and it puts up a few slips every sunrise. Pets take slips by the tool in their hand: a hoe for weeding, a sword or bow for hunting, and Hachiware with the Music Box for street performances. The pay goes straight into the pet's backpack. Spend emeralds on the board to upgrade it: more slips a day, and hunting slips from level 2.");
+            addHandbookChapter(adder, "shop", "The Shop and Presents",
+                "Place a Shop and your pets spend the emeralds in their backpacks on things they like. Right-click a pet with an emerald to give it pocket money. Treat it well or let it earn its wages and it may want to give you a present; when it comes over with one, right-click it with an empty hand to take it. You can buy and sell at the Shop too.");
+            addHandbookChapter(adder, "care", "Looking After Pets",
+                "A Rucksack or a pouch gives a pet 10 more slots, and a Simple Dish makes it keener to work. A pet that falls becomes a doll: right-click a placed cake with the doll and it comes back. If one wanders off, ring the Pet Bell.");
+            addHandbookChapter(adder, "camera", "Hachiware's Camera",
+                "Give Hachiware a camera and film, and it takes photos of you, its friends and the view when the moment is right. A roll holds 8 photos, and a full roll comes to you as a present. Right-click a roll to look through its photos.");
+            addHandbookChapter(adder, "licence", "The Weeding Licence",
+                "Place an Exam Desk and right-click it to sign a pet up for 1 diamond. It sits the exam in the daytime and gets its result the next morning. Weeding slips and the study guide raise its chances. A licensed pet earns more for weeding, and from grade 3 it can take Advanced Weeding slips.");
+            adder.add("manual.chiikawa.more", "More on the website →");
+            addJobTranslations(adder, "Job: %s", "None", "Farmer", "Fencer", "Archer", "Musician", "Unknown");
+            addEntityTranslations(adder, "Usagi", "Hachiware", "Chiikawa", "Shisa", "Momonga", "Kurimanju", "Rakko", "Furuhonya");
+            addItemTagTranslations(adder, "Farmer Tools", "Fencer Tools", "Archer Tools", "Musician Tools", "Tame Foods", "Seeds", "Deliver Items", "Pickable Items", "Pet Treats", "Arrows");
+            addItemTranslations(
+                adder,
+                "Usagi Spawn Egg",
+                "Hachiware Spawn Egg",
+                "Chiikawa Spawn Egg",
+                "Shisa Spawn Egg",
+                "Momonga Spawn Egg",
+                "Kurimanju Spawn Egg",
+                "Rakko Spawn Egg",
+                "Furuhonya Spawn Egg",
+                "Usagi Doll",
+                "Hachiware Doll",
+                "Chiikawa Doll",
+                "Shisa Doll",
+                "Momonga Doll",
+                "Kurimanju Doll",
+                "Rakko Doll",
+                "Furuhonya Doll",
+                "Usagi's Subjugation Stick",
+                "Hachiware's Sasumata",
+                "Chiikawa's Sasumata",
+                "Rakko's Sword"
+            );
+            addMusicBoxTranslations(adder, "Music Box", "No song selected", "Song: %s", "Choose Song", "Importing", "Failed", "No playable songs",
+                "Put MP3 / WAV files in the folder, then reload", "Put MP3 / WAV in the server's config/chiikawa/music folder, then reload", "Some songs failed to import", "Please use MP3 audio files", "Open Folder", "Reload", "Previous page", "Next page");
+            addMusicBoxModeTranslations(adder, "Playback: %s", "Play once", "Repeat all", "Shuffle", "Repeat one");
+            addIntentFailureTranslations(adder, "Can't find you", "You're close by", "Nothing to do", "Target is too far",
+                "Target left the allowed area", "Left the allowed area", "No dropped items nearby", "No crop to harvest", "No farmland nearby to plant", "No chest nearby to put it in",
+                "No monster to fight", "Catching its breath", "No arrows", "No new song to play",
+                "Something more urgent comes first", "No weeds nearby", "No mushrooms nearby",
+                "Needs a slip first", "It's not dark yet",
+                "Already carries a slip", "No work for it on the board",
+                "Nothing here it wants and can afford", "Nothing to give");
+            addBlockTranslations(adder, "Labor Board", "Shop", "Level %s");
+            addSupplyTranslations(adder, "Rucksack", "Bear Pouch", "Whale Pouch", "Star Pouch", "Put it on a pet for ten more backpack slots",
+                    "Simple Dish", "Feed it to a pet to make it keener on work for a while",
+                    "Pet Bell", "Calls your pets home, even from another dimension; half a minute between rings");
+            addLicenceTranslations(adder, "Weeding Licence Study Guide", "Right-click your pet to have it read this, and it will pass its next weeding licence exam more easily. It is used up by the exam.",
+                "Weeding Licence", "%1$s passed the %2$s grade %3$s exam", "%1$s failed the %2$s grade %3$s exam",
+                "Signed %1$s up for the %2$s grade %3$s exam", "%1$s handed in the %2$s paper; results tomorrow morning",
+                "%1$s missed today's %2$s exam", "The exam desk is gone; %1$s's %2$s exam is off",
+                "Off to an exam", "Checking results", "No exam desk nearby");
+            addLicenceScreenTranslations(adder, "Gr. %s", "None", "%s: grade %s", "%s: none yet", "Holds the top grade",
+                "Results tomorrow morning", "Sitting the exam today", "Needs more practice before it can sit the exam",
+                "Ready: sign it up at an exam desk");
+            addExamDeskStatusTranslations(adder, "Exam Desk", "Pick a pet to sign up", "Sign-ups only in the daytime",
+                "A pet is already sitting an exam here", "No room to sit behind the desk",
+                "%1$s is sitting the %2$s grade %3$s exam", "%1$s has handed in; results tomorrow morning",
+                "%1$s, %2$s grade %3$s: passed", "%1$s, %2$s grade %3$s: failed");
+            addExamDeskPetTranslations(adder, "Fee %s", "Sign up %s", "Grade %s", "None of your pets nearby", " (grade %s)",
+                " (no licence yet)", "Holds the top grade", "Needs more practice", "Signed up or awaiting results", "Sitting",
+                "Too far away");
+            addExamDeskOddsTranslations(adder, "Base %s%%", "Practice +%s%%", "Failed before +%s%%", "Read the guide +%s%%",
+                "Personality ×%s", "Pass chance %s (best %s%%)");
+            addPetNewsTranslations(adder, "%1$s gave you %2$s");
+            addGiftTranslations(adder, "Wrapping a gift", "No present in mind", "Already gave you a present today", "Nothing in the bag to give", "%1$s left %2$s by your bed");
+            addRecallTranslations(adder, "%s came running", "You don't have any pets yet",
+                    "%s did not answer; it may no longer be where it was");
+            addShopScreenTranslations(adder, "Shop", "Buy %s", "Sell %s", "Nothing for sale today",
+                    "Previous page", "Next page");
+            addIntentNameTranslations(adder, "Following you", "Sitting", "Wandering", "Picking up an item",
+                "Fetching a slip", "Harvesting", "Planting", "Storing the harvest", "Pulling weeds", "Picking mushrooms",
+                "Fighting", "Shooting a monster", "Performing", "Out shopping", "Bringing a present");
+            addCombatTranslations(adder, "Patrolling to hunt", "Patrolling to hunt", "Defending itself", "Getting away",
+                "Nothing is attacking it", "Already holding a weapon", "No weapon in the bag", "Can fight back, no need to run");
+            addRhythmTranslations(adder, "Sleeping", "Out of the rain", "Playing in the rain", "Watching you work",
+                "You're still awake", "Not in the mood", "No shelter from the rain nearby", "Nothing interesting nearby");
+            addPastimeTranslations(adder, "Cowering", "Running wild", "Wanting praise", "Evening drink", "Bringing coffee", "Eyeing sweets", "Sword practice", "Greeting you");
+            addSocialTranslations(adder, "Visiting a friend", "Playing along", "Nobody nearby it feels like playing with",
+                "Nobody is coming over");
+            addTaskTypeTranslations(adder, "Weeding", "%s weeds", "Street Performance", "%ss",
+                "Monster Hunting", "Monster Shooting", "%s slain", "Advanced Weeding");
+            addLancerTranslations(adder, "Lancer", "Lancer Tools", "Lance Hunting", "%s slain", "Throwing the trident", "Patrolling to throw the trident");
+            addBoardScreenTranslations(adder, "Labor Board", "%s up", "No slips up today",
+                    "%s only", "Open", "Taken", "Taken by %s",
+                    "Lv.%s", "%s a day", "Upgrade %s",
+                    "At Lv.%1$s: %2$s a day", "New work: %s",
+                    "Fully upgraded", "You have %1$s × %2$s");
+            addPetStatusTranslations(adder, "Idle", "A rucksack or a pouch adds ten more slots");
+            addPetScreenTranslations(adder,
+                    "Keen on work: %s left",
+                    "Pocket money: %1$s × %2$s",
+                    "Gift!",
+                    "It will bring it over itself",
+                    "Auto Pickup",
+                    "While roaming, puts nearby dropped items in its bag");
+            addPetOutlookTranslations(adder,
+                    "Needs %s",
+                    "What it feels like doing next");
+            // What the pets say (design 0.1.1, section 3), in the words English-speaking fans know the lines by.
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TAME, "Wah...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HURT, "Nooo!!", "Hic... hic...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.HUNT, "Yaaah!!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PAID, "!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SHOP, "Wah...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIFT, "Mm...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.REVIVE, "Hah...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.IDLE, "Hup...", "Phew...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TAME, "Does that mean...!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HURT, "Ow ow ow...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.HUNT, "Something'll work out!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PAID, "Yaaay!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SHOP, "Isn't this... the best!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIFT, "Here, this is for you!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.REVIVE, "I'm crying!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.IDLE, "Hmm hmm~♪");
+            addVoiceLines(adder, "usagi", VoiceMoment.TAME, "Yaha!");
+            addVoiceLines(adder, "usagi", VoiceMoment.HURT, "Haah?");
+            addVoiceLines(adder, "usagi", VoiceMoment.HUNT, "Uraaa!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.PAID, "Prrrrr");
+            addVoiceLines(adder, "usagi", VoiceMoment.SHOP, "Purya");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIFT, "Ura");
+            addVoiceLines(adder, "usagi", VoiceMoment.REVIVE, "Yahaaa!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.IDLE, "Hmmn", "Prrrrr", "Ura");
+            addVoiceLines(adder, "momonga", VoiceMoment.TAME, "I finally did it!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.HURT, "Comfort me.");
+            addVoiceLines(adder, "momonga", VoiceMoment.PAID, "Praise me.");
+            addVoiceLines(adder, "momonga", VoiceMoment.SHOP, "Gimme!");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIFT, "Praise me.");
+            addVoiceLines(adder, "momonga", VoiceMoment.REVIVE, "Comfort me.");
+            addVoiceLines(adder, "momonga", VoiceMoment.IDLE, "Praise me.", "Gimme!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SHOP, "Haaah...");
+            addVoiceLines(adder, "rakko", VoiceMoment.TAME, "...Not bad.");
+            addVoiceLines(adder, "rakko", VoiceMoment.HUNT, "Let's go.");
+            addVoiceLines(adder, "rakko", VoiceMoment.PAID, "Heh.");
+            addVoiceLines(adder, "rakko", VoiceMoment.SHOP, "...Tasty.");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIFT, "...Here.");
+            addVoiceLines(adder, "rakko", VoiceMoment.REVIVE, "...Still a long way to go.");
+            addVoiceLines(adder, "shisa", VoiceMoment.TAME, "Haisai!", "Pleased to meet you!");
+            addVoiceLines(adder, "shisa", VoiceMoment.HURT, "Ow!");
+            addVoiceLines(adder, "shisa", VoiceMoment.HUNT, "I-I'll do my best...!");
+            addVoiceLines(adder, "shisa", VoiceMoment.PAID, "Happy-shisa!");
+            addVoiceLines(adder, "shisa", VoiceMoment.SHOP, "Thanks for the treat!");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIFT, "Please, take this!");
+            addVoiceLines(adder, "shisa", VoiceMoment.REVIVE, "It'll all work out~");
+            addVoiceLines(adder, "shisa", VoiceMoment.IDLE, "Haisai!", "I could go for some sanpin tea~");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.TAME, "Crab!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIFT, "For you...");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.IDLE, "Crab");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.CLUNG_TO, "Nooo!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.TREATED, "Wah...!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.GIVEN_COFFEE, "Wah...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.LISTEN, "Wah...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CLUNG_TO, "Huh, what is it!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.CRAB_GREETING, "Crab~!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TREATED, "Thank you, Sensei!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.GIVEN_COFFEE, "Thanks~!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.LISTEN, "What a song!");
+            addVoiceLines(adder, "usagi", VoiceMoment.CLUNG_TO, "Haah?");
+            addVoiceLines(adder, "usagi", VoiceMoment.GIVEN_COFFEE, "Yaha");
+            addVoiceLines(adder, "usagi", VoiceMoment.LISTEN, "Prrrrr");
+            addVoiceLines(adder, "momonga", VoiceMoment.CLING, "Praise me.");
+            addVoiceLines(adder, "momonga", VoiceMoment.TURNED_DOWN, "Comfort me.");
+            addVoiceLines(adder, "momonga", VoiceMoment.CRAB_GREETING, "Crab!");
+            addVoiceLines(adder, "momonga", VoiceMoment.GIVEN_COFFEE, "More! Gimme!");
+            addVoiceLines(adder, "momonga", VoiceMoment.LISTEN, "Play another!");
+            addVoiceLines(adder, "rakko", VoiceMoment.TREAT, "...Eat.");
+            addVoiceLines(adder, "rakko", VoiceMoment.GIVEN_COFFEE, "...Appreciated.");
+            addVoiceLines(adder, "shisa", VoiceMoment.CLUNG_TO, "U-um...");
+            addVoiceLines(adder, "shisa", VoiceMoment.GIVEN_COFFEE, "Thank you so much!");
+            addVoiceLines(adder, "shisa", VoiceMoment.LISTEN, "You play so well~!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.CRAB_GREETING, "Crab");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.GIVEN_COFFEE, "Thank you...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_PASS, "Wa... wah...!!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.EXAM_FAIL, "Hic... hic...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_PASS, "I passed... does that mean...!?");
+            addVoiceLines(adder, "hachiware", VoiceMoment.EXAM_FAIL, "Next time for sure!");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_PASS, "Uraaa!!");
+            addVoiceLines(adder, "usagi", VoiceMoment.EXAM_FAIL, "Haah?");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_PASS, "I passed! Praise me!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.EXAM_FAIL, "Comfort me.");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.EXAM_PASS, "Haaah...");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_PASS, "...Naturally.");
+            addVoiceLines(adder, "rakko", VoiceMoment.EXAM_FAIL, "...Still a long way to go.");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_PASS, "So, so happy!");
+            addVoiceLines(adder, "shisa", VoiceMoment.EXAM_FAIL, "Nankurunaisa! I'll try harder next time!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_PASS, "All thanks to the books.");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.EXAM_FAIL, "I'll read it again.");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.WHISTLE, "Wah...!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.WHISTLE, "Did you call~?");
+            addVoiceLines(adder, "usagi", VoiceMoment.WHISTLE, "Yahaaa!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.WHISTLE, "Gimme!");
+            addVoiceLines(adder, "rakko", VoiceMoment.WHISTLE, "...Let's go.");
+            addVoiceLines(adder, "shisa", VoiceMoment.WHISTLE, "Coming!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.WHISTLE, "Coming...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.PHOTO, "Say cheese~!");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.PHOTOGRAPHED, "Mm...");
+            addVoiceLines(adder, "usagi", VoiceMoment.PHOTOGRAPHED, "Yahaaa!");
+            addVoiceLines(adder, "momonga", VoiceMoment.PHOTOGRAPHED, "Make me look cute.");
+            addVoiceLines(adder, "rakko", VoiceMoment.PHOTOGRAPHED, "...Go ahead.");
+            addVoiceLines(adder, "shisa", VoiceMoment.PHOTOGRAPHED, "Make it a nice one~");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.PHOTOGRAPHED, "Crab");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SCARED, "Waaah...!!");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SCARED, "W-what do I do...!");
+            addVoiceLines(adder, "usagi", VoiceMoment.SCARED, "Ura ura uraaa!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.SCARED, "Scary! Comfort me!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SCARED, "...Sigh.");
+            addVoiceLines(adder, "shisa", VoiceMoment.SCARED, "E-eek...!");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SCARED, "Eep...");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.MISSING, "Waah... no more %s...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.TROUBLE, "It'll work out somehow!");
+            addVoiceLines(adder, "usagi", VoiceMoment.MISSING, "Yaha!? %s! Ura!");
+            addVoiceLines(adder, "momonga", VoiceMoment.MISSING, "No %s! Fix it!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.MISSING, "...Out of %s, huh.");
+            addVoiceLines(adder, "rakko", VoiceMoment.MISSING, "Hey. Out of %s.");
+            addVoiceLines(adder, "shisa", VoiceMoment.MISSING, "Um... we're out of %s...");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.MISSING, "...I could use %s.");
+            addVoiceLines(adder, "chiikawa", VoiceMoment.SLEEPY, "Haa...");
+            addVoiceLines(adder, "hachiware", VoiceMoment.SLEEPY, "So sleepy...");
+            addVoiceLines(adder, "usagi", VoiceMoment.SLEEPY, "Ya... haa...");
+            addVoiceLines(adder, "momonga", VoiceMoment.SLEEPY, "Sleepy! Where is my bed?!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SLEEPY, "...Haa.");
+            addVoiceLines(adder, "rakko", VoiceMoment.SLEEPY, "...Sleepy.");
+            addVoiceLines(adder, "shisa", VoiceMoment.SLEEPY, "Haa... I am sleepy...");
+            addVoiceLines(adder, "furuhonya", VoiceMoment.SLEEPY, "...Haa.");
+            addVoiceLines(adder, "usagi", VoiceMoment.FRENZY, "Ura!!", "Yaha—!!", "Ura ura ura!!");
+            addVoiceLines(adder, "momonga", VoiceMoment.PRAISE_ME, "Praise me! Praise me~", "I'm cute, right? Praise me!");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.SIGH, "Haaah...");
+            addVoiceLines(adder, "kurimanju", VoiceMoment.OFFER_COFFEE, "...Good work. Here.");
+            addVoiceLines(adder, "rakko", VoiceMoment.SWEETS, "...Hey, that looks sweet.");
+            addVoiceLines(adder, "shisa", VoiceMoment.GREET, "Welcome back! Pleased to see you~");
+            addWhistleTranslations(adder, "Whistle Candy", "Whistle Candy (%s)", "Hold right-click to blow it, and nearby pets follow the current order. Sneak and right-click to change the order.", "Whistle candy switched to: %s", "%d pets came running", "%d pets sat down", "%d pets went off to roam", "%d wild pets came over to look", "No pet heard the whistle", "Coming over to look", "No whistle heard");
+            addSettingsTranslations(adder, "Chiikawa Settings", "Wild pet spawning: %s", "Chatter: %s", "Pastimes: %s", "Speech bubbles: %s", "On", "Off",
+                "These are world settings, so they can only be changed from inside a world", "These are world settings, and only operators can change them",
+                "Pet volume is under Options → Music & Sounds → Friendly Creatures");
+            addAlbumTranslations(adder, "Taken by %1$s · Day %2$s · %3$s", "Taken by %1$s · Day %2$s · Scenery", "Shot %1$s/%2$s",
+                "Developing...", "This photo can't be found", "Previous photo", "Next photo");
+            addCameraTranslations(adder, "Hachiware's Camera", "Put it in Hachiware's backpack with some film, and it will look for good moments to take photos", "Film",
+                "Put it in the backpack of a Hachiware that has a camera, and Hachiware gives it to you once it is full. Right-click to look at the photos.");
+            addPhotoIntentTranslations(adder, "Take a photo", "Only Hachiware takes photos", "No camera in its backpack",
+                "No film in its backpack", "Too far from you", "You're busy",
+                "Nothing worth a photo right now");
+        }
+    }
+
+    /** The whistle candy: its name with and without an order, the tooltip, and what a blow turned up. */
+    private static void addWhistleTranslations(Adder adder, String name, String withOrder, String tip, String switched,
+            String came, String sat, String roam, String wild, String nobody, String answering, String noWhistle) {
+        adder.add("item.chiikawa.whistle_candy", name);
+        adder.add("item.chiikawa.whistle_candy.with_order", withOrder);
+        adder.add("tooltip.chiikawa.whistle_candy", tip);
+        adder.add("message.chiikawa.whistle_candy.switched", switched);
+        adder.add("message.chiikawa.whistle_candy.follow", came);
+        adder.add("message.chiikawa.whistle_candy.stay", sat);
+        adder.add("message.chiikawa.whistle_candy.free", roam);
+        adder.add("message.chiikawa.whistle_candy.wild", wild);
+        adder.add("message.chiikawa.whistle_candy.nobody", nobody);
+        adder.add("intent.chiikawa.answer_whistle", answering);
+        adder.add("intent.chiikawa.fail.no_whistle", noWhistle);
+    }
+
+    /** The settings screen: its title, a line for each setting, and the notes under them. */
+    private static void addSettingsTranslations(Adder adder, String title, String wildSpawn, String chatter,
+            String pastimes, String speechBubbles, String on, String off, String worldOnly, String readOnly, String volume) {
+        adder.add("screen.chiikawa.settings.title", title);
+        adder.add("screen.chiikawa.settings.wild_spawn", wildSpawn);
+        adder.add("screen.chiikawa.settings.chatter", chatter);
+        adder.add("screen.chiikawa.settings.pastimes", pastimes);
+        adder.add("screen.chiikawa.settings.speech_bubbles", speechBubbles);
+        adder.add("screen.chiikawa.settings.on", on);
+        adder.add("screen.chiikawa.settings.off", off);
+        adder.add("screen.chiikawa.settings.world_only", worldOnly);
+        adder.add("screen.chiikawa.settings.read_only", readOnly);
+        adder.add("screen.chiikawa.settings.volume", volume);
+    }
+
+    /** The camera and its film: their names, and a line under each saying what it is for. */
+    private static void addCameraTranslations(Adder adder, String camera, String cameraTip, String film, String filmTip) {
+        adder.add("item.chiikawa.camera", camera);
+        adder.add("tooltip.chiikawa.camera", cameraTip);
+        adder.add("item.chiikawa.film", film);
+        adder.add("tooltip.chiikawa.film", filmTip);
+    }
+
+    /** Taking photos as an errand: its name, and why a pet is not taking one, for the debug command. */
+    private static void addPhotoIntentTranslations(Adder adder, String name, String notPhotographer, String noCamera,
+            String noFilm, String ownerFar, String ownerBusy, String nothingToShoot) {
+        adder.add("intent.chiikawa.take_photo", name);
+        adder.add("intent.chiikawa.fail.not_photographer", notPhotographer);
+        adder.add("intent.chiikawa.fail.no_camera", noCamera);
+        adder.add("intent.chiikawa.fail.no_film", noFilm);
+        adder.add("intent.chiikawa.fail.owner_far", ownerFar);
+        adder.add("intent.chiikawa.fail.owner_busy", ownerBusy);
+        adder.add("intent.chiikawa.fail.nothing_to_shoot", nothingToShoot);
+    }
+
+    /** The album: the line under a shot, what a roll says of itself, and what a page says while it waits. */
+    private static void addAlbumTranslations(Adder adder, String caption, String sceneryCaption, String shots,
+            String loading, String missing, String previousPage, String nextPage) {
+        adder.add("screen.chiikawa.album.caption", caption);
+        adder.add("screen.chiikawa.album.caption.scenery", sceneryCaption);
+        adder.add("tooltip.chiikawa.film.shots", shots);
+        adder.add("screen.chiikawa.album.loading", loading);
+        adder.add("screen.chiikawa.album.missing", missing);
+        adder.add("screen.chiikawa.album.previous_page", previousPage);
+        adder.add("screen.chiikawa.album.next_page", nextPage);
+    }
+
+    /** A pet's lines for one moment, numbered from 1 in the order given; see {@link PetVoiceData}. */
+    private static void addVoiceLines(Adder adder, String pet, VoiceMoment moment, String... lines) {
+        for (int i = 0; i < lines.length; i++) {
+            adder.add(PetVoiceData.lineKey(pet, moment, i + 1), lines[i]);
+        }
+    }
+
+    /** The tab and the pet's backpack, the three orders by name, and what is said of a pet once it has been given one. */
+    private static void addCommonTranslations(Adder adder, String tabName, String backpackMenu, String follow, String stay, String free,
+            String followed, String stayed, String freed) {
+        adder.add("itemGroup.chiikawa", tabName);
+        adder.add("menu.chiikawa.pet_backpack", backpackMenu);
+        adder.add("screen.chiikawa.pet.order.follow", follow);
+        adder.add("screen.chiikawa.pet.order.stay", stay);
+        adder.add("screen.chiikawa.pet.order.free", free);
+        adder.add("message.chiikawa.pet_follow", followed);
+        adder.add("message.chiikawa.pet_stay", stayed);
+        adder.add("message.chiikawa.pet_free", freed);
+    }
+
+    private static void addIntentFailureTranslations(
+        Adder adder,
+        String ownerUnavailable,
+        String ownerNearby,
+        String nothingToDo,
+        String outOfReach,
+        String outOfLeash,
+        String leftArea,
+        String noItem,
+        String noCrop,
+        String noFarmland,
+        String noContainer,
+        String noAttackTarget,
+        String attackCoolingDown,
+        String noArrows,
+        String noNewSong,
+        String higherPriority,
+        String noWeed,
+        String noMushroom,
+        String needsSlip,
+        String notNight,
+        String hasSlip,
+        String noSlip,
+        String nothingToBuy,
+        String noGift
+    ) {
+        adder.add("intent.chiikawa.fail.owner_unavailable", ownerUnavailable);
+        adder.add("intent.chiikawa.fail.owner_nearby", ownerNearby);
+        adder.add("intent.chiikawa.fail.nothing_to_do", nothingToDo);
+        adder.add("intent.chiikawa.fail.out_of_reach", outOfReach);
+        adder.add("intent.chiikawa.fail.out_of_leash", outOfLeash);
+        adder.add("intent.chiikawa.fail.left_area", leftArea);
+        adder.add("intent.chiikawa.fail.no_item", noItem);
+        adder.add("intent.chiikawa.fail.no_crop", noCrop);
+        adder.add("intent.chiikawa.fail.no_farmland", noFarmland);
+        adder.add("intent.chiikawa.fail.no_container", noContainer);
+        adder.add("intent.chiikawa.fail.no_attack_target", noAttackTarget);
+        adder.add("intent.chiikawa.fail.attack_cooling_down", attackCoolingDown);
+        adder.add("intent.chiikawa.fail.no_arrows", noArrows);
+        adder.add("intent.chiikawa.fail.no_new_song", noNewSong);
+        adder.add("intent.chiikawa.fail.higher_priority", higherPriority);
+        adder.add("intent.chiikawa.fail.no_weed", noWeed);
+        adder.add("intent.chiikawa.fail.no_mushroom", noMushroom);
+        adder.add("intent.chiikawa.fail.needs_slip", needsSlip);
+        adder.add("intent.chiikawa.fail.not_night", notNight);
+        adder.add("intent.chiikawa.fail.has_slip", hasSlip);
+        adder.add("intent.chiikawa.fail.no_slip", noSlip);
+        adder.add("intent.chiikawa.fail.nothing_to_buy", nothingToBuy);
+        adder.add("intent.chiikawa.fail.no_gift", noGift);
+    }
+
+    /**
+     * The shop screen. The prices go on the buttons — "buy 3" is what pressing it does —
+     * so the words are a verb and a number and nothing else.
+     */
+    private static void addShopScreenTranslations(Adder adder, String title, String buy, String sell,
+            String empty, String previousPage, String nextPage) {
+        adder.add("screen.chiikawa.shop", title);
+        adder.add("screen.chiikawa.shop.buy", buy);
+        adder.add("screen.chiikawa.shop.sell", sell);
+        adder.add("screen.chiikawa.shop.empty", empty);
+        adder.add("screen.chiikawa.shop.previous_page", previousPage);
+        adder.add("screen.chiikawa.shop.next_page", nextPage);
+    }
+
+    private static void addSupplyTranslations(Adder adder, String backpack, String bearPouch, String whalePouch,
+            String starPouch, String bagTip, String simpleDish, String simpleDishTip, String petBell, String petBellTip) {
+        adder.add("item.chiikawa.backpack", backpack);
+        adder.add("item.chiikawa.bear_pouch", bearPouch);
+        adder.add("item.chiikawa.whale_pouch", whalePouch);
+        adder.add("item.chiikawa.star_pouch", starPouch);
+        adder.add("tooltip.chiikawa.bag", bagTip);
+        adder.add("item.chiikawa.simple_dish", simpleDish);
+        adder.add("tooltip.chiikawa.simple_dish", simpleDishTip);
+        adder.add("item.chiikawa.pet_bell", petBell);
+        adder.add("tooltip.chiikawa.pet_bell", petBellTip);
+    }
+
+    /**
+     * What a pet's screen says of a licence: the grade on its chip, and under the cursor
+     * the licence and grade, then what comes next.
+     */
+    private static void addLicenceScreenTranslations(Adder adder, String rank, String none, String held,
+            String heldNone, String top, String awaiting, String called, String unpractised, String ready) {
+        adder.add("screen.chiikawa.pet.licence.rank", rank);
+        adder.add("screen.chiikawa.pet.licence.none", none);
+        adder.add("screen.chiikawa.pet.licence.held", held);
+        adder.add("screen.chiikawa.pet.licence.held_none", heldNone);
+        adder.add("screen.chiikawa.pet.licence.top", top);
+        adder.add("screen.chiikawa.pet.licence.awaiting", awaiting);
+        adder.add("screen.chiikawa.pet.licence.called", called);
+        adder.add("screen.chiikawa.pet.licence.unpractised", unpractised);
+        adder.add("screen.chiikawa.pet.licence.ready", ready);
+    }
+
+    /**
+     * The weeding licence: the book a pet reads for its exams, what the licence is called,
+     * and what its owner reads in chat - the pets called to an exam, one handing its paper
+     * in or missing the exam, and its result with the grade it sat.
+     *
+     * @param separator what goes between the names of the pets called
+     */
+    private static void addLicenceTranslations(Adder adder, String weedingBook, String weedingBookTip, String weeding,
+            String passed, String failed, String signedUp, String handedIn, String missed, String deskGone,
+            String takeExam, String checkResults, String noDesk) {
+        adder.add("item.chiikawa.weeding_book", weedingBook);
+        adder.add("tooltip.chiikawa.weeding_book", weedingBookTip);
+        adder.add("qualification.chiikawa.weeding", weeding);
+        adder.add("message.chiikawa.exam.passed", passed);
+        adder.add("message.chiikawa.exam.failed", failed);
+        adder.add("message.chiikawa.exam.signed_up", signedUp);
+        adder.add("message.chiikawa.exam.handed_in", handedIn);
+        adder.add("message.chiikawa.exam.missed", missed);
+        adder.add("message.chiikawa.exam.desk_gone", deskGone);
+        adder.add("intent.chiikawa.take_exam", takeExam);
+        adder.add("intent.chiikawa.check_results", checkResults);
+        adder.add("intent.chiikawa.fail.no_desk", noDesk);
+    }
+
+    /**
+     * The exam desk, and the line at the top of its screen: what to do, why it takes nobody
+     * now, or whoever it has and where they are with it - the pet, the licence, the grade.
+     */
+    private static void addExamDeskStatusTranslations(Adder adder, String desk, String pick, String closed,
+            String taken, String noSeat, String sitting, String handedIn, String passed, String failed) {
+        adder.add("block.chiikawa.exam_desk", desk);
+        adder.add("screen.chiikawa.exam_desk", desk);
+        adder.add("screen.chiikawa.exam_desk.pick", pick);
+        adder.add("screen.chiikawa.exam_desk.closed.closed", closed);
+        adder.add("screen.chiikawa.exam_desk.closed.taken", taken);
+        adder.add("screen.chiikawa.exam_desk.closed.no_seat", noSeat);
+        adder.add("screen.chiikawa.exam_desk.booking.sitting", sitting);
+        adder.add("screen.chiikawa.exam_desk.booking.handed_in", handedIn);
+        adder.add("screen.chiikawa.exam_desk.booking.passed", passed);
+        adder.add("screen.chiikawa.exam_desk.booking.failed", failed);
+    }
+
+    /**
+     * The pets on an exam desk's screen: the fee, the button with it on, the grade each would
+     * sit, and why one cannot go; under the cursor, the grade it holds after its name.
+     */
+    private static void addExamDeskPetTranslations(Adder adder, String fee, String signUp, String sits, String nobody,
+            String holds, String holdsNone, String topGrade, String unpractised, String busy, String staying,
+            String outOfReach) {
+        adder.add("screen.chiikawa.exam_desk.fee", fee);
+        adder.add("screen.chiikawa.exam_desk.sign_up", signUp);
+        adder.add("screen.chiikawa.exam_desk.sits", sits);
+        adder.add("screen.chiikawa.exam_desk.nobody", nobody);
+        adder.add("screen.chiikawa.exam_desk.holds", holds);
+        adder.add("screen.chiikawa.exam_desk.holds_none", holdsNone);
+        adder.add("screen.chiikawa.exam_desk.ineligible.top_grade", topGrade);
+        adder.add("screen.chiikawa.exam_desk.ineligible.unpractised", unpractised);
+        adder.add("screen.chiikawa.exam_desk.ineligible.busy", busy);
+        adder.add("screen.chiikawa.exam_desk.ineligible.staying", staying);
+        adder.add("screen.chiikawa.exam_desk.ineligible.out_of_reach", outOfReach);
+    }
+
+    /** What a pet's odds come from, under the cursor on an exam desk's screen, in percent. */
+    private static void addExamDeskOddsTranslations(Adder adder, String base, String practice, String failing,
+            String book, String aptitude, String total) {
+        adder.add("screen.chiikawa.exam_desk.odds.base", base);
+        adder.add("screen.chiikawa.exam_desk.odds.practice", practice);
+        adder.add("screen.chiikawa.exam_desk.odds.failing", failing);
+        adder.add("screen.chiikawa.exam_desk.odds.book", book);
+        adder.add("screen.chiikawa.exam_desk.odds.aptitude", aptitude);
+        adder.add("screen.chiikawa.exam_desk.odds.total", total);
+    }
+
+    /** What a rung bell tells its owner. */
+    private static void addRecallTranslations(Adder adder, String came, String nobody, String missing) {
+        adder.add("message.chiikawa.pet_bell.came", came);
+        adder.add("message.chiikawa.pet_bell.nobody", nobody);
+        adder.add("message.chiikawa.pet_bell.missing", missing);
+    }
+
+    /**
+     * What a pet tells its owner in chat: the present it hands over, by the pet and the thing.
+     * Numbered, since the languages put them in different orders.
+     */
+    private static void addPetNewsTranslations(Adder adder, String given) {
+        adder.add("message.chiikawa.gift.given", given);
+    }
+
+    /**
+     * The present a pet takes out of its bag to give: what it is doing, why it is not, and what its owner reads when it
+     * leaves one by their bed. Numbered, as the news above is.
+     */
+    private static void addGiftTranslations(Adder adder, String offerGift, String noPresentInMind, String ownerGivenEnough,
+            String noPresent, String leftByBed) {
+        adder.add("intent.chiikawa.offer_gift", offerGift);
+        adder.add("intent.chiikawa.fail.no_present_in_mind", noPresentInMind);
+        adder.add("intent.chiikawa.fail.owner_given_enough", ownerGivenEnough);
+        adder.add("intent.chiikawa.fail.no_present", noPresent);
+        adder.add("message.chiikawa.gift.left_by_bed", leftByBed);
+    }
+
+    /** The blocks' names, and the line under a labor board that was taken up paid for, saying how far. */
+    private static void addBlockTranslations(Adder adder, String laborBoard, String shop, String boardLevelTip) {
+        adder.add("block.chiikawa.labor_board", laborBoard);
+        adder.add("block.chiikawa.shop", shop);
+        adder.add("tooltip.chiikawa.labor_board.level", boardLevelTip);
+    }
+
+    /**
+     * The fights a pet picks and the ones it cannot help: hunting what it finds in its area, taking up a weapon from its bag
+     * to answer an attack, and running from one it will not answer, and why each of them is not what it is doing.
+     */
+    private static void addCombatTranslations(Adder adder, String huntMelee, String huntRanged, String defendSelf, String flee,
+            String noAttacker, String armed, String noSpareWeapon, String fightsBack) {
+        adder.add("intent.chiikawa.hunt_melee", huntMelee);
+        adder.add("intent.chiikawa.hunt_ranged", huntRanged);
+        adder.add("intent.chiikawa.defend_self", defendSelf);
+        adder.add("intent.chiikawa.flee", flee);
+        adder.add("intent.chiikawa.fail.no_attacker", noAttacker);
+        adder.add("intent.chiikawa.fail.armed", armed);
+        adder.add("intent.chiikawa.fail.no_spare_weapon", noSpareWeapon);
+        adder.add("intent.chiikawa.fail.fights_back", fightsBack);
+    }
+
+    /**
+     * The rhythm of a pet's day: sleeping, and the pastimes every character has, and why a pet is not at them.
+     */
+    private static void addRhythmTranslations(Adder adder, String sleep, String rainShelter, String rainPlay,
+            String watchOwnerWork, String ownerAwake, String noOccasion, String noShelter, String noCreature) {
+        adder.add("intent.chiikawa.sleep", sleep);
+        adder.add("intent.chiikawa.rain_shelter", rainShelter);
+        adder.add("intent.chiikawa.rain_play", rainPlay);
+        adder.add("intent.chiikawa.watch_owner_work", watchOwnerWork);
+        adder.add("intent.chiikawa.fail.owner_awake", ownerAwake);
+        adder.add("intent.chiikawa.fail.no_occasion", noOccasion);
+        adder.add("intent.chiikawa.fail.no_shelter", noShelter);
+        adder.add("intent.chiikawa.fail.no_creature", noCreature);
+    }
+
+    /** The pastimes of one character each: what a pet is doing, as the pets' status shows it. */
+    private static void addPastimeTranslations(Adder adder, String cower, String frenzy, String askPraise, String eveningDrink,
+            String coffeeForAWorker, String sweetsStare, String swordPractice, String greetOwner) {
+        adder.add("intent.chiikawa.cower", cower);
+        adder.add("intent.chiikawa.frenzy", frenzy);
+        adder.add("intent.chiikawa.ask_praise", askPraise);
+        adder.add("intent.chiikawa.evening_drink", eveningDrink);
+        adder.add("intent.chiikawa.coffee_for_a_worker", coffeeForAWorker);
+        adder.add("intent.chiikawa.sweets_stare", sweetsStare);
+        adder.add("intent.chiikawa.sword_practice", swordPractice);
+        adder.add("intent.chiikawa.greet_owner", greetOwner);
+    }
+
+    /** Names of what a pet may be doing, shown in its backpack; one per errand. */
+    private static void addIntentNameTranslations(
+        Adder adder,
+        String followOwner,
+        String stay,
+        String wander,
+        String pickUpItem,
+        String takeTask,
+        String harvest,
+        String plant,
+        String deliver,
+        String weed,
+        String pickMushroom,
+        String melee,
+        String ranged,
+        String playMusic,
+        String shop,
+        String giftOwner
+    ) {
+        adder.add("intent.chiikawa.follow_owner", followOwner);
+        adder.add("intent.chiikawa.stay", stay);
+        adder.add("intent.chiikawa.wander", wander);
+        adder.add("intent.chiikawa.pick_up_item", pickUpItem);
+        adder.add("intent.chiikawa.take_task", takeTask);
+        adder.add("intent.chiikawa.harvest", harvest);
+        adder.add("intent.chiikawa.plant", plant);
+        adder.add("intent.chiikawa.deliver", deliver);
+        adder.add("intent.chiikawa.weed", weed);
+        adder.add("intent.chiikawa.pick_mushroom", pickMushroom);
+        adder.add("intent.chiikawa.melee", melee);
+        adder.add("intent.chiikawa.ranged", ranged);
+        adder.add("intent.chiikawa.play_music", playMusic);
+        adder.add("intent.chiikawa.shop", shop);
+        adder.add("intent.chiikawa.gift_owner", giftOwner);
+    }
+
+    /**
+     * Pets meeting pets: what a pet going over to another is doing, what the one it goes to
+     * is doing, and why either is not.
+     */
+    private static void addSocialTranslations(Adder adder, String socialize, String cooperate, String noPartner,
+            String notAsked) {
+        adder.add("intent.chiikawa.socialize", socialize);
+        adder.add("intent.chiikawa.cooperate", cooperate);
+        adder.add("intent.chiikawa.fail.no_partner", noPartner);
+        adder.add("intent.chiikawa.fail.not_asked", notAsked);
+    }
+
+    /** The lancer: its job, the tag of what it wields, and its hunting slip, which counts as the other hunting slips do. */
+    private static void addLancerTranslations(Adder adder, String job, String tools, String lanceHunting, String huntingAmount,
+            String throwing, String huntThrowing) {
+        adder.add("intent.chiikawa.throw", throwing);
+        adder.add("intent.chiikawa.hunt_throw", huntThrowing);
+        adder.add("tooltip.chiikawa.pet_job.lancer", job);
+        adder.add("tag.item.chiikawa.entity_lancer_tools", tools);
+        adder.add("pet_task.chiikawa.lance_hunting", lanceHunting);
+        adder.add("pet_task.chiikawa.lance_hunting.amount", huntingAmount);
+    }
+
+    /** Names of the slip types a labor board puts up, each with the unit it counts in. */
+    private static void addTaskTypeTranslations(
+        Adder adder,
+        String weeding,
+        String weedingAmount,
+        String streetPerformance,
+        String streetPerformanceAmount,
+        String meleeHunting,
+        String rangedHunting,
+        String huntingAmount,
+        String advancedWeeding
+    ) {
+        adder.add("pet_task.chiikawa.weeding", weeding);
+        adder.add("pet_task.chiikawa.weeding.amount", weedingAmount);
+        adder.add("pet_task.chiikawa.advanced_weeding", advancedWeeding);
+        // Counted in weeds, as weeding is.
+        adder.add("pet_task.chiikawa.advanced_weeding.amount", weedingAmount);
+        adder.add("pet_task.chiikawa.street_performance", streetPerformance);
+        adder.add("pet_task.chiikawa.street_performance.amount", streetPerformanceAmount);
+        adder.add("pet_task.chiikawa.melee_hunting", meleeHunting);
+        adder.add("pet_task.chiikawa.melee_hunting.amount", huntingAmount);
+        adder.add("pet_task.chiikawa.ranged_hunting", rangedHunting);
+        adder.add("pet_task.chiikawa.ranged_hunting.amount", huntingAmount);
+    }
+
+    /**
+     * The board's screen. {@code open} and {@code taken} are badges on a row and have to
+     * stay to a word or two; {@code takenBy} is the sentence under the cursor, where there
+     * is room to say who.
+     *
+     * @param count how many slips are up, in the title bar
+     * @param forJob which job may take a slip, beside its name
+     * @param daily what a level buys, said in slips a day rather than in levels
+     * @param upgrade the button that buys the next level, with its price on it
+     */
+    private static void addBoardScreenTranslations(Adder adder, String title, String count, String empty,
+            String forJob, String open, String taken, String takenBy,
+            String level, String daily, String upgrade, String upgradeHint, String unlocks, String maxLevel,
+            String purse) {
+        adder.add("screen.chiikawa.labor_board", title);
+        adder.add("screen.chiikawa.labor_board.count", count);
+        adder.add("screen.chiikawa.labor_board.empty", empty);
+        adder.add("screen.chiikawa.labor_board.for_job", forJob);
+        adder.add("screen.chiikawa.labor_board.open", open);
+        adder.add("screen.chiikawa.labor_board.taken", taken);
+        adder.add("screen.chiikawa.labor_board.taken_by", takenBy);
+        adder.add("screen.chiikawa.labor_board.level", level);
+        adder.add("screen.chiikawa.labor_board.daily", daily);
+        adder.add("screen.chiikawa.labor_board.upgrade", upgrade);
+        adder.add("screen.chiikawa.labor_board.upgrade_hint", upgradeHint);
+        adder.add("screen.chiikawa.labor_board.unlocks", unlocks);
+        adder.add("screen.chiikawa.labor_board.max_level", maxLevel);
+        adder.add("screen.chiikawa.labor_board.purse", purse);
+    }
+
+    /**
+     * What a pet is at. Only the idle case needs words of its own: a pet that is doing
+     * something is named by the errand it is running, and a slip by its own type, both of
+     * which already have names. How far along it is comes out as a bar and a count, which
+     * read the same in every language.
+     */
+    /**
+     * The pet screen's words. The gift badge is the one word on the badge for a present the pet carries, and its hint what
+     * waits under the cursor; the auto-pickup row has its name and, under the cursor, the line that says what it does.
+     */
+    private static void addPetScreenTranslations(Adder adder, String eager, String money, String giftBadge, String giftHint,
+            String pickUp, String pickUpHint) {
+        adder.add("screen.chiikawa.pet.eager", eager);
+        adder.add("screen.chiikawa.pet.money", money);
+        adder.add("screen.chiikawa.pet.gift_badge", giftBadge);
+        adder.add("screen.chiikawa.pet.gift_hint", giftHint);
+        adder.add("screen.chiikawa.pet.pick_up", pickUp);
+        adder.add("screen.chiikawa.pet.pick_up.hint", pickUpHint);
+    }
+
+    /** What the pet screen says of what the pet is short of, and the heading over what it would do next. */
+    private static void addPetOutlookTranslations(Adder adder, String lacks, String next) {
+        adder.add("screen.chiikawa.pet.outlook.lacks", lacks);
+        adder.add("screen.chiikawa.pet.outlook.next", next);
+    }
+
+    private static void addPetStatusTranslations(Adder adder, String doingNothing, String bagHint) {
+        adder.add("screen.chiikawa.pet.doing.nothing", doingNothing);
+        adder.add("screen.chiikawa.pet.bag_hint", bagHint);
+    }
+
+    /**
+     * The handbook itself. What the pets in it say is not here: they say their own lines,
+     * the ones written under {@link #addVoiceLines}.
+     */
+    private static void addHandbookTranslations(Adder adder, String name, String tip, String empty) {
+        adder.add("item.chiikawa.handbook", name);
+        adder.add("tooltip.chiikawa.handbook", tip);
+        adder.add("screen.chiikawa.handbook.empty", empty);
+    }
+
+    /** A handbook chapter's title and its text, under the keys its chapter names. */
+    private static void addHandbookChapter(Adder adder, String chapter, String title, String text) {
+        adder.add(ManualData.titleKey(chapter), title);
+        adder.add(ManualData.textKey(chapter), text);
+    }
+
+    private static void addDollTooltipTranslations(Adder adder, String placeOnCakeHint) {
+        adder.add("tooltip.chiikawa.doll.place_on_cake", placeOnCakeHint);
+    }
+
+    private static void addJobTranslations(
+        Adder adder,
+        String jobFormat,
+        String none,
+        String farmer,
+        String fencer,
+        String archer,
+        String musician,
+        String unknown
+    ) {
+        adder.add("tooltip.chiikawa.pet_job", jobFormat);
+        adder.add("tooltip.chiikawa.pet_job.none", none);
+        adder.add("tooltip.chiikawa.pet_job.farmer", farmer);
+        adder.add("tooltip.chiikawa.pet_job.fencer", fencer);
+        adder.add("tooltip.chiikawa.pet_job.archer", archer);
+        adder.add("tooltip.chiikawa.pet_job.musician", musician);
+        adder.add("tooltip.chiikawa.pet_job.unknown", unknown);
+    }
+
+    private static void addEntityTranslations(Adder adder, String usagi, String hachiware, String chiikawa,
+        String shisa, String momonga, String kurimanju, String rakko, String furuhonya) {
+        adder.add("entity.chiikawa.usagi", usagi);
+        adder.add("entity.chiikawa.hachiware", hachiware);
+        adder.add("entity.chiikawa.chiikawa", chiikawa);
+        adder.add("entity.chiikawa.shisa", shisa);
+        adder.add("entity.chiikawa.momonga", momonga);
+        adder.add("entity.chiikawa.kurimanju", kurimanju);
+        adder.add("entity.chiikawa.rakko", rakko);
+        adder.add("entity.chiikawa.furuhonya", furuhonya);
+    }
+
+    private static void addItemTagTranslations(
+        Adder adder,
+        String farmerTools,
+        String fencerTools,
+        String archerTools,
+        String musicianTools,
+        String tameFoods,
+        String plantCrops,
+        String deliverItems,
+        String pickableItems,
+        String petTreats,
+        String arrows
+    ) {
+        adder.add("tag.item.chiikawa.entity_farmer_tools", farmerTools);
+        adder.add("tag.item.chiikawa.entity_fencer_tools", fencerTools);
+        adder.add("tag.item.chiikawa.entity_archer_tools", archerTools);
+        adder.add("tag.item.chiikawa.entity_musician_tools", musicianTools);
+        adder.add("tag.item.chiikawa.entity_tame_foods", tameFoods);
+        adder.add("tag.item.chiikawa.entity_plant_crops", plantCrops);
+        adder.add("tag.item.chiikawa.entity_deliver_items", deliverItems);
+        adder.add("tag.item.chiikawa.entity_pickable_items", pickableItems);
+        adder.add("tag.item.chiikawa.pet_treats", petTreats);
+        // What an archer says it is short of: a tag of the game's own, which has no name of its own in 1.21.1.
+        adder.add("tag.item.minecraft.arrows", arrows);
+    }
+
+    private static void addItemTranslations(Adder adder, String usagiEgg, String hachiwareEgg, String chiikawaEgg,
+        String shisaEgg, String momongaEgg, String kurimanjuEgg, String rakkoEgg, String furuhonyaEgg,
+        String usagiDoll, String hachiwareDoll, String chiikawaDoll,
+        String shisaDoll, String momongaDoll, String kurimanjuDoll, String rakkoDoll, String furuhonyaDoll,
+        String usagiWeapon, String hachiwareWeapon, String chiikawaWeapon, String rakkoSword) {
+        adder.add("item.chiikawa.usagi_spawn_egg", usagiEgg);
+        adder.add("item.chiikawa.hachiware_spawn_egg", hachiwareEgg);
+        adder.add("item.chiikawa.chiikawa_spawn_egg", chiikawaEgg);
+        adder.add("item.chiikawa.shisa_spawn_egg", shisaEgg);
+        adder.add("item.chiikawa.momonga_spawn_egg", momongaEgg);
+        adder.add("item.chiikawa.kurimanju_spawn_egg", kurimanjuEgg);
+        adder.add("item.chiikawa.rakko_spawn_egg", rakkoEgg);
+        adder.add("item.chiikawa.furuhonya_spawn_egg", furuhonyaEgg);
+        adder.add("item.chiikawa.usagi_doll", usagiDoll);
+        adder.add("item.chiikawa.hachiware_doll", hachiwareDoll);
+        adder.add("item.chiikawa.chiikawa_doll", chiikawaDoll);
+        adder.add("item.chiikawa.shisa_doll", shisaDoll);
+        adder.add("item.chiikawa.momonga_doll", momongaDoll);
+        adder.add("item.chiikawa.kurimanju_doll", kurimanjuDoll);
+        adder.add("item.chiikawa.rakko_doll", rakkoDoll);
+        adder.add("item.chiikawa.furuhonya_doll", furuhonyaDoll);
+        adder.add("item.chiikawa.usagi_weapon", usagiWeapon);
+        adder.add("item.chiikawa.hachiware_weapon", hachiwareWeapon);
+        adder.add("item.chiikawa.chiikawa_weapon", chiikawaWeapon);
+        adder.add("item.chiikawa.rakko_sword", rakkoSword);
+    }
+
+    private static void addMusicBoxTranslations(
+        Adder adder,
+        String itemName,
+        String emptyTooltip,
+        String selectedTooltip,
+        String title,
+        String importing,
+        String failed,
+        String emptyCatalog,
+        String emptyHint,
+        String emptyHintServer,
+        String importFailed,
+        String formatHint,
+        String openFolder,
+        String reload,
+        String previousPage,
+        String nextPage
+    ) {
+        adder.add("item.chiikawa.music_box", itemName);
+        adder.add("tooltip.chiikawa.music_box.empty", emptyTooltip);
+        adder.add("tooltip.chiikawa.music_box.selected", selectedTooltip);
+        adder.add("screen.chiikawa.music_box.title", title);
+        adder.add("screen.chiikawa.music_box.importing", importing);
+        adder.add("screen.chiikawa.music_box.failed", failed);
+        adder.add("screen.chiikawa.music_box.empty_catalog", emptyCatalog);
+        adder.add("screen.chiikawa.music_box.empty_hint", emptyHint);
+        adder.add("screen.chiikawa.music_box.empty_hint_server", emptyHintServer);
+        adder.add("screen.chiikawa.music_box.import_failed", importFailed);
+        adder.add("screen.chiikawa.music_box.format_hint", formatHint);
+        adder.add("screen.chiikawa.music_box.open_folder", openFolder);
+        adder.add("screen.chiikawa.music_box.reload", reload);
+        // Read out rather than written on the buttons: the arrows say it plainly enough.
+        adder.add("screen.chiikawa.music_box.previous_page", previousPage);
+        adder.add("screen.chiikawa.music_box.next_page", nextPage);
+    }
+
+    private static void addMusicBoxModeTranslations(
+        Adder adder,
+        String heading,
+        String once,
+        String repeatAll,
+        String shuffle,
+        String repeatOne
+    ) {
+        adder.add("screen.chiikawa.music_box.mode", heading);
+        adder.add("screen.chiikawa.music_box.mode.once", once);
+        adder.add("screen.chiikawa.music_box.mode.repeat_all", repeatAll);
+        adder.add("screen.chiikawa.music_box.mode.shuffle", shuffle);
+        adder.add("screen.chiikawa.music_box.mode.repeat_one", repeatOne);
+    }
+}
