@@ -19,6 +19,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.SimpleContainer;
@@ -46,11 +48,21 @@ public class PetBackpackMenu extends AbstractContainerMenu {
     public static final int PLAYER_INV_X = 129;
     public static final int PLAYER_INV_Y = 79;
     public static final int HOTBAR_Y = 137;
+    /**
+     * The pet's armour, down the card's left side with the hand and the bag: a helmet over the hand, a chestplate
+     * under it, and boots under the bag.
+     */
+    public static final int ARMOR_X = MAINHAND_X;
+    public static final int HELMET_Y = MAINHAND_Y - SLOT_PITCH;
+    public static final int CHESTPLATE_Y = MAINHAND_Y + SLOT_PITCH;
+    public static final int BOOTS_Y = BAG_Y + SLOT_PITCH;
 
     private final AbstractPet pet;
     private final Level level;
     private final SimpleContainer petContainer;
     private final int petSlotCount;
+    /** Where the pet's armour starts in the menu's slots: after everything else, so no other slot's place has moved. */
+    private final int armorStart;
     /** Which entity the pet is, fixed when the menu is opened; the client finds the pet in its level by it. */
     private final int petId;
     /** How often the server tells the player who has the menu open what the pet would do next and why it is not at work. */
@@ -133,6 +145,13 @@ public class PetBackpackMenu extends AbstractContainerMenu {
         for (int col = 0; col < 9; col++) {
             this.addSlot(new Slot(playerInventory, col, PLAYER_INV_X + col * SLOT_PITCH, HOTBAR_Y));
         }
+
+        // What the pet wears. The client's menu has no pet in hand and lays out the same three all the same.
+        SimpleContainer worn = pet != null ? pet.getArmor() : new SimpleContainer(AbstractPet.ARMOR_SLOTS);
+        this.armorStart = this.slots.size();
+        this.addSlot(new ArmorSlot(worn, AbstractPet.ARMOR_HEAD, EquipmentSlot.HEAD, ARMOR_X, HELMET_Y));
+        this.addSlot(new ArmorSlot(worn, AbstractPet.ARMOR_CHEST, EquipmentSlot.CHEST, ARMOR_X, CHESTPLATE_Y));
+        this.addSlot(new ArmorSlot(worn, AbstractPet.ARMOR_FEET, EquipmentSlot.FEET, ARMOR_X, BOOTS_Y));
     }
 
     /**
@@ -186,6 +205,33 @@ public class PetBackpackMenu extends AbstractContainerMenu {
     /** Whether a slot is the one the worn bag goes in. */
     public boolean isBagSlot(Slot slot) {
         return slot instanceof BagSlot;
+    }
+
+    /** @return which piece of armour a slot is for, {@link AbstractPet#ARMOR_HEAD} and the others, or -1 if it is not one */
+    public int armorSlotOf(Slot slot) {
+        return slot instanceof ArmorSlot armor ? armor.kind : -1;
+    }
+
+    /** Where one piece of the pet's armour goes: that piece, and nothing else, one at a time. */
+    private static final class ArmorSlot extends Slot {
+        private final int kind;
+        private final EquipmentSlot equips;
+
+        private ArmorSlot(SimpleContainer worn, int kind, EquipmentSlot equips, int x, int y) {
+            super(worn, kind, x, y);
+            this.kind = kind;
+            this.equips = equips;
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return stack.getItem() instanceof ArmorItem armor && armor.getEquipmentSlot() == equips;
+        }
+
+        @Override
+        public int getMaxStackSize() {
+            return 1;
+        }
     }
 
     /** Whether a slot is one of the bag's own ten, which are there to be used only while a bag is worn. */
@@ -283,13 +329,21 @@ public class PetBackpackMenu extends AbstractContainerMenu {
             int playerInvEnd = playerInvStart + 27;
             int hotbarEnd = playerInvEnd + 9;
 
-            if (slotIndex < petSlotCount) {
+            if (slotIndex >= armorStart) {
+                // What the pet wears goes back to the player.
+                if (!this.moveItemStackTo(stack, playerInvStart, hotbarEnd, true)) {
+                    return ItemStack.EMPTY;
+                }
+            }
+            else if (slotIndex < petSlotCount) {
                 if (!this.moveItemStackTo(stack, playerInvStart, hotbarEnd, true)) {
                     return ItemStack.EMPTY;
                 }
             }
             else {
-                if (!this.moveItemStackTo(stack, 0, petSlotCount, false)) {
+                // A piece of armour goes on the pet first; whatever is not, or does not fit, goes in its pockets.
+                if (!this.moveItemStackTo(stack, armorStart, this.slots.size(), false)
+                    && !this.moveItemStackTo(stack, 0, petSlotCount, false)) {
                     if (slotIndex < playerInvEnd) {
                         if (!this.moveItemStackTo(stack, playerInvEnd, hotbarEnd, false)) {
                             return ItemStack.EMPTY;

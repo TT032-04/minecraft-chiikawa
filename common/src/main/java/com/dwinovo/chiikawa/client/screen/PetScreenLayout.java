@@ -18,7 +18,7 @@ import com.dwinovo.chiikawa.ui.widget.Switch;
  */
 public final class PetScreenLayout {
     public static final int PANEL_W = 300;
-    public static final int PANEL_H = 184;
+    public static final int PANEL_H = 194;
     /** How far the pet's picture rises above the panel's top edge: the tallest of the pets, ears and all. */
     public static final int RISE = 24;
 
@@ -76,8 +76,12 @@ public final class PetScreenLayout {
 
     // ---- the pet's card -----------------------------------------------------------
 
-    /** The card the pet's own slots are in, the hand and the fifteen, then a line across it, then the bag and the bag's ten. */
-    public static final Rect PET_CARD = new Rect(4, 74, 120, 102);
+    /**
+     * The card the pet's own slots are in, the hand and the fifteen, then a line across it, then the bag and the bag's ten.
+     * Down its left side, where the hand and the bag are, are the pet's three pieces of armour: a helmet over the hand, a
+     * chestplate under it, and boots under the bag.
+     */
+    public static final Rect PET_CARD = new Rect(4, 74, 120, 112);
     public static final int CARD_DIVIDER_Y = 133;
 
     // ---- the auto-pickup row ------------------------------------------------------

@@ -22,6 +22,7 @@ import com.dwinovo.chiikawa.voice.PetSpeech;
 import com.dwinovo.chiikawa.entity.AbstractPet;
 import com.dwinovo.chiikawa.item.BagItem;
 import com.dwinovo.chiikawa.client.anim.render.layer.BagLayer;
+import com.dwinovo.chiikawa.client.anim.render.layer.ArmorLayer;
 import com.dwinovo.chiikawa.client.anim.render.layer.RenderLayer;
 import com.dwinovo.chiikawa.client.anim.render.layer.RenderLayerContext;
 import com.dwinovo.chiikawa.anim.runtime.AnimationClock;
@@ -145,6 +146,7 @@ public abstract class ChiikawaEntityRenderer<T extends Entity> extends EntityRen
         // Default layers shared by all pets.
         addRenderLayer(new HeldItemLayer(PropBone.bones()));
         addRenderLayer(new BagLayer());
+        addRenderLayer(new ArmorLayer());
         // A bag's strap is part of the pet's own model, there only while a bag worn
         // that way is on.
         for (BagItem.Wear wear : BagItem.Wear.values()) {
@@ -262,6 +264,9 @@ public abstract class ChiikawaEntityRenderer<T extends Entity> extends EntityRen
 
         if (entity instanceof AbstractPet pet) {
             state.put(PetData.WORN_BAG, pet.getItemBySlot(EquipmentSlot.CHEST));
+            state.put(PetData.ARMOR_HEAD, pet.getWornArmor(AbstractPet.ARMOR_HEAD));
+            state.put(PetData.ARMOR_CHEST, pet.getWornArmor(AbstractPet.ARMOR_CHEST));
+            state.put(PetData.ARMOR_FEET, pet.getWornArmor(AbstractPet.ARMOR_FEET));
         }
 
         if (entity instanceof ChiikawaAnimated animated) {

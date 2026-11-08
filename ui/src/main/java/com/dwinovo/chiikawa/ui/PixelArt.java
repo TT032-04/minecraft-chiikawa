@@ -52,6 +52,37 @@ public record PixelArt(String... rows) {
         ".ssssssssss.",
         "..ssssssss..");
 
+    /** A cap, as a shadow in the shade of an empty well: where a helmet would be worn. */
+    public static final PixelArt HELMET = new PixelArt(
+        "...ssssss...",
+        "..ssssssss..",
+        ".ssssssssss.",
+        ".ssssssssss.",
+        ".ssssssssss.",
+        ".ssssssssss.",
+        ".ss......ss.",
+        ".ss......ss.");
+
+    /** A chestplate, in the same shade: where one would be worn. */
+    public static final PixelArt CHESTPLATE = new PixelArt(
+        "ss..ssss..ss",
+        "ssssssssssss",
+        "ssssssssssss",
+        ".ssssssssss.",
+        ".ssssssssss.",
+        ".ssssssssss.",
+        ".ssssssssss.",
+        "..ssssssss..");
+
+    /** A pair of boots, in the same shade: where they would be worn. */
+    public static final PixelArt BOOTS = new PixelArt(
+        ".ssss...ssss.",
+        ".ssss...ssss.",
+        ".ssss...ssss.",
+        ".ssss...ssss.",
+        "ssssss.ssssss",
+        "ssssss.ssssss");
+
     public int width() {
         int widest = 0;
         for (String row : rows) {

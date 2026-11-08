@@ -7,7 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class PixelArtTest {
-    private static final List<PixelArt> SHIPPED = List.of(PixelArt.GIFT, PixelArt.PICK_UP, PixelArt.BAG);
+    private static final List<PixelArt> SHIPPED = List.of(PixelArt.GIFT, PixelArt.PICK_UP, PixelArt.BAG,
+        PixelArt.HELMET, PixelArt.CHESTPLATE, PixelArt.BOOTS);
 
     @Test
     void everyIconFitsWhereAnItemWould() {

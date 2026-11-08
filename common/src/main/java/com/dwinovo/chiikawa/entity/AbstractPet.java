@@ -33,7 +33,9 @@ import com.dwinovo.chiikawa.task.PetTask;
 import com.dwinovo.chiikawa.utils.Utils;
 import com.dwinovo.chiikawa.voice.PetSpeech;
 import com.dwinovo.chiikawa.voice.VoiceMoment;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.network.chat.Component;
@@ -62,6 +64,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -212,6 +215,19 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
     /** How near, squared, a thrown trident has to come for the pet to have it in its hand again. */
     private static final double TRIDENT_REACH_SQR = 4.0;
 
+    /** The three things a pet can wear, in the order its screen has them. */
+    public static final int ARMOR_HEAD = 0;
+    public static final int ARMOR_CHEST = 1;
+    public static final int ARMOR_FEET = 2;
+    public static final int ARMOR_SLOTS = 3;
+    private static final EquipmentSlot[] ARMOR_EQUIPS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.FEET};
+    private static final String[] ARMOR_KEYS = {"Head", "Chest", "Feet"};
+    /** What the pet wears, for the client to draw it: a copy of each of the three, synced as they change. */
+    private static final EntityDataAccessor<ItemStack> WORN_HEAD = SynchedEntityData.defineId(AbstractPet.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<ItemStack> WORN_CHEST = SynchedEntityData.defineId(AbstractPet.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<ItemStack> WORN_FEET = SynchedEntityData.defineId(AbstractPet.class, EntityDataSerializers.ITEM_STACK);
+    private static final java.util.List<EntityDataAccessor<ItemStack>> WORN = java.util.List.of(WORN_HEAD, WORN_CHEST, WORN_FEET);
+
     /** The trident in the air or on the ground, by its id. Not saved: a pet that is loaded has its trident back. */
     private UUID thrownTridentId;
     private boolean thrownTridentReturns;
@@ -301,6 +317,20 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
             AbstractPet.this.refreshJobFromMainhand();
         }
     };
+    /**
+     * What the pet wears: a helmet, a chestplate and boots. Kept apart from the backpack, whose slots are counted from
+     * the pockets to the bag's ten, so that no pocket's place moves. Worn armour does what armour does for anything
+     * that wears it, see {@link #applyArmorModifiers}, and is drawn on the pet, see the renderer's armour layer.
+     */
+    private final SimpleContainer armor = new SimpleContainer(ARMOR_SLOTS) {
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            AbstractPet.this.armorChanged();
+        }
+    };
+    /** The attribute modifiers the armour has on the pet just now, so that they can be taken off again. */
+    private final Multimap<Attribute, AttributeModifier> armorModifiers = HashMultimap.create();
     /** Where what the pet is given or finds goes; never the hand or the bag's slot, see {@link PetPockets}. */
     private final PetPockets pockets = new PetPockets(backpack, this::isWearingBag);
 
@@ -316,6 +346,68 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         // brain-side FloatBehavior bobs the pet to the surface smoothly instead of
         // sink-fighting the jump (which caused the repeated bouncing). One-time setup.
         this.getNavigation().setCanFloat(true);
+    }
+
+    /** @return what the pet wears: {@link #ARMOR_HEAD}, {@link #ARMOR_CHEST} and {@link #ARMOR_FEET}, in that order */
+    public SimpleContainer getArmor() {
+        return armor;
+    }
+
+    /** @return what the pet wears on that part of it, on either side: the server's own, and the client's synced copy */
+    public ItemStack getWornArmor(int kind) {
+        return this.entityData.get(WORN.get(kind));
+    }
+
+    /** What the pet wears has changed: the client is told, and the pet has the armour's protection, or no longer has it. */
+    private void armorChanged() {
+        if (level().isClientSide) {
+            return;
+        }
+        for (int kind = 0; kind < ARMOR_SLOTS; kind++) {
+            this.entityData.set(WORN.get(kind), armor.getItem(kind).copy());
+        }
+        applyArmorModifiers();
+    }
+
+    /**
+     * Gives the pet what each piece of armour gives whoever wears it, from its own attribute modifiers: its armour points,
+     * its toughness, whatever else it adds. Taken off and put on again each time, as vanilla does for what a mob wears,
+     * and not saved: the pet is given them again as it is loaded, with the armour.
+     */
+    private void applyArmorModifiers() {
+        getAttributes().removeAttributeModifiers(armorModifiers);
+        armorModifiers.clear();
+        for (int kind = 0; kind < ARMOR_SLOTS; kind++) {
+            ItemStack worn = armor.getItem(kind);
+            if (!worn.isEmpty()) {
+                armorModifiers.putAll(worn.getAttributeModifiers(ARMOR_EQUIPS[kind]));
+            }
+        }
+        getAttributes().addTransientAttributeModifiers(armorModifiers);
+    }
+
+    /** Armour wears down as it does on a player: a little for each hit it takes a share of, and it breaks. */
+    @Override
+    protected void hurtArmor(DamageSource source, float damage) {
+        if (damage <= 0.0F) {
+            return;
+        }
+        int wear = Math.max(1, (int) (damage / 4.0F));
+        boolean changed = false;
+        for (int kind = 0; kind < ARMOR_SLOTS; kind++) {
+            ItemStack worn = armor.getItem(kind);
+            if (worn.isDamageableItem()) {
+                worn.hurtAndBreak(wear, this, pet -> { });
+                if (worn.isEmpty()) {
+                    armor.setItem(kind, ItemStack.EMPTY);
+                } else {
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            armor.setChanged();
+        }
     }
 
     /**
@@ -1072,6 +1164,9 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         this.entityData.define(PERFORMANCE, "");
         this.entityData.define(RULES, new CompoundTag());
         this.entityData.define(TRIDENT_AWAY, false);
+        this.entityData.define(WORN_HEAD, ItemStack.EMPTY);
+        this.entityData.define(WORN_CHEST, ItemStack.EMPTY);
+        this.entityData.define(WORN_FEET, ItemStack.EMPTY);
     }
 
     /**
@@ -1232,6 +1327,15 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.put("Backpack", ContainerHelper.saveAllItems(new CompoundTag(), itemsAsKept()));
+        CompoundTag worn = new CompoundTag();
+        for (int kind = 0; kind < ARMOR_SLOTS; kind++) {
+            if (!armor.getItem(kind).isEmpty()) {
+                worn.put(ARMOR_KEYS[kind], armor.getItem(kind).save(new CompoundTag()));
+            }
+        }
+        if (!worn.isEmpty()) {
+            tag.put("Armor", worn);
+        }
         tag.putInt("PetJob", getPetJobId());
         tag.putByte("PetMode", this.entityData.get(PET_MODE));
         CompoundTag task = this.entityData.get(TASK);
@@ -1261,6 +1365,12 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
             ContainerHelper.loadAllItems(tag.getCompound("Backpack"), items);
             setBackpackItems(items);
             clearBagSlotOfOldStorage();
+        }
+        CompoundTag worn = tag.getCompound("Armor");
+        for (int kind = 0; kind < ARMOR_SLOTS; kind++) {
+            armor.setItem(kind, worn.contains(ARMOR_KEYS[kind], Tag.TAG_COMPOUND)
+                ? ItemStack.of(worn.getCompound(ARMOR_KEYS[kind]))
+                : ItemStack.EMPTY);
         }
         if (tag.contains("PetJob", Tag.TAG_INT)) {
             setPetJobId(tag.getInt("PetJob"));

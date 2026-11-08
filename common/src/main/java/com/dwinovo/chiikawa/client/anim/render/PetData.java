@@ -22,7 +22,9 @@ public enum PetData {
     /** Mainhand {@link net.minecraft.world.item.ItemStack} snapshot consumed by {@code HeldItemLayer}. */
     HELD_ITEM_STACK,
     /** Worn {@link net.minecraft.world.item.ItemStack} snapshot consumed by {@code BagLayer} and the strap rules. */
-    WORN_BAG;
+    WORN_BAG,
+    /** What the pet wears on its head, its hands (a chestplate) and its feet, consumed by {@code ArmorLayer}. */
+    ARMOR_HEAD, ARMOR_CHEST, ARMOR_FEET;
 
     /** Cached values() to avoid per-frame allocation; treat as immutable. */
     public static final PetData[] VALUES = values();
