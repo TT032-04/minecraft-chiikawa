@@ -386,9 +386,12 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         getAttributes().addTransientAttributeModifiers(armorModifiers);
     }
 
-    /** Armour wears down as it does on a player: a little for each hit it takes a share of, and it breaks. */
+    /**
+     * Armour wears down as it does on a player: a little for each hit it takes a share of, and it breaks. Public, as the
+     * method it overrides is in the game the mod is built against; a subclass may make a method more open, never less.
+     */
     @Override
-    protected void hurtArmor(DamageSource source, float damage) {
+    public void hurtArmor(DamageSource source, float damage) {
         if (damage <= 0.0F) {
             return;
         }
