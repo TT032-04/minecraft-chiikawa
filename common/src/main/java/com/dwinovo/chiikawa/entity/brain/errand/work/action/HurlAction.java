@@ -8,6 +8,7 @@ import com.dwinovo.chiikawa.entity.brain.errand.Offer;
 import com.dwinovo.chiikawa.entity.brain.errand.Offers;
 import com.dwinovo.chiikawa.entity.brain.errand.rest.RestStore;
 import com.dwinovo.chiikawa.entity.brain.errand.run.Routine;
+import com.dwinovo.chiikawa.entity.brain.errand.step.Fetch;
 import com.dwinovo.chiikawa.entity.brain.errand.step.Heft;
 import com.dwinovo.chiikawa.entity.brain.errand.step.Hurl;
 import com.dwinovo.chiikawa.entity.brain.errand.step.Skirmish;
@@ -75,15 +76,16 @@ public final class HurlAction implements WorkAction<Duel, ErrandTunings.Ranged> 
     /**
      * @param foe the creature the fight is about
      * @param tuning how the pet throws
-     * @return the fight itself: round after round of footwork, an aim and a throw, for as long as the sensor names the
-     *         foe, it is alive and it is not up close
+     * @return the fight itself: round after round of footwork, an aim, a throw and fetching the trident back, for as
+     *         long as the sensor names the foe, it is alive and it is not up close
      */
     public static Routine.Part fight(UUID foe, ErrandTunings.Ranged tuning) {
         Stance stance = new Stance(tuning.footwork(), true);
         return Routine.repeatWhile(Skirmish.whileHunting(foe).and(Skirmish.whileBeyond(foe, Heft.JABS_WITHIN)),
             () -> Skirmish.hurling(foe, stance, tuning.range()),
             () -> new Heft(foe, stance, tuning.range(), tuning.drawTicks()),
-            () -> new Hurl(foe, tuning.range(), tuning.cooldownTicks()));
+            () -> new Hurl(foe, tuning.range(), tuning.cooldownTicks()),
+            () -> new Fetch(foe));
     }
 
     /** @return how far apart two places are, and no end of it when they are not in the same world */

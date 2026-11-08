@@ -46,7 +46,7 @@ public final class Heft implements Step {
 
     /** Whether a throw at this foe can be started now: off cooldown, and the foe is far enough and within range. */
     static boolean canHeft(AbstractPet pet, LivingEntity target, double range) {
-        return !pet.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_COOLING_DOWN)
+        return !pet.isTridentAway() && !pet.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_COOLING_DOWN)
             && canHold(pet, target, range, AIMS_FROM);
     }
 

@@ -199,6 +199,24 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
      */
     private static final EntityDataAccessor<CompoundTag> RULES = SynchedEntityData.defineId(AbstractPet.class, EntityDataSerializers.COMPOUND_TAG);
 
+    /**
+     * Whether the trident the pet holds is out of its hand just now, thrown and not yet back, so that the hand is
+     * drawn empty while it flies. The trident stays in the bag, and the pet stays a lancer: only what is seen changes.
+     */
+    private static final EntityDataAccessor<Boolean> TRIDENT_AWAY = SynchedEntityData.defineId(AbstractPet.class, EntityDataSerializers.BOOLEAN);
+
+    /** How long a thrown trident is waited for before it is put back in the pet's hand, in ticks. */
+    private static final int TRIDENT_RECALL_TICKS = 600;
+    /** How long a thrown trident has been out before the pet may take it, so that it is not taken as it leaves. */
+    private static final int TRIDENT_TAKEABLE_AFTER = 10;
+    /** How near, squared, a thrown trident has to come for the pet to have it in its hand again. */
+    private static final double TRIDENT_REACH_SQR = 4.0;
+
+    /** The trident in the air or on the ground, by its id. Not saved: a pet that is loaded has its trident back. */
+    private UUID thrownTridentId;
+    private boolean thrownTridentReturns;
+    private long thrownTridentRecallAt;
+
     /** Legacy animation-id namespace for {@link #ANIM_TRIGGER}'s low byte. */
     public static final int TRIGGER_NONE         = 0;
     public static final int TRIGGER_USE_MAINHAND = 1;
@@ -713,6 +731,7 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
             applyEagerness();
         }
         PetExams.upkeep(this);
+        upkeepTrident();
         mind.tick(serverLevel);
         getBrain().tick(serverLevel, this);
         super.customServerAiStep();
@@ -787,18 +806,20 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
     }
 
     /**
-     * Throws a trident at the target, as a drowned does. What flies is a plain trident of its own, as the drowned's is,
-     * which cannot be picked up, so the one in the pet's hand stays there, with whatever is on it: a lancer is a
-     * lancer for as long as it holds one, and a trident that comes back to a pet is a trident that goes round for
-     * good. The throw is aimed as an arrow is.
+     * Throws the trident in its hand at the target, as a drowned does. What flies is a copy of the one in the bag, with
+     * what is on it: a loyal trident comes back by itself, one with impaling does more to what lives in the water. The
+     * pet cannot pick up what lands, so it is taken back by {@link #recallTrident}, and for as long as it is out the
+     * pet's hand is drawn empty, see {@link #isTridentAway}. The trident in the bag is never touched, so the pet is a
+     * lancer through all of it and nothing can be lost.
      *
      * @param target the creature to throw at
      */
     public void hurlTrident(LivingEntity target) {
-        if (!(level() instanceof ServerLevel serverLevel)) {
+        ItemStack held = backpack.getItem(MAINHAND_SLOT);
+        if (!(level() instanceof ServerLevel serverLevel) || isTridentAway() || held.isEmpty()) {
             return;
         }
-        ThrownTrident trident = new ThrownTrident(serverLevel, this, new ItemStack(Items.TRIDENT));
+        ThrownTrident trident = new ThrownTrident(serverLevel, this, held.copy());
         trident.pickup = AbstractArrow.Pickup.DISALLOWED;
         double dx = target.getX() - getX();
         double dy = target.getY(1.0 / 3.0) - trident.getY();
@@ -806,7 +827,59 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         float inaccuracy = 14 - serverLevel.getDifficulty().getId() * 4;
         trident.shoot(dx, dy + Math.sqrt(dx * dx + dz * dz) * 0.2F, dz, 1.6F, inaccuracy);
         serverLevel.addFreshEntity(trident);
+        thrownTridentId = trident.getUUID();
+        thrownTridentReturns = EnchantmentHelper.getLoyalty(held) > 0;
+        thrownTridentRecallAt = serverLevel.getGameTime() + TRIDENT_RECALL_TICKS;
+        this.entityData.set(TRIDENT_AWAY, true);
         playAttackSound();
+    }
+
+    /** @return whether the pet's trident is out of its hand, thrown and not yet back; the hand is drawn empty meanwhile */
+    public boolean isTridentAway() {
+        return this.entityData.get(TRIDENT_AWAY);
+    }
+
+    /** @return the trident the pet threw, while it is there; nothing on the client, which does not know it */
+    public Optional<ThrownTrident> thrownTrident() {
+        if (thrownTridentId == null || !(level() instanceof ServerLevel serverLevel)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(serverLevel.getEntity(thrownTridentId))
+            .filter(found -> found instanceof ThrownTrident && found.isAlive())
+            .map(found -> (ThrownTrident) found);
+    }
+
+    /** @return whether the trident that was thrown comes back by itself, which a loyal one does */
+    public boolean thrownTridentReturns() {
+        return thrownTridentReturns;
+    }
+
+    /** Puts the trident back in the pet's hand: what is out is taken away, and the hand is drawn with it again. */
+    public void recallTrident() {
+        thrownTrident().ifPresent(Entity::discard);
+        thrownTridentId = null;
+        thrownTridentReturns = false;
+        if (isTridentAway()) {
+            this.entityData.set(TRIDENT_AWAY, false);
+            playSound(net.minecraft.sounds.SoundEvents.ITEM_PICKUP, 0.3F, 1.4F);
+        }
+    }
+
+    /**
+     * Looked at every tick the pet's AI runs, whatever the pet is doing: a trident that has been taken, or has come
+     * back to the pet, or is gone, or has been waited for long enough, is put back in the hand, so that the pet is
+     * never left with an empty hand for good.
+     */
+    private void upkeepTrident() {
+        if (!isTridentAway()) {
+            return;
+        }
+        Optional<ThrownTrident> trident = thrownTrident();
+        boolean taken = trident.filter(out -> out.tickCount >= TRIDENT_TAKEABLE_AFTER
+            && out.distanceToSqr(this) <= TRIDENT_REACH_SQR).isPresent();
+        if (trident.isEmpty() || taken || level().getGameTime() >= thrownTridentRecallAt) {
+            recallTrident();
+        }
     }
 
     @Override
@@ -998,6 +1071,7 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         this.entityData.define(LICENCES, new CompoundTag());
         this.entityData.define(PERFORMANCE, "");
         this.entityData.define(RULES, new CompoundTag());
+        this.entityData.define(TRIDENT_AWAY, false);
     }
 
     /**

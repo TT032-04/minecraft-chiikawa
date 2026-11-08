@@ -255,7 +255,9 @@ public abstract class ChiikawaEntityRenderer<T extends Entity> extends EntityRen
             // a fresh item render state while rendering. Lives on the typed
             // extras map so future layers can register their own keys without
             // adding fields to ChiikawaRenderState.
-            state.put(PetData.HELD_ITEM_STACK, living.getMainHandItem());
+            // A trident that has been thrown is out of the hand until the pet has it back.
+            state.put(PetData.HELD_ITEM_STACK, entity instanceof AbstractPet pet && pet.isTridentAway()
+                ? net.minecraft.world.item.ItemStack.EMPTY : living.getMainHandItem());
         }
 
         if (entity instanceof AbstractPet pet) {
