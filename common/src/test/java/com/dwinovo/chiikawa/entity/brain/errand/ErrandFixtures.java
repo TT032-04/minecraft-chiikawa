@@ -79,6 +79,8 @@ public final class ErrandFixtures {
         Map.entry(WorkData.RANGED, free().armedWithArrows().targets(foe(Ground.SELF, Ground.OWNER, Ground.NEARBY))),
         Map.entry(WorkData.HUNT_MELEE, free().targets(foe(Ground.HUNT))),
         Map.entry(WorkData.HUNT_RANGED, free().armedWithArrows().targets(foe(Ground.HUNT))),
+        Map.entry(WorkData.THROW, free().targets(farFoe(Ground.SELF, Ground.OWNER, Ground.NEARBY))),
+        Map.entry(WorkData.HUNT_THROW, free().targets(farFoe(Ground.HUNT))),
         Map.entry(ErrandIds.DEFEND_SELF, free().targets(foe(Ground.SELF)).arms(new Arms(false, Optional.of(new Arms.Weapon(2, false))))),
         Map.entry(ErrandIds.FLEE, free().attackedBy(FOE, east(3))),
         Map.entry(WorkData.PLAY_MUSIC, free().withSong()),
@@ -126,6 +128,12 @@ public final class ErrandFixtures {
     /** A foe two blocks off that the pet fights for these reasons. */
     private static PerceivedTargets foe(Ground... grounds) {
         return TestTargets.of(Optional.of(TestTargets.foe(FOE, east(2), grounds)), Optional.empty(), Optional.empty(),
+            Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+    }
+
+    /** A foe eight blocks off, which is a foe to throw at and not to jab. */
+    private static PerceivedTargets farFoe(Ground... grounds) {
+        return TestTargets.of(Optional.of(TestTargets.foe(FOE, east(8), grounds)), Optional.empty(), Optional.empty(),
             Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
     }
 

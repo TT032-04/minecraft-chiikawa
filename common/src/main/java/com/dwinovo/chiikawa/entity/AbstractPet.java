@@ -74,6 +74,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -782,6 +783,29 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         if (!infinite) {
             ammo.shrink(1);
         }
+        playAttackSound();
+    }
+
+    /**
+     * Throws a trident at the target, as a drowned does. What flies is a plain trident of its own, as the drowned's is,
+     * which cannot be picked up, so the one in the pet's hand stays there, with whatever is on it: a lancer is a
+     * lancer for as long as it holds one, and a trident that comes back to a pet is a trident that goes round for
+     * good. The throw is aimed as an arrow is.
+     *
+     * @param target the creature to throw at
+     */
+    public void hurlTrident(LivingEntity target) {
+        if (!(level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        ThrownTrident trident = new ThrownTrident(serverLevel, this, new ItemStack(Items.TRIDENT));
+        trident.pickup = AbstractArrow.Pickup.DISALLOWED;
+        double dx = target.getX() - getX();
+        double dy = target.getY(1.0 / 3.0) - trident.getY();
+        double dz = target.getZ() - getZ();
+        float inaccuracy = 14 - serverLevel.getDifficulty().getId() * 4;
+        trident.shoot(dx, dy + Math.sqrt(dx * dx + dz * dz) * 0.2F, dz, 1.6F, inaccuracy);
+        serverLevel.addFreshEntity(trident);
         playAttackSound();
     }
 

@@ -63,7 +63,8 @@ class ErrandFileTest {
         Loaded loaded = ErrandSettingsLoader.load(ErrandFiles.all());
 
         assertEquals(Set.of(WorkData.HARVEST, WorkData.PLANT, WorkData.DELIVER, WorkData.WEED, WorkData.PICK_MUSHROOM, WorkData.MELEE,
-            WorkData.RANGED, WorkData.HUNT_MELEE, WorkData.HUNT_RANGED, WorkData.PLAY_MUSIC, PastimeData.RAIN_SHELTER,
+            WorkData.RANGED, WorkData.HUNT_MELEE, WorkData.HUNT_RANGED, WorkData.THROW, WorkData.HUNT_THROW,
+            WorkData.PLAY_MUSIC, PastimeData.RAIN_SHELTER,
             PastimeData.RAIN_PLAY, PastimeData.WATCH_OWNER_WORK, CharacterPastimeData.COWER, CharacterPastimeData.FRENZY,
             CharacterPastimeData.ASK_PRAISE, CharacterPastimeData.EVENING_DRINK, CharacterPastimeData.COFFEE_FOR_A_WORKER,
             CharacterPastimeData.SWEETS_STARE, CharacterPastimeData.SWORD_PRACTICE, CharacterPastimeData.GREET_OWNER),
@@ -207,6 +208,8 @@ class ErrandFileTest {
             WorkData.RANGED, Set.of("foe"),
             WorkData.HUNT_MELEE, Set.of("foe"),
             WorkData.HUNT_RANGED, Set.of("foe"),
+            WorkData.THROW, Set.of("foe"),
+            WorkData.HUNT_THROW, Set.of("foe"),
             WorkData.HARVEST, Set.of("ripe_crop", "blocks"),
             WorkData.PLANT, Set.of("plantable_soil"),
             WorkData.DELIVER, Set.of("container"),

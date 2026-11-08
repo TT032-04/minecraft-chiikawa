@@ -5,6 +5,7 @@ import com.dwinovo.chiikawa.entity.brain.errand.work.action.AskPraiseAction;
 import com.dwinovo.chiikawa.entity.brain.errand.work.action.BuskAction;
 import com.dwinovo.chiikawa.entity.brain.errand.work.action.DepositAction;
 import com.dwinovo.chiikawa.entity.brain.errand.work.action.HarvestBlockAction;
+import com.dwinovo.chiikawa.entity.brain.errand.work.action.HurlAction;
 import com.dwinovo.chiikawa.entity.brain.errand.work.action.PerformAction;
 import com.dwinovo.chiikawa.entity.brain.errand.work.action.PlantBlockAction;
 import com.dwinovo.chiikawa.entity.brain.errand.work.action.ShootAction;
@@ -29,6 +30,8 @@ public final class WorkActions {
     public static final StrikeAction STRIKE = new StrikeAction();
     /** Fighting the foe with a bow. */
     public static final ShootAction SHOOT = new ShootAction();
+    /** Fighting the foe with a trident thrown at it. */
+    public static final HurlAction HURL = new HurlAction();
 
     /** Breaking a ripe crop, a weed or a mushroom into the bag. */
     public static final HarvestBlockAction HARVEST_BLOCK = new HarvestBlockAction();
@@ -47,7 +50,7 @@ public final class WorkActions {
     private static final Map<ResourceLocation, WorkAction<?, ?>> BY_ID = Map.of(
         BuskAction.ID, BUSK, StrikeAction.ID, STRIKE, ShootAction.ID, SHOOT, HarvestBlockAction.ID, HARVEST_BLOCK,
         PlantBlockAction.ID, PLANT_BLOCK, DepositAction.ID, DEPOSIT, PerformAction.ID, PERFORM, VisitAction.ID, VISIT,
-        AskPraiseAction.ID, ASK_PRAISE);
+        AskPraiseAction.ID, ASK_PRAISE, HurlAction.ID, HURL);
 
     /** Reads and writes an action as its id; an id no action has does not read. */
     public static final Codec<WorkAction<?, ?>> CODEC = ResourceLocation.CODEC.comapFlatMap(id -> {

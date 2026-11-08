@@ -19,7 +19,8 @@ class JobWorkDataTest {
             JobIds.FARMER, List.of(WorkData.HARVEST, WorkData.PLANT, WorkData.DELIVER, WorkData.WEED, WorkData.PICK_MUSHROOM),
             JobIds.FENCER, List.of(WorkData.MELEE, WorkData.HUNT_MELEE),
             JobIds.ARCHER, List.of(WorkData.RANGED, WorkData.HUNT_RANGED),
-            JobIds.MUSICIAN, List.of(WorkData.PLAY_MUSIC));
+            JobIds.MUSICIAN, List.of(WorkData.PLAY_MUSIC),
+            JobIds.LANCER, List.of(WorkData.THROW, WorkData.MELEE, WorkData.HUNT_THROW, WorkData.HUNT_MELEE));
 
         assertEquals(expected.keySet(), JobWorkData.all().keySet(), "a pet with no job has no file");
         expected.forEach((job, work) -> assertEquals(work, JobWorkData.all().get(job).work(), job.toString()));

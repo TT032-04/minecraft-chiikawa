@@ -30,10 +30,12 @@ class ErrandSettingsDataTest {
         Map.entry(ErrandIds.GIFT_OWNER, 80),
         Map.entry(WorkData.MELEE, 80),
         Map.entry(WorkData.RANGED, 80),
+        Map.entry(WorkData.THROW, 81),
         Map.entry(ErrandIds.DEFEND_SELF, 80),
         Map.entry(ErrandIds.FLEE, 100),
         Map.entry(WorkData.HUNT_MELEE, 50),
         Map.entry(WorkData.HUNT_RANGED, 50),
+        Map.entry(WorkData.HUNT_THROW, 51),
         Map.entry(ErrandIds.TAKE_EXAM, 80),
         Map.entry(ErrandIds.CHECK_RESULTS, 80),
         Map.entry(ErrandIds.COOPERATE, 80),
@@ -71,10 +73,12 @@ class ErrandSettingsDataTest {
         Map.entry(ErrandIds.GIFT_OWNER, 0.85F),
         Map.entry(WorkData.MELEE, 0.8F),
         Map.entry(WorkData.RANGED, 0.8F),
+        Map.entry(WorkData.THROW, 0.8F),
         Map.entry(ErrandIds.DEFEND_SELF, 0.8F),
         Map.entry(ErrandIds.FLEE, 1.0F),
         Map.entry(WorkData.HUNT_MELEE, 0.8F),
         Map.entry(WorkData.HUNT_RANGED, 0.8F),
+        Map.entry(WorkData.HUNT_THROW, 0.8F),
         Map.entry(ErrandIds.TAKE_EXAM, 0.72F),
         Map.entry(ErrandIds.CHECK_RESULTS, 0.72F),
         Map.entry(ErrandIds.COOPERATE, 0.5F),
@@ -171,7 +175,7 @@ class ErrandSettingsDataTest {
 
         Optional<VoiceMoment> cry = Optional.of(VoiceMoment.HUNT);
         assertEquals(Map.of(WorkData.MELEE, cry, WorkData.RANGED, cry, WorkData.HUNT_MELEE, cry, WorkData.HUNT_RANGED, cry,
-            ErrandIds.DEFEND_SELF, cry, ErrandIds.FLEE, Optional.of(VoiceMoment.SCARED)), voices);
+            WorkData.THROW, cry, WorkData.HUNT_THROW, cry, ErrandIds.DEFEND_SELF, cry, ErrandIds.FLEE, Optional.of(VoiceMoment.SCARED)), voices);
     }
 
     @Test

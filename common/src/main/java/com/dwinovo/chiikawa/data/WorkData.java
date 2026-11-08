@@ -40,6 +40,10 @@ public final class WorkData {
     public static final ResourceLocation HUNT_MELEE = id("hunt_melee");
     /** Hunting them with a bow. */
     public static final ResourceLocation HUNT_RANGED = id("hunt_ranged");
+    /** Fighting the same with a trident thrown at what is some way off. */
+    public static final ResourceLocation THROW = id("throw");
+    /** Hunting them with a thrown trident. */
+    public static final ResourceLocation HUNT_THROW = id("hunt_throw");
     /** Playing the song on the held music box. */
     public static final ResourceLocation PLAY_MUSIC = id("play_music");
     /** One second of a performance, which a street performance slip counts. */
@@ -82,6 +86,10 @@ public final class WorkData {
             Map.entry(HUNT_MELEE, new Work<>(WorkActions.STRIKE, ErrandCategory.COMBAT, Optional.of(PetWorkCounters.SLAY),
                 List.of(), hunt, Optional.empty())),
             Map.entry(HUNT_RANGED, new Work<>(WorkActions.SHOOT, ErrandCategory.COMBAT, Optional.of(PetWorkCounters.SLAY),
+                List.of(), hunt, Optional.empty())),
+            Map.entry(THROW, new Work<>(WorkActions.HURL, ErrandCategory.COMBAT, Optional.empty(), List.of(), guard,
+                Optional.empty())),
+            Map.entry(HUNT_THROW, new Work<>(WorkActions.HURL, ErrandCategory.COMBAT, Optional.of(PetWorkCounters.SLAY),
                 List.of(), hunt, Optional.empty())),
             Map.entry(PLAY_MUSIC, new Work<>(WorkActions.BUSK, ErrandCategory.WORK, Optional.of(PLAY_MUSIC_SECOND), List.of(),
                 Optional.empty(), Optional.empty()))));

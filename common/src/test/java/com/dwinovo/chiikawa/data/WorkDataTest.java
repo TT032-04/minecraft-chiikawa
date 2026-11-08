@@ -39,7 +39,7 @@ class WorkDataTest {
         Set<ResourceLocation> errands = Errands.all().stream().map(ErrandType::id).collect(Collectors.toSet());
         Set<ResourceLocation> works = WorkData.all().keySet();
 
-        assertEquals(38, errands.size());
+        assertEquals(40, errands.size());
         assertEquals(errands, ErrandSettingsData.all().keySet(), "settings and errands are each other's");
         assertEquals(errands, ErrandSettings.all().keySet(), "the loader kept every file");
         assertEquals(errands, ErrandFiles.all().keySet(), "every errand has a file");
@@ -97,7 +97,7 @@ class WorkDataTest {
             .filter(work -> work.getValue().counter().equals(Optional.of(PetWorkCounters.SLAY)))
             .map(Map.Entry::getKey).collect(Collectors.toSet());
 
-        assertEquals(Set.of(WorkData.HUNT_MELEE, WorkData.HUNT_RANGED), hunts);
+        assertEquals(Set.of(WorkData.HUNT_MELEE, WorkData.HUNT_RANGED, WorkData.HUNT_THROW), hunts);
     }
 
     private static boolean countedByTheJobOf(PetTaskType type) {

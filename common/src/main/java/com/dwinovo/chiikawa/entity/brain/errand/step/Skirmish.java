@@ -50,6 +50,24 @@ public final class Skirmish implements Step {
         return new Skirmish(foe, stance, (pet, target) -> DrawBow.canDraw(pet, target, range));
     }
 
+    /**
+     * @param foe the creature the fight is about
+     * @param stance where the pet stands
+     * @param range how far away a throw is still worth taking
+     * @return the footwork of a fight with a thrown trident, done when the pet can take aim
+     */
+    public static Skirmish hurling(UUID foe, Stance stance, double range) {
+        return new Skirmish(foe, stance, (pet, target) -> Heft.canHeft(pet, target, range));
+    }
+
+    /** @return whether the foe is still at least this far from the pet, which a foe that is gone is not */
+    public static Predicate<Handle> whileBeyond(UUID foe, double closest) {
+        return handle -> {
+            LiveHandle live = LiveHandle.of(handle);
+            return hunted(live, foe).map(target -> target.distanceTo(live.pet()) >= closest).orElse(false);
+        };
+    }
+
     /** @return whether the fight about that foe goes on: the sensor still names it, and it is still there */
     public static Predicate<Handle> whileHunting(UUID foe) {
         return handle -> hunted(LiveHandle.of(handle), foe).isPresent();

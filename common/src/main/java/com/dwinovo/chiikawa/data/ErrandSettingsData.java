@@ -60,6 +60,9 @@ public final class ErrandSettingsData {
         ErrandTunings.HarvestBlock byHand = new ErrandTunings.HarvestBlock(0.8F, 3.0, 0, 0);
         ErrandTunings.Footwork footwork = new ErrandTunings.Footwork(1.0F, 1.2F, 10.0, 3.0, 2);
         ErrandTunings.Ranged bow = new ErrandTunings.Ranged(footwork, 15.0, 15, 20);
+        // A lancer throws at a foe some way off and jabs the one up close, so a throw is a little more than a jab:
+        // it is the errand picked while the foe is out of reach, and gives way to the jab when it comes near.
+        ErrandTunings.Ranged spear = new ErrandTunings.Ranged(footwork, 12.0, 10, 40);
         // Chiikawa cries and Usagi yells, and never cries; the rest only flinch, and sit with it.
         ErrandTunings.Performances cowers = new ErrandTunings.Performances(Map.of(
             new ResourceLocation(Constants.MOD_ID, "chiikawa"), List.of("cry", "hurt"),
@@ -96,6 +99,8 @@ public final class ErrandSettingsData {
             // A hunt is a fight a pet picks, so it matters as work does; with a slip for putting monsters down it is the work.
             entry(WorkData.HUNT_MELEE, errand(50, 0.8F, A_DAY, giveUp(20), footwork).startingWith(VoiceMoment.HUNT)),
             entry(WorkData.HUNT_RANGED, errand(50, 0.8F, A_DAY, giveUp(20), bow).startingWith(VoiceMoment.HUNT)),
+            entry(WorkData.THROW, errand(81, 0.8F, A_DAY, giveUp(20), spear).startingWith(VoiceMoment.HUNT)),
+            entry(WorkData.HUNT_THROW, errand(51, 0.8F, A_DAY, giveUp(20), spear).startingWith(VoiceMoment.HUNT)),
             // A pet that is attacked and has only a weapon in its bag takes it up for the fight and puts its tool back after.
             entry(ErrandIds.DEFEND_SELF, errand(80, 0.8F, A_DAY, giveUp(20), new ErrandTunings.Defend(footwork, bow))
                 .startingWith(VoiceMoment.HUNT)),
