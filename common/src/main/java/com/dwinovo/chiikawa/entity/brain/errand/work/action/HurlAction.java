@@ -11,8 +11,8 @@ import com.dwinovo.chiikawa.entity.brain.errand.run.Routine;
 import com.dwinovo.chiikawa.entity.brain.errand.step.Fetch;
 import com.dwinovo.chiikawa.entity.brain.errand.step.Heft;
 import com.dwinovo.chiikawa.entity.brain.errand.step.Hurl;
+import com.dwinovo.chiikawa.entity.brain.errand.step.Poise;
 import com.dwinovo.chiikawa.entity.brain.errand.step.Skirmish;
-import com.dwinovo.chiikawa.entity.brain.errand.step.Stance;
 import com.dwinovo.chiikawa.entity.brain.errand.view.AttackTarget;
 import com.dwinovo.chiikawa.entity.brain.errand.view.PetView;
 import com.dwinovo.chiikawa.entity.brain.errand.work.Work;
@@ -25,10 +25,11 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Fights a foe that is some way off by throwing the trident at it, as a drowned does: footwork to a distance, an aim,
- * and a throw. Offered only for a foe at a distance, since a foe up close is better answered with the trident in
- * the hand, which is the strike; and the fight ends when the foe comes close, so that the next decision picks the
- * jab. The trident that flies is a copy that cannot be picked up, so nothing is ever lost.
+ * Fights a foe that is some way off by throwing the trident at it, as a drowned does: an aim where the pet stands, a
+ * throw, and fetching the trident back. There is no backing away to get the distance, as an archer has: the foe is
+ * thrown at while it is far off, and jabbed when it comes near, which is the strike. Offered only for a foe at a
+ * distance, and the fight ends as soon as the foe comes close, so that the next decision picks the jab. The trident
+ * that flies is a copy that cannot be picked up, so nothing is ever lost.
  */
 public final class HurlAction implements WorkAction<Duel, ErrandTunings.Ranged> {
     public static final ResourceLocation ID = new ResourceLocation(Constants.MOD_ID, "hurl");
@@ -76,14 +77,13 @@ public final class HurlAction implements WorkAction<Duel, ErrandTunings.Ranged> 
     /**
      * @param foe the creature the fight is about
      * @param tuning how the pet throws
-     * @return the fight itself: round after round of footwork, an aim, a throw and fetching the trident back, for as
-     *         long as the sensor names the foe, it is alive and it is not up close
+     * @return the fight itself: round after round of an aim, a throw and fetching the trident back, for as long as the
+     *         sensor names the foe, it is alive and it is not up close
      */
     public static Routine.Part fight(UUID foe, ErrandTunings.Ranged tuning) {
-        Stance stance = new Stance(tuning.footwork(), true);
         return Routine.repeatWhile(Skirmish.whileHunting(foe).and(Skirmish.whileBeyond(foe, Heft.JABS_WITHIN)),
-            () -> Skirmish.hurling(foe, stance, tuning.range()),
-            () -> new Heft(foe, stance, tuning.range(), tuning.drawTicks()),
+            () -> new Poise(foe, tuning.range()),
+            () -> new Heft(foe, tuning.range(), tuning.drawTicks()),
             () -> new Hurl(foe, tuning.range(), tuning.cooldownTicks()),
             () -> new Fetch(foe));
     }

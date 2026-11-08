@@ -61,8 +61,11 @@ public final class ErrandSettingsData {
         ErrandTunings.Footwork footwork = new ErrandTunings.Footwork(1.0F, 1.2F, 10.0, 3.0, 2);
         ErrandTunings.Ranged bow = new ErrandTunings.Ranged(footwork, 15.0, 15, 20);
         // A lancer throws at a foe some way off and jabs the one up close, so a throw is a little more than a jab:
-        // it is the errand picked while the foe is out of reach, and gives way to the jab when it comes near.
-        ErrandTunings.Ranged spear = new ErrandTunings.Ranged(footwork, 12.0, 10, 40);
+        // it is the errand picked while the foe is out of reach, and gives way to the jab when it comes near. It
+        // stands where it is, so the footwork is not used. Nothing is thrown again until the trident is back in the
+        // hand, so the cooldown after a throw is short: it holds off the jab as well, and a foe at the pet's side
+        // should not have to wait for it.
+        ErrandTunings.Ranged spear = new ErrandTunings.Ranged(footwork, 12.0, 10, 10);
         // Chiikawa cries and Usagi yells, and never cries; the rest only flinch, and sit with it.
         ErrandTunings.Performances cowers = new ErrandTunings.Performances(Map.of(
             new ResourceLocation(Constants.MOD_ID, "chiikawa"), List.of("cry", "hurt"),

@@ -24,7 +24,7 @@ public final class Fetch implements Step {
     /** How often the walk is set off again, since a trident that is still falling is not where it was. */
     private static final int REPATH_EVERY = 10;
     /** A foe this near is a foe to jab, and the trident is taken back to do it. */
-    private static final double FOE_TOO_NEAR = Heft.JABS_WITHIN + 2.0;
+    private static final double FOE_TOO_NEAR = Heft.JABS_WITHIN;
 
     private final UUID foe;
     private long startedAt;

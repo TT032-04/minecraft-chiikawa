@@ -45,8 +45,8 @@ public final class Hurl implements Step {
                 handle.action(PetAction.SLASH);
                 handle.swing();
                 pet.hurlTrident(target);
+                handle.cooldownAttack(cooldownTicks);
             });
-        handle.cooldownAttack(cooldownTicks);
         return StepStatus.DONE;
     }
 }
