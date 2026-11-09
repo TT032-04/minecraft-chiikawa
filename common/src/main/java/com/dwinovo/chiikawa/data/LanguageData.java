@@ -104,7 +104,7 @@ public final class LanguageData {
             addTaskTypeTranslations(adder, "除草", "%s株", "街头演奏", "%s秒",
                 "近身讨伐", "远程讨伐", "%s只", "高级除草");
             addLancerTranslations(adder, "枪术师", "枪术师工具", "枪术讨伐", "%s只", "投掷三叉戟", "巡逻投掷三叉戟");
-            addArmorTranslations(adder, "头盔：显示为帽子", "胸甲：显示为手套", "靴子：显示在脚上");
+            addArmorTranslations(adder, "头盔：显示为发夹", "胸甲：显示为手套", "靴子：显示为脚套");
             addBoardScreenTranslations(adder, "劳动公告板", "%s张", "今天没有工作牌",
                     "限%s", "待领", "已领", "%s已领",
                     "Lv.%s", "每天%s张", "升级%s",
@@ -353,7 +353,7 @@ public final class LanguageData {
             addTaskTypeTranslations(adder, "草むしり", "%s本", "路上演奏", "%s秒",
                 "近接討伐", "遠距離討伐", "%s体", "上級草むしり");
             addLancerTranslations(adder, "槍使い", "槍使いの道具", "槍討伐", "%s体", "トライデントを投げる", "見回ってトライデントを投げる");
-            addArmorTranslations(adder, "ヘルメット：帽子として見えます", "チェストプレート：手袋として見えます", "ブーツ：足に見えます");
+            addArmorTranslations(adder, "ヘルメット：ヘアピンとして見えます", "チェストプレート：ミトンとして見えます", "ブーツ：足カバーとして見えます");
             addBoardScreenTranslations(adder, "労働掲示板", "%s枚", "今日はお仕事カードがありません",
                     "%s限定", "募集中", "受注済み", "%sが受けた",
                     "Lv.%s", "1日%s枚", "レベルアップ %s",
@@ -607,7 +607,7 @@ public final class LanguageData {
             addTaskTypeTranslations(adder, "Capina", "%s ervas daninhas", "Show de Rua", "%ss",
                 "Caça a Monstros", "Tiro em Monstros", "%s abatidos", "Capina Avançada");
             addLancerTranslations(adder, "Lanceiro", "Ferramentas de Lanceiro", "Caça com Lança", "%s abatidos", "Arremessando o tridente", "Arremessando o tridente em patrulha");
-            addArmorTranslations(adder, "Capacete: aparece como chapéu", "Peitoral: aparece como luvas", "Botas: aparecem nos pés");
+            addArmorTranslations(adder, "Capacete: aparece como grampo de cabelo", "Peitoral: aparece como luvas", "Botas: aparecem como protetores de pé");
             addBoardScreenTranslations(adder, "Quadro de Trabalho", "%s no quadro", "Nenhuma ficha hoje",
                     "Só %s", "Aberta", "Pega", "Pega por %s",
                     "Nv.%s", "%s por dia", "Melhorar %s",
@@ -858,7 +858,7 @@ public final class LanguageData {
             addTaskTypeTranslations(adder, "잡초 뽑기", "잡초 %s포기", "길거리 연주", "%s초",
                 "근접 토벌", "원거리 토벌", "%s마리", "상급 잡초 뽑기");
             addLancerTranslations(adder, "창술사", "창술사 도구", "창 토벌", "%s마리", "삼지창 던지기", "순찰하며 삼지창 던지기");
-            addArmorTranslations(adder, "투구: 모자로 보여요", "갑옷: 장갑으로 보여요", "신발: 발에 덧대어 보여요");
+            addArmorTranslations(adder, "투구: 헤어핀으로 보여요", "갑옷: 장갑으로 보여요", "신발: 발덮개로 보여요");
             addBoardScreenTranslations(adder, "알바 게시판", "%s장", "오늘은 전표가 없어",
                     "%s만", "모집", "수락", "%s(이)가 받음",
                     "Lv.%s", "하루 %s장", "강화 %s",
@@ -1112,7 +1112,7 @@ public final class LanguageData {
             addTaskTypeTranslations(adder, "Weeding", "%s weeds", "Street Performance", "%ss",
                 "Monster Hunting", "Monster Shooting", "%s slain", "Advanced Weeding");
             addLancerTranslations(adder, "Lancer", "Lancer Tools", "Lance Hunting", "%s slain", "Throwing the trident", "Patrolling to throw the trident");
-            addArmorTranslations(adder, "Helmet: shows as a hat", "Chestplate: shows as gloves", "Boots: show on its feet");
+            addArmorTranslations(adder, "Helmet: shows as a hairpin", "Chestplate: shows as mittens", "Boots: show as foot covers");
             addBoardScreenTranslations(adder, "Labor Board", "%s up", "No slips up today",
                     "%s only", "Open", "Taken", "Taken by %s",
                     "Lv.%s", "%s a day", "Upgrade %s",
