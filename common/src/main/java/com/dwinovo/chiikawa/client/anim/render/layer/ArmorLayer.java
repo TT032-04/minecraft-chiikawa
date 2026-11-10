@@ -49,8 +49,8 @@ public final class ArmorLayer implements RenderLayer {
             hairpin(ctx, vc, colour(head));
         }
         if (!isEmpty(chest)) {
-            mitten(ctx, vc, "RightArm", colour(chest));
-            mitten(ctx, vc, "LeftArm", colour(chest));
+            mitten(ctx, vc, "RightHandLocator", "RightArm", colour(chest));
+            mitten(ctx, vc, "LeftHandLocator", "LeftArm", colour(chest));
         }
         if (!isEmpty(feet)) {
             footCover(ctx, vc, "RightLeg", colour(feet));
@@ -111,26 +111,24 @@ public final class ArmorLayer implements RenderLayer {
         stack.popPose();
     }
 
-    /** A round mitten at the end of the arm, big for the arm that is in it, and a little off the body. */
-    private void mitten(RenderLayerContext ctx, VertexConsumer vc, String armBone, int colour) {
+    /**
+     * A round mitten on the hand, where the hand is: the pet's hand is not at the end of the arm's own cube, which is
+     * half in its body, but a little way out from it, where the pet holds what it holds, and that is the hand's
+     * locator. Sized by the arm's width, so that it is as big for a pet as it is for the next.
+     */
+    private void mitten(RenderLayerContext ctx, VertexConsumer vc, String handLocator, String armBone, int colour) {
         BakedModel model = ctx.model();
-        Integer index = model.boneIndex.get(armBone);
+        Integer index = model.boneIndex.get(handLocator);
+        Integer arm = model.boneIndex.get(armBone);
         if (index == null || ctx.isHidden(index)) {
             return;
         }
-        BakedBone bone = model.bones[index];
-        BakedCube arm = biggest(model, bone);
-        if (arm == null) {
-            return;
-        }
-        float armWidth = arm.maxX - arm.minX;
-        float outward = bone.pivotX < 0 ? -1.0F : 1.0F;
-        float w = armWidth * 2.5F;
+        BakedCube armCube = arm == null ? null : biggest(model, model.bones[arm]);
+        float armWidth = armCube == null ? 1.0F : armCube.maxX - armCube.minX;
+        float w = armWidth * 2.3F;
         float h = armWidth * 2.2F;
-        float cx = (arm.minX + arm.maxX) / 2.0F + outward * 0.35F * armWidth - bone.pivotX;
-        float cy = arm.minY - 0.5F * armWidth + h / 2.0F - bone.pivotY;
-        float cz = (arm.minZ + arm.maxZ) / 2.0F - bone.pivotZ;
-        drawOn(ctx, vc, index, colour, cx, cy, cz, w, h, w);
+        // A little below the locator, which is where the fingers would close on a handle.
+        drawOn(ctx, vc, index, colour, 0.0F, -0.25F * armWidth, 0.0F, w, h, w);
     }
 
     /** A low, round cover over the foot, wider than the leg and longer than it to the front. */
