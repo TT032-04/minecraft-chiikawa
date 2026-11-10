@@ -16,13 +16,14 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Shows that a pet is wearing armour, and no more than shows it: a pet is not a player, and its body is not made for
- * armour to be drawn round it. A helmet is a star-shaped hairpin on the pet's head, a chestplate is a pair of round
- * mittens, boots are a pair of round covers over the feet, each in the colour of what it is made of, or the leather's
- * own dye. They are sized from the pet's own model, so that they fit whichever pet wears them, and move with the bone
+ * armour to be drawn round it. A helmet is a star-shaped hairpin on the pet's head, boots are a pair of round covers
+ * over the feet, each in the colour of what it is made of, or the leather's own dye; a chestplate is the armour a
+ * player wears, drawn from the game's own armour texture for what it is made of, round the pet's body and over its
+ * arms. They are sized from the pet's own model, so that they fit whichever pet wears them, and move with the bone
  * they are on, so that they turn with the head and swing with the arms and legs.
  *
- * <p>Every piece is built from plain boxes of one colour: the star from a grid of cells, the rounded ones from three
- * boxes each with the corners taken off, which is a round in the game's own blocky way.
+ * <p>The hairpin and the covers are built from plain boxes of one colour: the star from a grid of cells, the rounded
+ * ones from three boxes each with the corners taken off, which is a round in the game's own blocky way.
  */
 public final class ArmorLayer implements RenderLayer {
     /** A plain white texture, which each box is tinted from: the vertex colour is the material. */
@@ -33,6 +34,13 @@ public final class ArmorLayer implements RenderLayer {
     private static final String[] STAR = {"..X..", ".XXX.", "XXXXX", ".XXX.", ".X.X."};
     /** How wide the star is, as a part of the head's width. */
     private static final float STAR_OF_HEAD = 0.27F;
+    /** The materials the game has an armour texture for; any other armour is drawn as iron. */
+    private static final java.util.Set<String> VANILLA_MATERIALS =
+        java.util.Set.of("leather", "chainmail", "iron", "gold", "diamond", "netherite", "turtle");
+    /** How far the armour stands off the body it is round, in model pixels. */
+    private static final float INFLATE = 0.3F;
+    private static final float TEXTURE_W = 64.0F;
+    private static final float TEXTURE_H = 32.0F;
     private final BoneTransformWalker walker = new BoneTransformWalker();
 
     @Override
@@ -48,13 +56,13 @@ public final class ArmorLayer implements RenderLayer {
         if (!isEmpty(head)) {
             hairpin(ctx, vc, colour(head));
         }
-        if (!isEmpty(chest)) {
-            mitten(ctx, vc, "RightHandLocator", "RightArm", colour(chest));
-            mitten(ctx, vc, "LeftHandLocator", "LeftArm", colour(chest));
-        }
         if (!isEmpty(feet)) {
             footCover(ctx, vc, "RightLeg", colour(feet));
             footCover(ctx, vc, "LeftLeg", colour(feet));
+        }
+        // Last, since it is drawn with the armour's own textures: a buffer once left is not written to again.
+        if (!isEmpty(chest)) {
+            chestplate(ctx, chest);
         }
     }
 
@@ -112,23 +120,61 @@ public final class ArmorLayer implements RenderLayer {
     }
 
     /**
-     * A round mitten on the hand, where the hand is: the pet's hand is not at the end of the arm's own cube, which is
-     * half in its body, but a little way out from it, where the pet holds what it holds, and that is the hand's
-     * locator. Sized by the arm's width, so that it is as big for a pet as it is for the next.
+     * The armour a player wears on the chest: its own texture for what it is made of, on a box round the pet's body, and
+     * over each arm. Leather is the leather texture in its dye, and the overlay over it, as it is on a player.
      */
-    private void mitten(RenderLayerContext ctx, VertexConsumer vc, String handLocator, String armBone, int colour) {
+    private void chestplate(RenderLayerContext ctx, ItemStack stack) {
+        String material = "iron";
+        int tint = 0xFFFFFF;
+        boolean leather = false;
+        if (stack.getItem() instanceof ArmorItem armor && VANILLA_MATERIALS.contains(armor.getMaterial().getName())) {
+            material = armor.getMaterial().getName();
+        }
+        if (stack.getItem() instanceof DyeableLeatherItem dye) {
+            material = "leather";
+            leather = true;
+            tint = dye.hasCustomColor(stack) ? dye.getColor(stack) : LEATHER_COLOUR;
+        }
+        plate(ctx, armorTexture(material, ""), tint);
+        if (leather) {
+            plate(ctx, armorTexture("leather", "_overlay"), 0xFFFFFF);
+        }
+    }
+
+    private static ResourceLocation armorTexture(String material, String suffix) {
+        return new ResourceLocation("textures/models/armor/" + material + "_layer_1" + suffix + ".png");
+    }
+
+    /** One coat of the chestplate's texture: round the body, and over the two arms. */
+    private void plate(RenderLayerContext ctx, ResourceLocation texture, int tint) {
+        VertexConsumer vc = ctx.bufferSource().getBuffer(RenderType.armorCutoutNoCull(texture));
+        // The body is the player's body in the texture, 8 by 12 by 4 pixels from (16, 16); an arm is 4 by 12 by 4 from (40, 16).
+        plateOn(ctx, vc, "Body", tint, 16, 16, 8, 12, 4);
+        plateOn(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4);
+        plateOn(ctx, vc, "LeftArm", tint, 40, 16, 4, 12, 4);
+    }
+
+    /** One part of the chestplate on a bone: its biggest cube, a little bigger, wearing that part of the texture. */
+    private void plateOn(RenderLayerContext ctx, VertexConsumer vc, String boneName, int tint,
+            int u, int v, int dx, int dy, int dz) {
         BakedModel model = ctx.model();
-        Integer index = model.boneIndex.get(handLocator);
-        Integer arm = model.boneIndex.get(armBone);
+        Integer index = model.boneIndex.get(boneName);
         if (index == null || ctx.isHidden(index)) {
             return;
         }
-        BakedCube armCube = arm == null ? null : biggest(model, model.bones[arm]);
-        float armWidth = armCube == null ? 1.0F : armCube.maxX - armCube.minX;
-        float w = armWidth * 2.3F;
-        float h = armWidth * 2.2F;
-        // A little below the locator, which is where the fingers would close on a handle.
-        drawOn(ctx, vc, index, colour, 0.0F, -0.25F * armWidth, 0.0F, w, h, w);
+        BakedBone bone = model.bones[index];
+        BakedCube cube = biggest(model, bone);
+        if (cube == null) {
+            return;
+        }
+        PoseStack stack = ctx.poseStack();
+        stack.pushPose();
+        walker.transformToBone(model, ctx.poseBuf(), index, stack);
+        texturedBox(vc, stack.last(), tint, ctx.packedLight(), ctx.packedOverlay(),
+            cube.minX - INFLATE - bone.pivotX, cube.minY - INFLATE - bone.pivotY, cube.minZ - INFLATE - bone.pivotZ,
+            cube.maxX + INFLATE - bone.pivotX, cube.maxY + INFLATE - bone.pivotY, cube.maxZ + INFLATE - bone.pivotZ,
+            u, v, dx, dy, dz);
+        stack.popPose();
     }
 
     /** A low, round cover over the foot, wider than the leg and longer than it to the front. */
@@ -251,6 +297,55 @@ public final class ArmorLayer implements RenderLayer {
             vc.vertex(pose.pose(), corners[i * 3], corners[i * 3 + 1], corners[i * 3 + 2])
                 .color(r, g, b, 255)
                 .uv(0.5F, 0.5F)
+                .overlayCoords(overlay)
+                .uv2(light)
+                .normal(pose.normal(), nx, ny, nz)
+                .endVertex();
+        }
+    }
+
+    /**
+     * A box wearing the texture of a player's body part: the cube of {@code dx} by {@code dy} by {@code dz} pixels the
+     * texture is laid out for, from {@code (u, v)}, front, back, sides, top and bottom as in the game. Stretched to the
+     * box it is on, which the pets' bodies are not the player's shape for, so the pattern is squashed and no more.
+     */
+    private static void texturedBox(VertexConsumer vc, PoseStack.Pose pose, int tint, int light, int overlay,
+            float x0, float y0, float z0, float x1, float y1, float z1,
+            int u, int v, int dx, int dy, int dz) {
+        int r = tint >> 16 & 0xFF;
+        int g = tint >> 8 & 0xFF;
+        int b = tint & 0xFF;
+        float uFront = u + dz;
+        float uSide = u + dz + dx;
+        float uBack = u + 2 * dz + dx;
+        float vBody = v + dz;
+        float vEnd = v + dz + dy;
+        // Front, at the low end of Z, seen from there: the pet's left on the viewer's left.
+        quad(vc, pose, r, g, b, light, overlay, 0, 0, -1,
+            x1, y1, z0, uFront, vBody, x0, y1, z0, uSide, vBody, x0, y0, z0, uSide, vEnd, x1, y0, z0, uFront, vEnd);
+        // Back.
+        quad(vc, pose, r, g, b, light, overlay, 0, 0, 1,
+            x0, y1, z1, uBack, vBody, x1, y1, z1, uBack + dx, vBody, x1, y0, z1, uBack + dx, vEnd,
+            x0, y0, z1, uBack, vEnd);
+        // The sides.
+        quad(vc, pose, r, g, b, light, overlay, -1, 0, 0,
+            x0, y1, z0, u, vBody, x0, y1, z1, uFront, vBody, x0, y0, z1, uFront, vEnd, x0, y0, z0, u, vEnd);
+        quad(vc, pose, r, g, b, light, overlay, 1, 0, 0,
+            x1, y1, z1, uSide, vBody, x1, y1, z0, uBack, vBody, x1, y0, z0, uBack, vEnd, x1, y0, z1, uSide, vEnd);
+        // Top and bottom.
+        quad(vc, pose, r, g, b, light, overlay, 0, 1, 0,
+            x1, y1, z0, uFront, v, x0, y1, z0, uSide, v, x0, y1, z1, uSide, vBody, x1, y1, z1, uFront, vBody);
+        quad(vc, pose, r, g, b, light, overlay, 0, -1, 0,
+            x1, y0, z1, uSide, v, x0, y0, z1, uSide + dx, v, x0, y0, z0, uSide + dx, vBody, x1, y0, z0, uSide, vBody);
+    }
+
+    /** A face of four corners, each given as x, y, z and its place in the texture in pixels. */
+    private static void quad(VertexConsumer vc, PoseStack.Pose pose, int r, int g, int b, int light, int overlay,
+            float nx, float ny, float nz, float... corners) {
+        for (int i = 0; i < 4; i++) {
+            vc.vertex(pose.pose(), corners[i * 5], corners[i * 5 + 1], corners[i * 5 + 2])
+                .color(r, g, b, 255)
+                .uv(corners[i * 5 + 3] / TEXTURE_W, corners[i * 5 + 4] / TEXTURE_H)
                 .overlayCoords(overlay)
                 .uv2(light)
                 .normal(pose.normal(), nx, ny, nz)
