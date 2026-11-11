@@ -961,11 +961,30 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
     }
 
     /**
+     * Takes away any trident this pet threw that it does not know of: one that came through a log-in, or a chunk that was
+     * unloaded and loaded again, since what the pet knows is not saved, and a loyal one then goes on coming back to the
+     * pet for good, with nobody to take it, hanging about it. Looked at once a second, near the pet, which is where a
+     * loyal one comes to; the pet's own, which it knows by its id, is let be.
+     */
+    private void clearStrayTridents() {
+        if (!(level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        for (ThrownTrident stray : serverLevel.getEntitiesOfClass(ThrownTrident.class, getBoundingBox().inflate(48.0D),
+                found -> found.getOwner() == this && !found.getUUID().equals(thrownTridentId))) {
+            stray.discard();
+        }
+    }
+
+    /**
      * Looked at every tick the pet's AI runs, whatever the pet is doing: a trident that has been taken, or has come
      * back to the pet, or is gone, or has been waited for long enough, is put back in the hand, so that the pet is
      * never left with an empty hand for good.
      */
     private void upkeepTrident() {
+        if (tickCount % 20 == 0) {
+            clearStrayTridents();
+        }
         if (!isTridentAway()) {
             return;
         }
