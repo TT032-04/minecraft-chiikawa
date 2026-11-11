@@ -32,6 +32,14 @@ public final class ArmorLayer implements RenderLayer {
     private static final float INFLATE_BOOTS = 0.45F;
     /** How much of a leg the boots cover, from the foot up, for the boots to be where a boot is. */
     private static final float BOOTS_OF_LEG = 0.5F;
+    /**
+     * How much of the head the helmet covers, from the top down: a cap over the top and sides of the head, with the
+     * pet's face below it. The helmet's own front is half band and half open, so the face would be half hidden by it
+     * if it went round the whole head.
+     */
+    private static final float HELMET_OF_HEAD = 0.45F;
+    /** The helmet stands a little further off the head than the rest, since it goes over the pet's hair and brow. */
+    private static final float INFLATE_HEAD = 0.4F;
     private static final float TEXTURE_W = 64.0F;
     private static final float TEXTURE_H = 32.0F;
     private final BoneTransformWalker walker = new BoneTransformWalker();
@@ -96,26 +104,27 @@ public final class ArmorLayer implements RenderLayer {
     private void coat(RenderLayerContext ctx, Piece piece, ResourceLocation texture, int tint) {
         VertexConsumer vc = ctx.bufferSource().getBuffer(RenderType.armorCutoutNoCull(texture));
         switch (piece) {
-            case HEAD -> on(ctx, vc, "Head", tint, 0, 0, 8, 8, 8, 1.0F, INFLATE);
+            case HEAD -> on(ctx, vc, "Head", tint, 0, 0, 8, 8, 8, HELMET_OF_HEAD, INFLATE_HEAD, true);
             case CHEST -> {
-                on(ctx, vc, "Body", tint, 16, 16, 8, 12, 4, 1.0F, INFLATE);
-                on(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE);
-                on(ctx, vc, "LeftArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE);
+                on(ctx, vc, "Body", tint, 16, 16, 8, 12, 4, 1.0F, INFLATE, false);
+                on(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false);
+                on(ctx, vc, "LeftArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false);
             }
             case FEET -> {
-                on(ctx, vc, "RightLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS);
-                on(ctx, vc, "LeftLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS);
+                on(ctx, vc, "RightLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false);
+                on(ctx, vc, "LeftLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false);
             }
         }
     }
 
     /**
-     * One part of a piece on a bone: its biggest cube, a little bigger, wearing that part of the texture. {@code cover}
-     * is how much of the cube's height it covers from the bottom, and the texture is cut the same way, so that the boots
-     * are the end of the leg's texture where they are, and not the whole leg's.
+     * One part of a piece on a bone: its biggest cube, a little bigger, wearing that part of the texture. {@code cover} is
+     * how much of the cube's height it covers, from the bottom or, with {@code fromTop}, from the top, and the texture
+     * is cut the same way, so that boots are the foot end of the leg's texture and a helmet the top of the head's, and
+     * not the whole of either.
      */
     private void on(RenderLayerContext ctx, VertexConsumer vc, String boneName, int tint,
-            int u, int v, int dx, int dy, int dz, float cover, float inflate) {
+            int u, int v, int dx, int dy, int dz, float cover, float inflate, boolean fromTop) {
         BakedModel model = ctx.model();
         Integer index = model.boneIndex.get(boneName);
         if (index == null || ctx.isHidden(index)) {
@@ -126,16 +135,30 @@ public final class ArmorLayer implements RenderLayer {
         if (cube == null) {
             return;
         }
-        float topY = cover >= 1.0F ? cube.maxY : cube.minY + (cube.maxY - cube.minY) * cover;
-        int usedRows = Math.max(1, Math.round(dy * cover));
-        int firstRow = dy - usedRows;
+        float height = cube.maxY - cube.minY;
+        int usedRows = cover >= 1.0F ? dy : Math.max(1, Math.round(dy * cover));
+        float low;
+        float high;
+        int firstRow;
+        if (cover >= 1.0F) {
+            low = cube.minY - inflate;
+            high = cube.maxY + inflate;
+            firstRow = 0;
+        } else if (fromTop) {
+            low = cube.maxY - height * cover;
+            high = cube.maxY + inflate;
+            firstRow = 0;
+        } else {
+            low = cube.minY - inflate;
+            high = cube.minY + height * cover;
+            firstRow = dy - usedRows;
+        }
         PoseStack stack = ctx.poseStack();
         stack.pushPose();
         walker.transformToBone(model, ctx.poseBuf(), index, stack);
         texturedBox(vc, stack.last(), tint, ctx.packedLight(), ctx.packedOverlay(),
-            cube.minX - inflate - bone.pivotX, cube.minY - inflate - bone.pivotY, cube.minZ - inflate - bone.pivotZ,
-            cube.maxX + inflate - bone.pivotX, topY + (cover >= 1.0F ? inflate : 0.0F) - bone.pivotY,
-            cube.maxZ + inflate - bone.pivotZ,
+            cube.minX - inflate - bone.pivotX, low - bone.pivotY, cube.minZ - inflate - bone.pivotZ,
+            cube.maxX + inflate - bone.pivotX, high - bone.pivotY, cube.maxZ + inflate - bone.pivotZ,
             u, v + firstRow, dx, usedRows, dz);
         stack.popPose();
     }
