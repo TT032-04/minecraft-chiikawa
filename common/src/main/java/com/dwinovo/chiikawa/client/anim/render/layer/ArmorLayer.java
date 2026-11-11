@@ -104,15 +104,15 @@ public final class ArmorLayer implements RenderLayer {
     private void coat(RenderLayerContext ctx, Piece piece, ResourceLocation texture, int tint) {
         VertexConsumer vc = ctx.bufferSource().getBuffer(RenderType.armorCutoutNoCull(texture));
         switch (piece) {
-            case HEAD -> on(ctx, vc, "Head", tint, 0, 0, 8, 8, 8, HELMET_OF_HEAD, INFLATE_HEAD, true);
+            case HEAD -> on(ctx, vc, "Head", tint, 0, 0, 8, 8, 8, HELMET_OF_HEAD, INFLATE_HEAD, true, false);
             case CHEST -> {
-                on(ctx, vc, "Body", tint, 16, 16, 8, 12, 4, 1.0F, INFLATE, false);
-                on(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false);
-                on(ctx, vc, "LeftArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false);
+                on(ctx, vc, "Body", tint, 16, 16, 8, 12, 4, 1.0F, INFLATE, false, false);
+                on(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false, false);
+                on(ctx, vc, "LeftArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false, false);
             }
             case FEET -> {
-                on(ctx, vc, "RightLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false);
-                on(ctx, vc, "LeftLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false);
+                on(ctx, vc, "RightLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false, true);
+                on(ctx, vc, "LeftLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false, true);
             }
         }
     }
@@ -121,10 +121,12 @@ public final class ArmorLayer implements RenderLayer {
      * One part of a piece on a bone: its biggest cube, a little bigger, wearing that part of the texture. {@code cover} is
      * how much of the cube's height it covers, from the bottom or, with {@code fromTop}, from the top, and the texture
      * is cut the same way, so that boots are the foot end of the leg's texture and a helmet the top of the head's, and
-     * not the whole of either.
+     * not the whole of either. {@code solidEnd} is for the underside to be drawn from the part of the texture that is
+     * there, the foot end of the front, and not from the underside's own, which in the game's texture is not filled in
+     * where the armour is seen from the side only, so that boots seen from below are a boot's sole, and not open.
      */
     private void on(RenderLayerContext ctx, VertexConsumer vc, String boneName, int tint,
-            int u, int v, int dx, int dy, int dz, float cover, float inflate, boolean fromTop) {
+            int u, int v, int dx, int dy, int dz, float cover, float inflate, boolean fromTop, boolean solidEnd) {
         BakedModel model = ctx.model();
         Integer index = model.boneIndex.get(boneName);
         if (index == null || ctx.isHidden(index)) {
@@ -159,7 +161,7 @@ public final class ArmorLayer implements RenderLayer {
         texturedBox(vc, stack.last(), tint, ctx.packedLight(), ctx.packedOverlay(),
             cube.minX - inflate - bone.pivotX, low - bone.pivotY, cube.minZ - inflate - bone.pivotZ,
             cube.maxX + inflate - bone.pivotX, high - bone.pivotY, cube.maxZ + inflate - bone.pivotZ,
-            u, v + firstRow, dx, usedRows, dz);
+            u, v, dx, dz, firstRow, usedRows, solidEnd);
         stack.popPose();
     }
 
@@ -179,21 +181,22 @@ public final class ArmorLayer implements RenderLayer {
     }
 
     /**
-     * A box wearing the texture of a player's body part: the cube of {@code dx} by {@code dy} by {@code dz} pixels the
-     * texture is laid out for, from {@code (u, v)}, front, back, sides, top and bottom as in the game. Stretched to the
-     * box it is on, which the pets' bodies are not the player's shape for, so the pattern is squashed and no more.
+     * A box wearing the texture of a player's body part: the cube of {@code dx} wide and {@code dz} deep the texture is
+     * laid out for, from {@code (u, v)}, front, back, sides, top and bottom as in the game. Only {@code usedRows} rows of
+     * its sides, from the {@code firstRow}th, are used, for a piece that covers part of the height. Stretched to the box
+     * it is on, which the pets' bodies are not the player's shape for, so the pattern is squashed and no more.
      */
     private static void texturedBox(VertexConsumer vc, PoseStack.Pose pose, int tint, int light, int overlay,
             float x0, float y0, float z0, float x1, float y1, float z1,
-            int u, int v, int dx, int dy, int dz) {
+            int u, int v, int dx, int dz, int firstRow, int usedRows, boolean solidEnd) {
         int r = tint >> 16 & 0xFF;
         int g = tint >> 8 & 0xFF;
         int b = tint & 0xFF;
         float uFront = u + dz;
         float uSide = u + dz + dx;
         float uBack = u + 2 * dz + dx;
-        float vBody = v + dz;
-        float vEnd = v + dz + dy;
+        float vBody = v + dz + firstRow;
+        float vEnd = vBody + usedRows;
         // Front, at the low end of Z, seen from there: the pet's left on the viewer's left.
         quad(vc, pose, r, g, b, light, overlay, 0, 0, -1,
             x1, y1, z0, uFront, vBody, x0, y1, z0, uSide, vBody, x0, y0, z0, uSide, vEnd, x1, y0, z0, uFront, vEnd);
@@ -206,11 +209,17 @@ public final class ArmorLayer implements RenderLayer {
             x0, y1, z0, u, vBody, x0, y1, z1, uFront, vBody, x0, y0, z1, uFront, vEnd, x0, y0, z0, u, vEnd);
         quad(vc, pose, r, g, b, light, overlay, 1, 0, 0,
             x1, y1, z1, uSide, vBody, x1, y1, z0, uBack, vBody, x1, y0, z0, uBack, vEnd, x1, y0, z1, uSide, vEnd);
-        // Top and bottom.
+        // Top.
         quad(vc, pose, r, g, b, light, overlay, 0, 1, 0,
-            x1, y1, z0, uFront, v, x0, y1, z0, uSide, v, x0, y1, z1, uSide, vBody, x1, y1, z1, uFront, vBody);
+            x1, y1, z0, uFront, v, x0, y1, z0, uSide, v, x0, y1, z1, uSide, v + dz, x1, y1, z1, uFront, v + dz);
+        // Bottom: its own part of the texture, or, if it is to be solid, the foot end of the front's.
+        float bottomV0 = solidEnd ? Math.max(vBody, vEnd - dz) : v;
+        float bottomV1 = solidEnd ? vEnd : v + dz;
+        float bottomU0 = solidEnd ? uFront : uSide;
+        float bottomU1 = solidEnd ? uSide : uSide + dx;
         quad(vc, pose, r, g, b, light, overlay, 0, -1, 0,
-            x1, y0, z1, uSide, v, x0, y0, z1, uSide + dx, v, x0, y0, z0, uSide + dx, vBody, x1, y0, z0, uSide, vBody);
+            x1, y0, z1, bottomU0, bottomV0, x0, y0, z1, bottomU1, bottomV0,
+            x0, y0, z0, bottomU1, bottomV1, x1, y0, z0, bottomU0, bottomV1);
     }
 
     /** A face of four corners, each given as x, y, z and its place in the texture in pixels. */
