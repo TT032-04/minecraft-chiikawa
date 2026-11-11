@@ -365,7 +365,26 @@ public abstract class ChiikawaEntityRenderer<T extends Entity> extends EntityRen
                 : OverlayTexture.NO_OVERLAY;
         VertexConsumer vc = bufferSource.getBuffer(type);
         boolean[] hiddenBones = state.hiddenBones;
+        // A pet wearing a helmet is drawn with a bare head, for the helmet to go over: its fur and tufts are left out,
+        // and so are its ears, except the big ears of those that have them, which the helmet is open for.
+        net.minecraft.world.item.ItemStack helmet = state.get(PetData.ARMOR_HEAD);
+        boolean helmeted = helmet != null && !helmet.isEmpty();
+        if (helmeted) {
+            hiddenBones = hiddenBones != null && hiddenBones.length == model.bones.length
+                ? hiddenBones.clone() : new boolean[model.bones.length];
+            if (!ArmorLayer.BIG_EARS.contains(state.modelKey.getPath())) {
+                for (String ear : new String[] {"LeftEar", "RightEar"}) {
+                    Integer index = model.boneIndex.get(ear);
+                    if (index != null) {
+                        hiddenBones[index] = true;
+                    }
+                }
+            }
+            Integer head = model.boneIndex.get("Head");
+            mesh.trimBone(head == null ? -1 : head);
+        }
         mesh.render(model, poseStack, vc, packedLight, packedOverlay, poseBuf, hiddenBones);
+        mesh.trimBone(-1);
 
         if (!renderLayers.isEmpty()) {
             RenderLayerContext layerCtx = new RenderLayerContext(

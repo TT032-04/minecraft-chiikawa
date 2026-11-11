@@ -60,6 +60,21 @@ public final class ModelRenderer {
 
     private final Quaternionf rotBuf = new Quaternionf();
 
+    /** How far a cube may stand outside the bone's main cube before it counts as sticking out of it, in pixels. */
+    private static final float STICKS_OUT = 0.15F;
+    /** The bone drawn without the cubes that stick out of it for the next render, or -1 for none. */
+    private int trimmedBone = -1;
+
+    /**
+     * Draws the bone {@code boneIdx}, from now until it is called again with -1, as its main cube alone with the
+     * cubes that stand clear of it left out: the fur, the tufts and the plates that make a head rounder than its box.
+     * What lies on the main cube, a mark on the face a hair's breadth off it, stays. It is what a pet wearing a helmet
+     * is drawn with, for the helmet to go over a bare head.
+     */
+    public void trimBone(int boneIdx) {
+        this.trimmedBone = boneIdx;
+    }
+
     /**
      * Renders the entire model with the supplied {@code poseBuf} (laid out per
      * {@link PoseSampler}). The caller's {@code stack} should already include
@@ -130,8 +145,30 @@ public final class ModelRenderer {
             }
         }
 
-        for (int c = bone.cubeStart, end = bone.cubeStart + bone.cubeCount; c < end; c++) {
-            renderCube(model.cubes[c], stack, vc, packedLight, packedOverlay);
+        if (boneIdx == trimmedBone) {
+            BakedCube main = null;
+            float most = 0.0F;
+            for (int c = bone.cubeStart, end = bone.cubeStart + bone.cubeCount; c < end; c++) {
+                BakedCube cube = model.cubes[c];
+                float volume = (cube.maxX - cube.minX) * (cube.maxY - cube.minY) * (cube.maxZ - cube.minZ);
+                if (main == null || volume > most) {
+                    main = cube;
+                    most = volume;
+                }
+            }
+            for (int c = bone.cubeStart, end = bone.cubeStart + bone.cubeCount; c < end; c++) {
+                BakedCube cube = model.cubes[c];
+                boolean sticksOut = cube.minX < main.minX - STICKS_OUT || cube.maxX > main.maxX + STICKS_OUT
+                    || cube.minY < main.minY - STICKS_OUT || cube.maxY > main.maxY + STICKS_OUT
+                    || cube.minZ < main.minZ - STICKS_OUT || cube.maxZ > main.maxZ + STICKS_OUT;
+                if (cube == main || !sticksOut) {
+                    renderCube(cube, stack, vc, packedLight, packedOverlay);
+                }
+            }
+        } else {
+            for (int c = bone.cubeStart, end = bone.cubeStart + bone.cubeCount; c < end; c++) {
+                renderCube(model.cubes[c], stack, vc, packedLight, packedOverlay);
+            }
         }
         for (int childIdx : bone.children) {
             renderBone(model, childIdx, stack, vc, packedLight, packedOverlay, poseBuf, hiddenBones);

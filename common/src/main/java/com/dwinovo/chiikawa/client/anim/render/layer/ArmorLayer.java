@@ -38,8 +38,19 @@ public final class ArmorLayer implements RenderLayer {
      * if it went round the whole head.
      */
     private static final float HELMET_OF_HEAD = 0.45F;
-    /** The helmet stands a little further off the head than the rest, since it goes over the pet's hair and brow. */
-    private static final float INFLATE_HEAD = 0.4F;
+    /** The helmet stands well off the head, since it goes over a bare head and is a helmet's size and not a skin's. */
+    private static final float INFLATE_HEAD = 0.8F;
+    /**
+     * The pets whose ears are big enough to stay in view with a helmet on: the helmet is open for them, and shows them
+     * coming out of it. The ears of the rest are left out of the picture when they wear one.
+     */
+    public static final java.util.Set<String> BIG_EARS = java.util.Set.of("furuhonya", "usagi", "momonga");
+    /** How much wider than an ear its opening in the helmet is, on each side. */
+    private static final float EAR_ROOM = 0.25F;
+
+    /** What a helmet is open for: a hole in its top for each ear, and how high its top has to go to meet them. */
+    private record Opening(float[][] holes, float meetsEarsAt) {
+    }
     private static final float TEXTURE_W = 64.0F;
     private static final float TEXTURE_H = 32.0F;
     private final BoneTransformWalker walker = new BoneTransformWalker();
@@ -104,15 +115,16 @@ public final class ArmorLayer implements RenderLayer {
     private void coat(RenderLayerContext ctx, Piece piece, ResourceLocation texture, int tint) {
         VertexConsumer vc = ctx.bufferSource().getBuffer(RenderType.armorCutoutNoCull(texture));
         switch (piece) {
-            case HEAD -> on(ctx, vc, "Head", tint, 0, 0, 8, 8, 8, HELMET_OF_HEAD, INFLATE_HEAD, true, false);
+            case HEAD -> on(ctx, vc, "Head", tint, 0, 0, 8, 8, 8, HELMET_OF_HEAD, INFLATE_HEAD, true, false,
+                openingForEars(ctx));
             case CHEST -> {
-                on(ctx, vc, "Body", tint, 16, 16, 8, 12, 4, 1.0F, INFLATE, false, false);
-                on(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false, false);
-                on(ctx, vc, "LeftArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false, false);
+                on(ctx, vc, "Body", tint, 16, 16, 8, 12, 4, 1.0F, INFLATE, false, false, null);
+                on(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false, false, null);
+                on(ctx, vc, "LeftArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false, false, null);
             }
             case FEET -> {
-                on(ctx, vc, "RightLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false, true);
-                on(ctx, vc, "LeftLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false, true);
+                on(ctx, vc, "RightLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false, true, null);
+                on(ctx, vc, "LeftLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, false, true, null);
             }
         }
     }
@@ -126,7 +138,8 @@ public final class ArmorLayer implements RenderLayer {
      * where the armour is seen from the side only, so that boots seen from below are a boot's sole, and not open.
      */
     private void on(RenderLayerContext ctx, VertexConsumer vc, String boneName, int tint,
-            int u, int v, int dx, int dy, int dz, float cover, float inflate, boolean fromTop, boolean solidEnd) {
+            int u, int v, int dx, int dy, int dz, float cover, float inflate, boolean fromTop, boolean solidEnd,
+            Opening opening) {
         BakedModel model = ctx.model();
         Integer index = model.boneIndex.get(boneName);
         if (index == null || ctx.isHidden(index)) {
@@ -155,14 +168,69 @@ public final class ArmorLayer implements RenderLayer {
             high = cube.minY + height * cover;
             firstRow = dy - usedRows;
         }
+        if (opening != null) {
+            high = Math.max(high, opening.meetsEarsAt());
+        }
         PoseStack stack = ctx.poseStack();
         stack.pushPose();
         walker.transformToBone(model, ctx.poseBuf(), index, stack);
+        float[][] holes = opening == null ? null : holesRelativeTo(opening.holes(), bone);
         texturedBox(vc, stack.last(), tint, ctx.packedLight(), ctx.packedOverlay(),
             cube.minX - inflate - bone.pivotX, low - bone.pivotY, cube.minZ - inflate - bone.pivotZ,
             cube.maxX + inflate - bone.pivotX, high - bone.pivotY, cube.maxZ + inflate - bone.pivotZ,
-            u, v, dx, dz, firstRow, usedRows, solidEnd);
+            u, v, dx, dz, firstRow, usedRows, solidEnd, holes);
         stack.popPose();
+    }
+
+    /** @return the holes, which are given where the model puts them, as they are in the bone's own space */
+    private static float[][] holesRelativeTo(float[][] holes, BakedBone bone) {
+        float[][] relative = new float[holes.length][];
+        for (int i = 0; i < holes.length; i++) {
+            relative[i] = new float[] {holes[i][0] - bone.pivotX, holes[i][1] - bone.pivotX,
+                holes[i][2] - bone.pivotZ, holes[i][3] - bone.pivotZ};
+        }
+        return relative;
+    }
+
+    /**
+     * What a helmet is open for on the pets with big ears: a hole in the top of it for each ear, a little wider than the
+     * ear, and the height the top must go to for the ears to come out of it and not float above it, since the fur that
+     * joins them to the head is left out under a helmet. Nothing for a pet whose ears are left out.
+     */
+    private static Opening openingForEars(RenderLayerContext ctx) {
+        if (!BIG_EARS.contains(ctx.state().modelKey.getPath())) {
+            return null;
+        }
+        BakedModel model = ctx.model();
+        java.util.List<float[]> holes = new java.util.ArrayList<>();
+        float lowest = Float.MAX_VALUE;
+        for (String name : new String[] {"LeftEar", "RightEar"}) {
+            Integer index = model.boneIndex.get(name);
+            if (index == null) {
+                continue;
+            }
+            BakedBone ear = model.bones[index];
+            float minX = Float.MAX_VALUE;
+            float maxX = -Float.MAX_VALUE;
+            float minZ = Float.MAX_VALUE;
+            float maxZ = -Float.MAX_VALUE;
+            for (int i = 0; i < ear.cubeCount; i++) {
+                BakedCube cube = model.cubes[ear.cubeStart + i];
+                minX = Math.min(minX, cube.minX);
+                maxX = Math.max(maxX, cube.maxX);
+                minZ = Math.min(minZ, cube.minZ);
+                maxZ = Math.max(maxZ, cube.maxZ);
+                lowest = Math.min(lowest, cube.minY);
+            }
+            if (ear.cubeCount > 0) {
+                holes.add(new float[] {minX - EAR_ROOM, maxX + EAR_ROOM, minZ - EAR_ROOM, maxZ + EAR_ROOM});
+            }
+        }
+        if (holes.isEmpty()) {
+            return null;
+        }
+        // A little into the ear, so that the helmet meets it.
+        return new Opening(holes.toArray(new float[0][]), lowest + 0.3F);
     }
 
     /** @return the biggest of the bone's own cubes, which is the head or the body or the leg, and not what is on it */
@@ -188,7 +256,7 @@ public final class ArmorLayer implements RenderLayer {
      */
     private static void texturedBox(VertexConsumer vc, PoseStack.Pose pose, int tint, int light, int overlay,
             float x0, float y0, float z0, float x1, float y1, float z1,
-            int u, int v, int dx, int dz, int firstRow, int usedRows, boolean solidEnd) {
+            int u, int v, int dx, int dz, int firstRow, int usedRows, boolean solidEnd, float[][] topHoles) {
         int r = tint >> 16 & 0xFF;
         int g = tint >> 8 & 0xFF;
         int b = tint & 0xFF;
@@ -209,9 +277,8 @@ public final class ArmorLayer implements RenderLayer {
             x0, y1, z0, u, vBody, x0, y1, z1, uFront, vBody, x0, y0, z1, uFront, vEnd, x0, y0, z0, u, vEnd);
         quad(vc, pose, r, g, b, light, overlay, 1, 0, 0,
             x1, y1, z1, uSide, vBody, x1, y1, z0, uBack, vBody, x1, y0, z0, uBack, vEnd, x1, y0, z1, uSide, vEnd);
-        // Top.
-        quad(vc, pose, r, g, b, light, overlay, 0, 1, 0,
-            x1, y1, z0, uFront, v, x0, y1, z0, uSide, v, x0, y1, z1, uSide, v + dz, x1, y1, z1, uFront, v + dz);
+        // Top, with the holes in it that it has.
+        top(vc, pose, r, g, b, light, overlay, x0, x1, y1, z0, z1, uFront, uSide, v, dz, topHoles);
         // Bottom: its own part of the texture, or, if it is to be solid, the foot end of the front's.
         float bottomV0 = solidEnd ? Math.max(vBody, vEnd - dz) : v;
         float bottomV1 = solidEnd ? vEnd : v + dz;
@@ -220,6 +287,62 @@ public final class ArmorLayer implements RenderLayer {
         quad(vc, pose, r, g, b, light, overlay, 0, -1, 0,
             x1, y0, z1, bottomU0, bottomV0, x0, y0, z1, bottomU1, bottomV0,
             x0, y0, z0, bottomU1, bottomV1, x1, y0, z0, bottomU0, bottomV1);
+    }
+
+    /**
+     * The top face, in as many pieces as it takes to leave the holes out of it: bands across it, and in a band that has a
+     * hole, the piece before the hole and the piece after. Each piece wears its own part of the texture's top, so that
+     * the pattern is the same as it would be without the holes.
+     */
+    private static void top(VertexConsumer vc, PoseStack.Pose pose, int r, int g, int b, int light, int overlay,
+            float x0, float x1, float y, float z0, float z1, float uFront, float uSide, float v, float dz,
+            float[][] holes) {
+        java.util.List<float[]> pieces = new java.util.ArrayList<>();
+        if (holes == null || holes.length == 0) {
+            pieces.add(new float[] {x0, x1, z0, z1});
+        } else {
+            java.util.TreeSet<Float> cuts = new java.util.TreeSet<>();
+            cuts.add(x0);
+            cuts.add(x1);
+            for (float[] hole : holes) {
+                cuts.add(Math.max(x0, Math.min(x1, hole[0])));
+                cuts.add(Math.max(x0, Math.min(x1, hole[1])));
+            }
+            Float[] xs = cuts.toArray(new Float[0]);
+            for (int i = 0; i + 1 < xs.length; i++) {
+                float bx0 = xs[i];
+                float bx1 = xs[i + 1];
+                if (bx1 - bx0 < 1.0E-4F) {
+                    continue;
+                }
+                float[] open = null;
+                for (float[] hole : holes) {
+                    if (hole[0] <= bx0 + 1.0E-4F && hole[1] >= bx1 - 1.0E-4F) {
+                        open = hole;
+                    }
+                }
+                if (open == null) {
+                    pieces.add(new float[] {bx0, bx1, z0, z1});
+                } else {
+                    float hz0 = Math.max(z0, Math.min(z1, open[2]));
+                    float hz1 = Math.max(z0, Math.min(z1, open[3]));
+                    if (hz0 - z0 > 1.0E-4F) {
+                        pieces.add(new float[] {bx0, bx1, z0, hz0});
+                    }
+                    if (z1 - hz1 > 1.0E-4F) {
+                        pieces.add(new float[] {bx0, bx1, hz1, z1});
+                    }
+                }
+            }
+        }
+        for (float[] p : pieces) {
+            float uA = uFront + (x1 - p[1]) / (x1 - x0) * (uSide - uFront);
+            float uB = uFront + (x1 - p[0]) / (x1 - x0) * (uSide - uFront);
+            float vA = v + (p[2] - z0) / (z1 - z0) * dz;
+            float vB = v + (p[3] - z0) / (z1 - z0) * dz;
+            quad(vc, pose, r, g, b, light, overlay, 0, 1, 0,
+                p[1], y, p[2], uA, vA, p[0], y, p[2], uB, vA, p[0], y, p[3], uB, vB, p[1], y, p[3], uA, vB);
+        }
     }
 
     /** A face of four corners, each given as x, y, z and its place in the texture in pixels. */
