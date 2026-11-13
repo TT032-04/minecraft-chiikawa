@@ -344,6 +344,19 @@ public abstract class ChiikawaEntityRenderer<T extends Entity> extends EntityRen
         }
     }
 
+    /** @return whether an ear is up where a helmet is, which is what leaves it out: an ear at the head's side stays */
+    private static boolean earStandsAbove(BakedModel model, com.dwinovo.chiikawa.anim.baked.BakedBone ear,
+            float lowEdge) {
+        if (Float.isNaN(lowEdge)) {
+            return true;
+        }
+        float lowest = Float.MAX_VALUE;
+        for (int i = 0; i < ear.cubeCount; i++) {
+            lowest = Math.min(lowest, model.cubes[ear.cubeStart + i].minY);
+        }
+        return lowest >= lowEdge - 0.3F;
+    }
+
     private void renderState(T entity, ChiikawaRenderState state, PoseStack poseStack,
                              MultiBufferSource bufferSource, int packedLight) {
         BakedModel model = ModelLibrary.get(state.modelKey);
@@ -365,26 +378,28 @@ public abstract class ChiikawaEntityRenderer<T extends Entity> extends EntityRen
                 : OverlayTexture.NO_OVERLAY;
         VertexConsumer vc = bufferSource.getBuffer(type);
         boolean[] hiddenBones = state.hiddenBones;
-        // A pet wearing a helmet is drawn with a bare head, for the helmet to go over: its fur and tufts are left out,
-        // and so are its ears, except the big ears of those that have them, which the helmet is open for.
+        // A pet wearing a helmet is drawn for the helmet to go over its head: the fur and tufts that would come up into it
+        // are left out, and so are the ears that stand up there, except the big ears of those that have them, which the
+        // helmet is open for. What hangs below the helmet's edge, and ears at the side of the head, stay.
         net.minecraft.world.item.ItemStack helmet = state.get(PetData.ARMOR_HEAD);
         boolean helmeted = helmet != null && !helmet.isEmpty();
         if (helmeted) {
             hiddenBones = hiddenBones != null && hiddenBones.length == model.bones.length
                 ? hiddenBones.clone() : new boolean[model.bones.length];
+            float lowEdge = ArmorLayer.lowEdge(model);
             if (!ArmorLayer.BIG_EARS.contains(state.modelKey.getPath())) {
                 for (String ear : new String[] {"LeftEar", "RightEar"}) {
                     Integer index = model.boneIndex.get(ear);
-                    if (index != null) {
+                    if (index != null && earStandsAbove(model, model.bones[index], lowEdge)) {
                         hiddenBones[index] = true;
                     }
                 }
             }
             Integer head = model.boneIndex.get("Head");
-            mesh.trimBone(head == null ? -1 : head);
+            mesh.trimBone(head == null ? -1 : head, Float.isNaN(lowEdge) ? Float.NEGATIVE_INFINITY : lowEdge);
         }
         mesh.render(model, poseStack, vc, packedLight, packedOverlay, poseBuf, hiddenBones);
-        mesh.trimBone(-1);
+        mesh.trimBone(-1, 0.0F);
 
         if (!renderLayers.isEmpty()) {
             RenderLayerContext layerCtx = new RenderLayerContext(

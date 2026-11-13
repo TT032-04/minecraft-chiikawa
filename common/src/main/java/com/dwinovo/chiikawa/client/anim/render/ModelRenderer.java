@@ -64,15 +64,19 @@ public final class ModelRenderer {
     private static final float STICKS_OUT = 0.15F;
     /** The bone drawn without the cubes that stick out of it for the next render, or -1 for none. */
     private int trimmedBone = -1;
+    /** Only the cubes that reach higher than this are left out of the trimmed bone: what is below is the helmet's brim. */
+    private float trimmedAbove = 0.0F;
 
     /**
-     * Draws the bone {@code boneIdx}, from now until it is called again with -1, as its main cube alone with the
-     * cubes that stand clear of it left out: the fur, the tufts and the plates that make a head rounder than its box.
-     * What lies on the main cube, a mark on the face a hair's breadth off it, stays. It is what a pet wearing a helmet
-     * is drawn with, for the helmet to go over a bare head.
+     * Draws the bone {@code boneIdx}, from now until it is called again with -1, without the cubes that stand clear of
+     * its main cube and reach higher than {@code above}: the fur, the tufts and the plates that make a head rounder than
+     * its box, where they would come up into a helmet or through it. What lies on the main cube, a mark on the face a
+     * hair's breadth off it, stays, and so does the fur that hangs below the helmet's edge. It is what a pet wearing a
+     * helmet is drawn with.
      */
-    public void trimBone(int boneIdx) {
+    public void trimBone(int boneIdx, float above) {
         this.trimmedBone = boneIdx;
+        this.trimmedAbove = above;
     }
 
     /**
@@ -161,7 +165,7 @@ public final class ModelRenderer {
                 boolean sticksOut = cube.minX < main.minX - STICKS_OUT || cube.maxX > main.maxX + STICKS_OUT
                     || cube.minY < main.minY - STICKS_OUT || cube.maxY > main.maxY + STICKS_OUT
                     || cube.minZ < main.minZ - STICKS_OUT || cube.maxZ > main.maxZ + STICKS_OUT;
-                if (cube == main || !sticksOut) {
+                if (cube == main || !sticksOut || cube.maxY <= trimmedAbove) {
                     renderCube(cube, stack, vc, packedLight, packedOverlay);
                 }
             }

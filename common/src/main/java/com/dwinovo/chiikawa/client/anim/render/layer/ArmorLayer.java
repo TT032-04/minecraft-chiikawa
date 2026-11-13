@@ -38,8 +38,15 @@ public final class ArmorLayer implements RenderLayer {
      * if it went round the whole head.
      */
     private static final float HELMET_OF_HEAD = 0.45F;
-    /** The helmet stands well off the head, since it goes over a bare head and is a helmet's size and not a skin's. */
-    private static final float INFLATE_HEAD = 0.8F;
+    /** The helmet stands a little off the head, as much as a helmet over hair does, and no more, so that it sits on it. */
+    private static final float INFLATE_HEAD = 0.45F;
+    /** The least a helmet covers of the head from the top, in pixels, whatever the eyebrows are. */
+    private static final float MIN_CAP = 1.2F;
+    /** How much smaller the top step of a helmet is, on each side, and how high it is, for a rounded top. */
+    private static final float DOME_STEP = 0.5F;
+    /** The parts of a pet's face that are highest on it: the helmet's edge is set above them. */
+    private static final String[] EYE_BONES = {"Eyebrow", "RightEyebrow", "LeftEyebrow", "Eyelid", "RightEyelid",
+        "LeftEyelid", "Rightlight", "Leftlight", "HappyEyes", "CryEyes"};
     /**
      * The pets whose ears are big enough to stay in view with a helmet on: the helmet is open for them, and shows them
      * coming out of it. The ears of the rest are left out of the picture when they wear one.
@@ -48,8 +55,11 @@ public final class ArmorLayer implements RenderLayer {
     /** How much wider than an ear its opening in the helmet is, on each side. */
     private static final float EAR_ROOM = 0.25F;
 
-    /** What a helmet is open for: a hole in its top for each ear, and how high its top has to go to meet them. */
-    private record Opening(float[][] holes, float meetsEarsAt) {
+    /**
+     * How a helmet fits the head it is on: where its lower edge is, which is above the eyes and the brows of the pet and
+     * not at a share of its head, a hole in its top for each big ear, and how high its top has to go to meet the ears.
+     */
+    private record Fit(float[][] holes, float meetsEarsAt, float lowEdge) {
     }
     private static final float TEXTURE_W = 64.0F;
     private static final float TEXTURE_H = 32.0F;
@@ -116,7 +126,7 @@ public final class ArmorLayer implements RenderLayer {
         VertexConsumer vc = ctx.bufferSource().getBuffer(RenderType.armorCutoutNoCull(texture));
         switch (piece) {
             case HEAD -> on(ctx, vc, "Head", tint, 0, 0, 8, 8, 8, HELMET_OF_HEAD, INFLATE_HEAD, true, false,
-                openingForEars(ctx));
+                headFit(ctx));
             case CHEST -> {
                 on(ctx, vc, "Body", tint, 16, 16, 8, 12, 4, 1.0F, INFLATE, false, false, null);
                 on(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false, false, null);
@@ -139,7 +149,7 @@ public final class ArmorLayer implements RenderLayer {
      */
     private void on(RenderLayerContext ctx, VertexConsumer vc, String boneName, int tint,
             int u, int v, int dx, int dy, int dz, float cover, float inflate, boolean fromTop, boolean solidEnd,
-            Opening opening) {
+            Fit fit) {
         BakedModel model = ctx.model();
         Integer index = model.boneIndex.get(boneName);
         if (index == null || ctx.isHidden(index)) {
@@ -168,22 +178,42 @@ public final class ArmorLayer implements RenderLayer {
             high = cube.minY + height * cover;
             firstRow = dy - usedRows;
         }
-        if (opening != null) {
-            high = Math.max(high, opening.meetsEarsAt());
+        if (fit != null && fromTop && !Float.isNaN(fit.lowEdge())) {
+            // The helmet's edge is where the pet's face is, not a share of its head.
+            low = fit.lowEdge();
+            usedRows = Math.max(1, Math.min(dy, Math.round(dy * (cube.maxY - low) / height)));
         }
+        if (fit != null && !Float.isNaN(fit.meetsEarsAt())) {
+            high = Math.max(high, fit.meetsEarsAt());
+        }
+        float[][] holes = fit == null ? new float[0][] : holesRelativeTo(fit.holes(), bone);
+        // A helmet with no ears to let out has a rounded top: one step smaller on top of the rest.
+        boolean dome = fromTop && holes.length == 0 && high - low > 2.0F * DOME_STEP + 0.2F;
         PoseStack stack = ctx.poseStack();
         stack.pushPose();
         walker.transformToBone(model, ctx.poseBuf(), index, stack);
-        float[][] holes = opening == null ? null : holesRelativeTo(opening.holes(), bone);
+        float bodyTop = dome ? high - DOME_STEP : high;
         texturedBox(vc, stack.last(), tint, ctx.packedLight(), ctx.packedOverlay(),
             cube.minX - inflate - bone.pivotX, low - bone.pivotY, cube.minZ - inflate - bone.pivotZ,
-            cube.maxX + inflate - bone.pivotX, high - bone.pivotY, cube.maxZ + inflate - bone.pivotZ,
-            u, v, dx, dz, firstRow, usedRows, solidEnd, holes);
+            cube.maxX + inflate - bone.pivotX, bodyTop - bone.pivotY, cube.maxZ + inflate - bone.pivotZ,
+            u, v, dx, dz, firstRow, usedRows, solidEnd, holes.length == 0 ? null : holes);
+        if (dome) {
+            float inset = DOME_STEP;
+            texturedBox(vc, stack.last(), tint, ctx.packedLight(), ctx.packedOverlay(),
+                cube.minX - inflate + inset - bone.pivotX, bodyTop - bone.pivotY,
+                cube.minZ - inflate + inset - bone.pivotZ,
+                cube.maxX + inflate - inset - bone.pivotX, high - bone.pivotY,
+                cube.maxZ + inflate - inset - bone.pivotZ,
+                u, v, dx, dz, 0, 1, false, null);
+        }
         stack.popPose();
     }
 
     /** @return the holes, which are given where the model puts them, as they are in the bone's own space */
     private static float[][] holesRelativeTo(float[][] holes, BakedBone bone) {
+        if (holes == null) {
+            return new float[0][];
+        }
         float[][] relative = new float[holes.length][];
         for (int i = 0; i < holes.length; i++) {
             relative[i] = new float[] {holes[i][0] - bone.pivotX, holes[i][1] - bone.pivotX,
@@ -197,11 +227,12 @@ public final class ArmorLayer implements RenderLayer {
      * ear, and the height the top must go to for the ears to come out of it and not float above it, since the fur that
      * joins them to the head is left out under a helmet. Nothing for a pet whose ears are left out.
      */
-    private static Opening openingForEars(RenderLayerContext ctx) {
-        if (!BIG_EARS.contains(ctx.state().modelKey.getPath())) {
-            return null;
-        }
+    private static Fit headFit(RenderLayerContext ctx) {
         BakedModel model = ctx.model();
+        float lowEdge = lowEdge(model);
+        if (!BIG_EARS.contains(ctx.state().modelKey.getPath())) {
+            return new Fit(new float[0][], Float.NaN, lowEdge);
+        }
         java.util.List<float[]> holes = new java.util.ArrayList<>();
         float lowest = Float.MAX_VALUE;
         for (String name : new String[] {"LeftEar", "RightEar"}) {
@@ -227,10 +258,41 @@ public final class ArmorLayer implements RenderLayer {
             }
         }
         if (holes.isEmpty()) {
-            return null;
+            return new Fit(new float[0][], Float.NaN, lowEdge);
         }
         // A little into the ear, so that the helmet meets it.
-        return new Opening(holes.toArray(new float[0][]), lowest + 0.3F);
+        return new Fit(holes.toArray(new float[0][]), lowest + 0.3F, lowEdge);
+    }
+
+    /**
+     * @return where the lower edge of a helmet is on this pet, in the model's own height: just over its brows and eyes,
+     *         whatever its face is like, and never covering less than {@link #MIN_CAP} of the head or more than half; the
+     *         renderer takes it to know what of the pet's hair comes up into the helmet. NaN for a model with no head
+     */
+    public static float lowEdge(BakedModel model) {
+        Integer headIndex = model.boneIndex.get("Head");
+        if (headIndex == null) {
+            return Float.NaN;
+        }
+        BakedCube head = biggest(model, model.bones[headIndex]);
+        if (head == null) {
+            return Float.NaN;
+        }
+        float height = head.maxY - head.minY;
+        float eyeTop = -Float.MAX_VALUE;
+        for (String name : EYE_BONES) {
+            Integer index = model.boneIndex.get(name);
+            if (index == null) {
+                continue;
+            }
+            BakedBone bone = model.bones[index];
+            for (int i = 0; i < bone.cubeCount; i++) {
+                eyeTop = Math.max(eyeTop, model.cubes[bone.cubeStart + i].maxY);
+            }
+        }
+        float thickness = eyeTop == -Float.MAX_VALUE ? height * HELMET_OF_HEAD : head.maxY - (eyeTop + 0.1F);
+        thickness = Math.max(MIN_CAP, Math.min(height * 0.5F, thickness));
+        return head.maxY - thickness;
     }
 
     /** @return the biggest of the bone's own cubes, which is the head or the body or the leg, and not what is on it */
