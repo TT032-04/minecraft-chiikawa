@@ -19,10 +19,10 @@ import net.minecraft.world.inventory.Slot;
  * where the slots will be, and the bag's own is a shadow of one.
  */
 final class BackpackPage {
-    /** The shadow in an empty armour well, and the words for it, in the order {@code AbstractPet.ARMOR_HEAD} and the others. */
-    private static final PixelArt[] ARMOR_ART = {PixelArt.HELMET, PixelArt.CHESTPLATE, PixelArt.BOOTS};
+    /** The shadow in an empty armour well, and the words for it, in the order {@code AbstractPet.ARMOR_CHEST} and the other. */
+    private static final PixelArt[] ARMOR_ART = {PixelArt.CHESTPLATE, PixelArt.BOOTS};
     private static final String[] ARMOR_HINT = {
-        "screen.chiikawa.pet.armor_head", "screen.chiikawa.pet.armor_chest", "screen.chiikawa.pet.armor_feet"};
+        "screen.chiikawa.pet.armor_chest", "screen.chiikawa.pet.armor_feet"};
 
     private final HoverNotes notes;
 

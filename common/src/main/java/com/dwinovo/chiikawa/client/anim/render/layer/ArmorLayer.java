@@ -6,7 +6,6 @@ import com.dwinovo.chiikawa.anim.baked.BakedModel;
 import com.dwinovo.chiikawa.client.anim.render.PetData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
@@ -14,15 +13,11 @@ import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Draws the armour a pet wears as a player's armour looks: the game's own armour texture for what it is made of. A
- * chestplate goes round the pet's body and over its arms, boots round its legs, laid over the pet's own body parts, with
- * the pattern squashed or stretched to fit, and no more than that. A helmet is not fitted to the pet's head, which it
- * does not fit: it is the player's helmet, its own size, put on top of the head and tilted back, hinged on the back of
- * the head, as far as it takes for what stands up on the pet's head, its ears and its tufts, to be under it and not
- * through it. The pet itself is drawn as it is without it, with nothing left out.
- *
- * <p>The sizes are taken from the pet's own model, so that it goes on whichever pet wears it, and each piece is on its
- * own bone, so that it turns with the head and swings with the arms and legs.
+ * Draws the armour a pet wears as a player's armour looks: the game's own armour texture for what it is made of, laid
+ * over the pet's own body parts. A chestplate goes round the pet's body and over its arms, boots round its legs, with
+ * the pattern squashed or stretched to fit, and no more than that. A pet wears no helmet. The sizes are taken from the
+ * pet's own model, so that it goes on whichever pet wears it, and each piece is on its own bone, so that it swings
+ * with the arms and legs.
  */
 public final class ArmorLayer implements RenderLayer {
     private static final int LEATHER_COLOUR = 0xA06540;
@@ -37,33 +32,17 @@ public final class ArmorLayer implements RenderLayer {
     private static final float BOOTS_OF_LEG = 0.5F;
     private static final float TEXTURE_W = 64.0F;
     private static final float TEXTURE_H = 32.0F;
-    /**
-     * A broad plate on the head counts as the top of it, and not the box under it: the fur that makes the head rounder
-     * than its box is as wide as this share of the box's top, or wider.
-     */
-    private static final float TOP_PLATE_SHARE = 0.25F;
-    /** How far the helmet's back edge is in from the back of the head, and sunk into the top of it, in pixels. */
-    private static final float HINGE_IN = 0.5F;
-    private static final float HINGE_SUNK = 0.2F;
-    /** The least and the most the helmet is tilted back, in degrees, and the room over what it has to clear. */
-    private static final float MIN_PITCH = 10.0F;
-    private static final float MAX_PITCH = 45.0F;
-    private static final float PITCH_MARGIN = 4.0F;
     private final BoneTransformWalker walker = new BoneTransformWalker();
 
     /** Which piece, since each is a different part of the texture on different bones. */
     private enum Piece {
-        HEAD, CHEST, FEET
+        CHEST, FEET
     }
 
     @Override
     public void submit(RenderLayerContext ctx) {
-        ItemStack head = ctx.state().get(PetData.ARMOR_HEAD);
         ItemStack chest = ctx.state().get(PetData.ARMOR_CHEST);
         ItemStack feet = ctx.state().get(PetData.ARMOR_FEET);
-        if (!isEmpty(head)) {
-            wear(ctx, head, Piece.HEAD);
-        }
         if (!isEmpty(chest)) {
             wear(ctx, chest, Piece.CHEST);
         }
@@ -98,20 +77,18 @@ public final class ArmorLayer implements RenderLayer {
         }
     }
 
-    /** The armour texture: helmet, chestplate and boots are all in the first of the two for each material. */
+    /** The armour texture: chestplate and boots are both in the first of the two for each material. */
     private static ResourceLocation armorTexture(String material, String suffix) {
         return new ResourceLocation("textures/models/armor/" + material + "_layer_1" + suffix + ".png");
     }
 
     /**
-     * One coat of one piece. Each part is the player's part of the texture: the head 8 by 8 by 8 pixels from (0, 0), the
-     * body 8 by 12 by 4 from (16, 16), an arm 4 by 12 by 4 from (40, 16), a leg the same from (0, 16), of which the boots
-     * are the foot end.
+     * One coat of one piece. Each part is the player's part of the texture: the body 8 by 12 by 4 pixels from (16, 16), an
+     * arm 4 by 12 by 4 from (40, 16), a leg the same from (0, 16), of which the boots are the foot end.
      */
     private void coat(RenderLayerContext ctx, Piece piece, ResourceLocation texture, int tint) {
         VertexConsumer vc = ctx.bufferSource().getBuffer(RenderType.armorCutoutNoCull(texture));
         switch (piece) {
-            case HEAD -> helmetOnTop(ctx, vc, tint);
             case CHEST -> {
                 on(ctx, vc, "Body", tint, 16, 16, 8, 12, 4, 1.0F, INFLATE, false);
                 on(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false);
@@ -122,80 +99,6 @@ public final class ArmorLayer implements RenderLayer {
                 on(ctx, vc, "LeftLeg", tint, 0, 16, 4, 12, 4, BOOTS_OF_LEG, INFLATE_BOOTS, true);
             }
         }
-    }
-
-    /**
-     * The player's helmet on top of the pet's head: its own size, a cube as wide as the head, whole, with its own texture
-     * as the player wears it, and not fitted to the head, which it does not fit. It rests on the top of the head by its
-     * back edge, which is its hinge, and is tilted back from it, the front lifted, by as much as it takes for what
-     * stands up on the head to be under it: the pet's ears and the tufts and plates over its head, which are drawn as
-     * ever and are not left out. The top of the head is the top of the fur, if the fur makes a plate over it.
-     */
-    private void helmetOnTop(RenderLayerContext ctx, VertexConsumer vc, int tint) {
-        BakedModel model = ctx.model();
-        Integer index = model.boneIndex.get("Head");
-        if (index == null || ctx.isHidden(index)) {
-            return;
-        }
-        BakedBone bone = model.bones[index];
-        BakedCube head = biggest(model, bone);
-        if (head == null) {
-            return;
-        }
-        float headTopArea = (head.maxX - head.minX) * (head.maxZ - head.minZ);
-        float topY = head.maxY;
-        for (int i = 0; i < bone.cubeCount; i++) {
-            BakedCube cube = model.cubes[bone.cubeStart + i];
-            float area = (cube.maxX - cube.minX) * (cube.maxZ - cube.minZ);
-            if (cube != head && area >= TOP_PLATE_SHARE * headTopArea) {
-                topY = Math.max(topY, cube.maxY);
-            }
-        }
-        float hingeZ = head.maxZ - HINGE_IN;
-        // The tilt: the helmet's underside is a slope from its hinge up to the front, and every cube that stands above
-        // the top of the head has to be under it, so the slope has to be at least as steep as the line from the hinge
-        // to the cube's top at the cube's nearest side to the hinge.
-        float slope = 0.0F;
-        for (int i = 0; i < bone.cubeCount; i++) {
-            BakedCube cube = model.cubes[bone.cubeStart + i];
-            if (cube != head) {
-                slope = Math.max(slope, slopeOver(cube, topY, hingeZ));
-            }
-        }
-        for (String ear : new String[] {"LeftEar", "RightEar"}) {
-            Integer earIndex = model.boneIndex.get(ear);
-            if (earIndex == null) {
-                continue;
-            }
-            BakedBone earBone = model.bones[earIndex];
-            for (int i = 0; i < earBone.cubeCount; i++) {
-                slope = Math.max(slope, slopeOver(model.cubes[earBone.cubeStart + i], topY, hingeZ));
-            }
-        }
-        float pitch = (float) Math.toDegrees(Math.atan(slope)) + PITCH_MARGIN;
-        pitch = Math.max(MIN_PITCH, Math.min(MAX_PITCH, pitch));
-        float size = head.maxX - head.minX;
-        PoseStack stack = ctx.poseStack();
-        stack.pushPose();
-        walker.transformToBone(model, ctx.poseBuf(), index, stack);
-        stack.translate((head.minX + head.maxX) / 2.0F - bone.pivotX, topY - HINGE_SUNK - bone.pivotY,
-            hingeZ - bone.pivotZ);
-        // Back, which lifts the front: the front is the low end of Z.
-        stack.mulPose(Axis.XP.rotationDegrees(pitch));
-        texturedBox(vc, stack.last(), tint, ctx.packedLight(), ctx.packedOverlay(),
-            -size / 2.0F, 0.0F, -size, size / 2.0F, size, 0.0F, 0, 0, 8, 8, 0, 8, false);
-        stack.popPose();
-    }
-
-    /** @return how steep a slope up from the hinge the cube needs to be under: how high above the top, over how far */
-    private static float slopeOver(BakedCube cube, float topY, float hingeZ) {
-        float rise = cube.maxY - topY;
-        if (rise <= 0.05F) {
-            return 0.0F;
-        }
-        // Its side nearest the hinge is the one the slope is the least over; a cube at the hinge is as near as 0.5.
-        float run = Math.max(0.5F, hingeZ - cube.maxZ);
-        return rise / run;
     }
 
     /**

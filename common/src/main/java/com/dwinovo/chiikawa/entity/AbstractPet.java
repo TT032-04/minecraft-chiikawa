@@ -215,18 +215,16 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
     /** How near, squared, a thrown trident has to come for the pet to have it in its hand again. */
     private static final double TRIDENT_REACH_SQR = 4.0;
 
-    /** The three things a pet can wear, in the order its screen has them. */
-    public static final int ARMOR_HEAD = 0;
-    public static final int ARMOR_CHEST = 1;
-    public static final int ARMOR_FEET = 2;
-    public static final int ARMOR_SLOTS = 3;
-    private static final EquipmentSlot[] ARMOR_EQUIPS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.FEET};
-    private static final String[] ARMOR_KEYS = {"Head", "Chest", "Feet"};
-    /** What the pet wears, for the client to draw it: a copy of each of the three, synced as they change. */
-    private static final EntityDataAccessor<ItemStack> WORN_HEAD = SynchedEntityData.defineId(AbstractPet.class, EntityDataSerializers.ITEM_STACK);
+    /** The two things a pet can wear, in the order its screen has them: a chestplate and boots. It does not wear a helmet. */
+    public static final int ARMOR_CHEST = 0;
+    public static final int ARMOR_FEET = 1;
+    public static final int ARMOR_SLOTS = 2;
+    private static final EquipmentSlot[] ARMOR_EQUIPS = {EquipmentSlot.CHEST, EquipmentSlot.FEET};
+    private static final String[] ARMOR_KEYS = {"Chest", "Feet"};
+    /** What the pet wears, for the client to draw it: a copy of each of the two, synced as they change. */
     private static final EntityDataAccessor<ItemStack> WORN_CHEST = SynchedEntityData.defineId(AbstractPet.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<ItemStack> WORN_FEET = SynchedEntityData.defineId(AbstractPet.class, EntityDataSerializers.ITEM_STACK);
-    private static final java.util.List<EntityDataAccessor<ItemStack>> WORN = java.util.List.of(WORN_HEAD, WORN_CHEST, WORN_FEET);
+    private static final java.util.List<EntityDataAccessor<ItemStack>> WORN = java.util.List.of(WORN_CHEST, WORN_FEET);
 
     /** The trident in the air or on the ground, by its id. Not saved: a pet that is loaded has its trident back. */
     private UUID thrownTridentId;
@@ -329,6 +327,8 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
             AbstractPet.this.armorChanged();
         }
     };
+    /** A helmet from an old save, to be dropped for the player at the next tick of the pet's AI; not saved. */
+    private ItemStack returnedHelmet = ItemStack.EMPTY;
     /** The attribute modifiers the armour has on the pet just now, so that they can be taken off again. */
     private final Multimap<Attribute, AttributeModifier> armorModifiers = HashMultimap.create();
     /** Where what the pet is given or finds goes; never the hand or the bag's slot, see {@link PetPockets}. */
@@ -348,7 +348,7 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         this.getNavigation().setCanFloat(true);
     }
 
-    /** @return what the pet wears: {@link #ARMOR_HEAD}, {@link #ARMOR_CHEST} and {@link #ARMOR_FEET}, in that order */
+    /** @return what the pet wears: {@link #ARMOR_CHEST} and {@link #ARMOR_FEET}, in that order */
     public SimpleContainer getArmor() {
         return armor;
     }
@@ -827,6 +827,10 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         }
         PetExams.upkeep(this);
         upkeepTrident();
+        if (!returnedHelmet.isEmpty()) {
+            spawnAtLocation(returnedHelmet);
+            returnedHelmet = ItemStack.EMPTY;
+        }
         mind.tick(serverLevel);
         getBrain().tick(serverLevel, this);
         super.customServerAiStep();
@@ -1186,7 +1190,6 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         this.entityData.define(PERFORMANCE, "");
         this.entityData.define(RULES, new CompoundTag());
         this.entityData.define(TRIDENT_AWAY, false);
-        this.entityData.define(WORN_HEAD, ItemStack.EMPTY);
         this.entityData.define(WORN_CHEST, ItemStack.EMPTY);
         this.entityData.define(WORN_FEET, ItemStack.EMPTY);
     }
@@ -1389,6 +1392,10 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
             clearBagSlotOfOldStorage();
         }
         CompoundTag worn = tag.getCompound("Armor");
+        // A pet saved with a helmet, from when it could wear one, has it given back: it is dropped where the pet is.
+        if (worn.contains("Head", Tag.TAG_COMPOUND)) {
+            returnedHelmet = ItemStack.of(worn.getCompound("Head"));
+        }
         for (int kind = 0; kind < ARMOR_SLOTS; kind++) {
             armor.setItem(kind, worn.contains(ARMOR_KEYS[kind], Tag.TAG_COMPOUND)
                 ? ItemStack.of(worn.getCompound(ARMOR_KEYS[kind]))

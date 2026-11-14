@@ -264,7 +264,6 @@ public abstract class ChiikawaEntityRenderer<T extends Entity> extends EntityRen
 
         if (entity instanceof AbstractPet pet) {
             state.put(PetData.WORN_BAG, pet.getItemBySlot(EquipmentSlot.CHEST));
-            state.put(PetData.ARMOR_HEAD, pet.getWornArmor(AbstractPet.ARMOR_HEAD));
             state.put(PetData.ARMOR_CHEST, pet.getWornArmor(AbstractPet.ARMOR_CHEST));
             state.put(PetData.ARMOR_FEET, pet.getWornArmor(AbstractPet.ARMOR_FEET));
         }

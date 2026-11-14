@@ -49,13 +49,13 @@ public class PetBackpackMenu extends AbstractContainerMenu {
     public static final int PLAYER_INV_Y = 79;
     public static final int HOTBAR_Y = 137;
     /**
-     * The pet's armour, down the card's left side with the hand and the bag: a helmet over the hand, a chestplate
-     * under it, and boots under the bag.
+     * The pet's armour, in the card's left column with the hand: a chestplate over the hand and boots under it, each a
+     * pixel clear of the hand's well and of the card's line below, so that none of the three stands on another and the
+     * bag is left to itself under the line.
      */
     public static final int ARMOR_X = MAINHAND_X;
-    public static final int HELMET_Y = MAINHAND_Y - SLOT_PITCH;
-    public static final int CHESTPLATE_Y = MAINHAND_Y + SLOT_PITCH;
-    public static final int BOOTS_Y = BAG_Y + SLOT_PITCH;
+    public static final int CHESTPLATE_Y = MAINHAND_Y - SLOT_PITCH + 1;
+    public static final int BOOTS_Y = MAINHAND_Y + SLOT_PITCH - 1;
 
     private final AbstractPet pet;
     private final Level level;
@@ -149,7 +149,6 @@ public class PetBackpackMenu extends AbstractContainerMenu {
         // What the pet wears. The client's menu has no pet in hand and lays out the same three all the same.
         SimpleContainer worn = pet != null ? pet.getArmor() : new SimpleContainer(AbstractPet.ARMOR_SLOTS);
         this.armorStart = this.slots.size();
-        this.addSlot(new ArmorSlot(worn, AbstractPet.ARMOR_HEAD, EquipmentSlot.HEAD, ARMOR_X, HELMET_Y));
         this.addSlot(new ArmorSlot(worn, AbstractPet.ARMOR_CHEST, EquipmentSlot.CHEST, ARMOR_X, CHESTPLATE_Y));
         this.addSlot(new ArmorSlot(worn, AbstractPet.ARMOR_FEET, EquipmentSlot.FEET, ARMOR_X, BOOTS_Y));
     }
@@ -207,7 +206,7 @@ public class PetBackpackMenu extends AbstractContainerMenu {
         return slot instanceof BagSlot;
     }
 
-    /** @return which piece of armour a slot is for, {@link AbstractPet#ARMOR_HEAD} and the others, or -1 if it is not one */
+    /** @return which piece of armour a slot is for, {@link AbstractPet#ARMOR_CHEST} and the other, or -1 if it is not one */
     public int armorSlotOf(Slot slot) {
         return slot instanceof ArmorSlot armor ? armor.kind : -1;
     }
