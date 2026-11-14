@@ -6,6 +6,7 @@ import com.dwinovo.chiikawa.anim.baked.BakedModel;
 import com.dwinovo.chiikawa.client.anim.render.PetData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
@@ -40,6 +41,18 @@ public final class ArmorLayer implements RenderLayer {
     private static final float HELMET_OF_HEAD = 0.45F;
     /** The helmet stands a little off the head, as much as a helmet over hair does, and no more, so that it sits on it. */
     private static final float INFLATE_HEAD = 0.45F;
+    /** The hat's width and depth as a part of the head's: a little less, so that it sits on the head and does not cover it. */
+    private static final float HAT_OF_HEAD = 0.95F;
+    /** How tall the hat is, in pixels, and how far it is sunk into the top of the head. */
+    private static final float HAT_HEIGHT = 2.0F;
+    private static final float HAT_SINK = 0.4F;
+    /** How far the hat is set back from the middle of the head, so that its front clears the pet's brow. */
+    private static final float HAT_BACK = 0.3F;
+    /** How far the hat is tilted to the pet's left side, and back, in degrees: a hat put on, not a helmet fitted. */
+    private static final float HAT_ROLL = 12.0F;
+    private static final float HAT_PITCH = 8.0F;
+    /** How deep into the head's top the hat is taken to reach, for the fur that comes up into it to be left out. */
+    private static final float HAT_DEPTH = 1.4F;
     /** The least a helmet covers of the head from the top, in pixels, whatever the eyebrows are. */
     private static final float MIN_CAP = 1.2F;
     /** How much smaller the top step of a helmet is, on each side, and how high it is, for a rounded top. */
@@ -125,8 +138,7 @@ public final class ArmorLayer implements RenderLayer {
     private void coat(RenderLayerContext ctx, Piece piece, ResourceLocation texture, int tint) {
         VertexConsumer vc = ctx.bufferSource().getBuffer(RenderType.armorCutoutNoCull(texture));
         switch (piece) {
-            case HEAD -> on(ctx, vc, "Head", tint, 0, 0, 8, 8, 8, HELMET_OF_HEAD, INFLATE_HEAD, true, false,
-                headFit(ctx));
+            case HEAD -> hat(ctx, vc, tint);
             case CHEST -> {
                 on(ctx, vc, "Body", tint, 16, 16, 8, 12, 4, 1.0F, INFLATE, false, false, null);
                 on(ctx, vc, "RightArm", tint, 40, 16, 4, 12, 4, 1.0F, INFLATE, false, false, null);
@@ -209,6 +221,52 @@ public final class ArmorLayer implements RenderLayer {
         stack.popPose();
     }
 
+    /**
+     * The helmet as a hat sat on the pet's head: the helmet's own texture, on a box a little smaller than the head's top
+     * with a smaller step on top of it, set on the top of the head and tilted a little to one side and back, as a hat put
+     * on is and a helmet fitted is not. It does not go down the sides of the head, so the pet's face and what hangs at its
+     * sides are as they are. The big ears of the pets that have them stand up through it.
+     */
+    private void hat(RenderLayerContext ctx, VertexConsumer vc, int tint) {
+        BakedModel model = ctx.model();
+        Integer index = model.boneIndex.get("Head");
+        if (index == null || ctx.isHidden(index)) {
+            return;
+        }
+        BakedBone bone = model.bones[index];
+        BakedCube head = biggest(model, bone);
+        if (head == null) {
+            return;
+        }
+        float side = leftSide(model);
+        float w = (head.maxX - head.minX) * HAT_OF_HEAD;
+        float d = (head.maxZ - head.minZ) * HAT_OF_HEAD;
+        float centreX = (head.minX + head.maxX) / 2.0F - bone.pivotX;
+        float centreZ = (head.minZ + head.maxZ) / 2.0F - bone.pivotZ + HAT_BACK;
+        float centreY = head.maxY - HAT_SINK + HAT_HEIGHT / 2.0F - bone.pivotY;
+        PoseStack stack = ctx.poseStack();
+        stack.pushPose();
+        walker.transformToBone(model, ctx.poseBuf(), index, stack);
+        stack.translate(centreX, centreY, centreZ);
+        // Down on the pet's left, and back: a rise at the front, which is the low end of Z.
+        stack.mulPose(Axis.ZP.rotationDegrees(-side * HAT_ROLL));
+        stack.mulPose(Axis.XP.rotationDegrees(HAT_PITCH));
+        float bottom = -HAT_HEIGHT / 2.0F;
+        float step = bottom + HAT_HEIGHT - DOME_STEP;
+        texturedBox(vc, stack.last(), tint, ctx.packedLight(), ctx.packedOverlay(),
+            -w / 2.0F, bottom, -d / 2.0F, w / 2.0F, step, d / 2.0F, 0, 0, 8, 8, 0, 3, false, null);
+        texturedBox(vc, stack.last(), tint, ctx.packedLight(), ctx.packedOverlay(),
+            -w / 2.0F + DOME_STEP, step, -d / 2.0F + DOME_STEP, w / 2.0F - DOME_STEP, HAT_HEIGHT / 2.0F,
+            d / 2.0F - DOME_STEP, 0, 0, 8, 8, 0, 1, false, null);
+        stack.popPose();
+    }
+
+    /** @return which way the pet's left is along the X axis, which is where its left arm is: 1, or -1 */
+    private static float leftSide(BakedModel model) {
+        Integer left = model.boneIndex.get("LeftArm");
+        return left != null && model.bones[left].pivotX < 0 ? -1.0F : 1.0F;
+    }
+
     /** @return the holes, which are given where the model puts them, as they are in the bone's own space */
     private static float[][] holesRelativeTo(float[][] holes, BakedBone bone) {
         if (holes == null) {
@@ -265,9 +323,9 @@ public final class ArmorLayer implements RenderLayer {
     }
 
     /**
-     * @return where the lower edge of a helmet is on this pet, in the model's own height: just over its brows and eyes,
-     *         whatever its face is like, and never covering less than {@link #MIN_CAP} of the head or more than half; the
-     *         renderer takes it to know what of the pet's hair comes up into the helmet. NaN for a model with no head
+     * @return where the hat's underside reaches down to on this pet, in the model's own height: the top of the head less
+     *         the hat's depth. The renderer takes it to know what of the pet's hair comes up into the hat, and leaves
+     *         that out. NaN for a model with no head
      */
     public static float lowEdge(BakedModel model) {
         Integer headIndex = model.boneIndex.get("Head");
@@ -275,24 +333,7 @@ public final class ArmorLayer implements RenderLayer {
             return Float.NaN;
         }
         BakedCube head = biggest(model, model.bones[headIndex]);
-        if (head == null) {
-            return Float.NaN;
-        }
-        float height = head.maxY - head.minY;
-        float eyeTop = -Float.MAX_VALUE;
-        for (String name : EYE_BONES) {
-            Integer index = model.boneIndex.get(name);
-            if (index == null) {
-                continue;
-            }
-            BakedBone bone = model.bones[index];
-            for (int i = 0; i < bone.cubeCount; i++) {
-                eyeTop = Math.max(eyeTop, model.cubes[bone.cubeStart + i].maxY);
-            }
-        }
-        float thickness = eyeTop == -Float.MAX_VALUE ? height * HELMET_OF_HEAD : head.maxY - (eyeTop + 0.1F);
-        thickness = Math.max(MIN_CAP, Math.min(height * 0.5F, thickness));
-        return head.maxY - thickness;
+        return head == null ? Float.NaN : head.maxY - HAT_DEPTH;
     }
 
     /** @return the biggest of the bone's own cubes, which is the head or the body or the leg, and not what is on it */
