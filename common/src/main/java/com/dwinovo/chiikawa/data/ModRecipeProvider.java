@@ -59,6 +59,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(Items.PINK_WOOL), has(Items.PINK_WOOL))
                 .save(recipeOutput, new ResourceLocation(Constants.MOD_ID, "chiikawa_weapon"));
 
+        // Rakko's Sword recipe: an iron sword in a ring of diamonds, the best blade among the pets'.
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, InitItems.RAKKO_SWORD.get())
+                .pattern("DDD")
+                .pattern("DSD")
+                .pattern("DDD")
+                .define('D', Items.DIAMOND)
+                .define('S', Items.IRON_SWORD)
+                .unlockedBy(getHasName(Items.DIAMOND), has(Items.DIAMOND))
+                .save(recipeOutput, new ResourceLocation(Constants.MOD_ID, "rakko_sword"));
+
         // Music Box recipe
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, InitItems.MUSIC_BOX.get())
                 .pattern(" P ")

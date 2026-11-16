@@ -840,9 +840,56 @@ public class AbstractPet extends TamableAnimal implements RangedAttackMob, Chiik
         return (Brain<AbstractPet>) super.getBrain();
     }
 
-    /** Being hurt is something the pet's mind is told, since it may be time to fight or to flee. */
+    /**
+     * Whether this is Rakko with Rakko's sword in its hand: the one pet, and the one blade, that has a strike of its own,
+     * see {@link com.dwinovo.chiikawa.item.RakkoSword}.
+     */
+    private boolean wieldsRakkoSword() {
+        return getType() == com.dwinovo.chiikawa.init.InitEntity.RAKKO_PET.get()
+            && getMainHandItem().is(com.dwinovo.chiikawa.init.InitItems.RAKKO_SWORD.get());
+    }
+
+    /**
+     * Rakko with its sword strikes for the sword's damage, whatever the pet's own is and whatever else has been put on it:
+     * the base is moved for the one blow so that the damage comes to exactly that, before enchantments, and put back.
+     */
+    @Override
+    public boolean doHurtTarget(Entity target) {
+        AttributeInstance damage = getAttribute(Attributes.ATTACK_DAMAGE);
+        if (damage == null || !wieldsRakkoSword()) {
+            return super.doHurtTarget(target);
+        }
+        double base = damage.getBaseValue();
+        damage.setBaseValue(base + com.dwinovo.chiikawa.item.RakkoSword.PET_ATTACK_DAMAGE - damage.getValue());
+        try {
+            return super.doHurtTarget(target);
+        } finally {
+            damage.setBaseValue(base);
+        }
+    }
+
+    /**
+     * @return how many strikes a second the weapon in the pet's hand allows: what the game says of it, or for Rakko with
+     *         its own sword what that sword says; 0 when the pet has no such attribute
+     */
+    public double weaponAttackSpeed() {
+        if (wieldsRakkoSword()) {
+            return com.dwinovo.chiikawa.item.RakkoSword.PET_ATTACK_SPEED;
+        }
+        AttributeInstance speed = getAttribute(Attributes.ATTACK_SPEED);
+        return speed == null ? 0.0 : speed.getValue();
+    }
+
+    /**
+     * Being hurt is something the pet's mind is told, since it may be time to fight or to flee. Pets do not hurt one
+     * another, with a trident, an arrow or anything else: what a pet throws or shoots or strikes with does nothing to
+     * another pet, which it bounces off.
+     */
     @Override
     public boolean hurt(DamageSource source, float amount) {
+        if (source.getEntity() instanceof AbstractPet) {
+            return false;
+        }
         boolean hurt = super.hurt(source, amount);
         if (hurt) {
             PetMind.post(this, new Message.Hurt(Optional.ofNullable(source.getEntity()).map(Entity::getUUID)));

@@ -179,8 +179,10 @@ public final class PersonalityData {
             .weigh(1.3F, FIGHTING)
             .at(DayPhase.NIGHT, 1.2F, FIGHTING)
             .randomness(0.05F)
-            // Never without its own sword, the only way anyone comes by one.
-            .wildTool(InitItems.RAKKO_SWORD.get(), 1)
+            // A wild Rakko carries no sword of its own: Rakko's sword is made, see the recipes. It is mostly empty-handed
+            // and now and then has a wooden sword.
+            .wildTool(Items.AIR, 3)
+            .wildTool(Items.WOODEN_SWORD, 1)
             // Sweet things.
             .likes(Items.CAKE, 3)
             .likes(Items.PUMPKIN_PIE, 2)

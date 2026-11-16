@@ -105,6 +105,7 @@ public final class LanguageData {
                 "近身讨伐", "远程讨伐", "%s只", "高级除草");
             addLancerTranslations(adder, "枪术师", "枪术师工具", "枪术讨伐", "%s只", "投掷三叉戟", "巡逻投掷三叉戟");
             addArmorTranslations(adder, "头盔：像帽子一样戴在头顶", "胸甲：穿在身上", "靴子：穿在脚上");
+            addRakkoSwordTooltip(adder, "当 Rakko 装备时：攻击伤害 11，攻击速度 1.6");
             addBoardScreenTranslations(adder, "劳动公告板", "%s张", "今天没有工作牌",
                     "限%s", "待领", "已领", "%s已领",
                     "Lv.%s", "每天%s张", "升级%s",
@@ -354,6 +355,7 @@ public final class LanguageData {
                 "近接討伐", "遠距離討伐", "%s体", "上級草むしり");
             addLancerTranslations(adder, "槍使い", "槍使いの道具", "槍討伐", "%s体", "トライデントを投げる", "見回ってトライデントを投げる");
             addArmorTranslations(adder, "ヘルメット：帽子のように頭の上にのります", "チェストプレート：体に着けた姿で見えます", "ブーツ：足に履いた姿で見えます");
+            addRakkoSwordTooltip(adder, "ラッコが装備すると：攻撃ダメージ 11、攻撃速度 1.6");
             addBoardScreenTranslations(adder, "労働掲示板", "%s枚", "今日はお仕事カードがありません",
                     "%s限定", "募集中", "受注済み", "%sが受けた",
                     "Lv.%s", "1日%s枚", "レベルアップ %s",
@@ -608,6 +610,7 @@ public final class LanguageData {
                 "Caça a Monstros", "Tiro em Monstros", "%s abatidos", "Capina Avançada");
             addLancerTranslations(adder, "Lanceiro", "Ferramentas de Lanceiro", "Caça com Lança", "%s abatidos", "Arremessando o tridente", "Arremessando o tridente em patrulha");
             addArmorTranslations(adder, "Capacete: fica sobre a cabeça como um chapéu", "Peitoral: aparece vestido no corpo", "Botas: aparecem calçadas nos pés");
+            addRakkoSwordTooltip(adder, "Quando Rakko o empunha: 11 de dano de ataque e 1,6 de velocidade de ataque");
             addBoardScreenTranslations(adder, "Quadro de Trabalho", "%s no quadro", "Nenhuma ficha hoje",
                     "Só %s", "Aberta", "Pega", "Pega por %s",
                     "Nv.%s", "%s por dia", "Melhorar %s",
@@ -859,6 +862,7 @@ public final class LanguageData {
                 "근접 토벌", "원거리 토벌", "%s마리", "상급 잡초 뽑기");
             addLancerTranslations(adder, "창술사", "창술사 도구", "창 토벌", "%s마리", "삼지창 던지기", "순찰하며 삼지창 던지기");
             addArmorTranslations(adder, "투구: 모자처럼 머리 위에 얹혀 보여요", "갑옷: 몸에 입은 모습으로 보여요", "신발: 발에 신은 모습으로 보여요");
+            addRakkoSwordTooltip(adder, "랏코가 장착하면: 공격피해 11, 공격속도 1.6");
             addBoardScreenTranslations(adder, "알바 게시판", "%s장", "오늘은 전표가 없어",
                     "%s만", "모집", "수락", "%s(이)가 받음",
                     "Lv.%s", "하루 %s장", "강화 %s",
@@ -1113,6 +1117,7 @@ public final class LanguageData {
                 "Monster Hunting", "Monster Shooting", "%s slain", "Advanced Weeding");
             addLancerTranslations(adder, "Lancer", "Lancer Tools", "Lance Hunting", "%s slain", "Throwing the trident", "Patrolling to throw the trident");
             addArmorTranslations(adder, "Helmet: sits on its head like a hat", "Chestplate: shows worn on its body", "Boots: show worn on its feet");
+            addRakkoSwordTooltip(adder, "When Rakko wields it: 11 attack damage, 1.6 attack speed");
             addBoardScreenTranslations(adder, "Labor Board", "%s up", "No slips up today",
                     "%s only", "Open", "Taken", "Taken by %s",
                     "Lv.%s", "%s a day", "Upgrade %s",
@@ -1743,6 +1748,11 @@ public final class LanguageData {
     private static void addPetOutlookTranslations(Adder adder, String lacks, String next) {
         adder.add("screen.chiikawa.pet.outlook.lacks", lacks);
         adder.add("screen.chiikawa.pet.outlook.next", next);
+    }
+
+    /** What Rakko's sword says in a tooltip of what it does for Rakko. */
+    private static void addRakkoSwordTooltip(Adder adder, String line) {
+        adder.add("item.chiikawa.rakko_sword.tooltip", line);
     }
 
     /** What an empty armour well says when it is pointed at: what goes in it, and how it shows on the pet. */

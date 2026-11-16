@@ -339,8 +339,18 @@ public abstract class ChiikawaEntityRenderer<T extends Entity> extends EntityRen
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
         if (!drawingPortrait && entity instanceof AbstractPet pet) {
             // The bubble clears the name tag when there is one, which the renderer alone says.
-            speech.render(pet, shouldShowName(entity), poseStack, bufferSource, getFont(), entityRenderDispatcher.cameraOrientation(), partialTick);
+            BakedModel shown = ModelLibrary.get(state.modelKey);
+            speech.render(pet, shouldShowName(entity), shown == null ? 0.0F : visualTop(shown), poseStack, bufferSource, getFont(), entityRenderDispatcher.cameraOrientation(), partialTick);
         }
+    }
+
+    /** @return how high the highest part of the model reaches, in blocks: its ears included, whatever the hitbox says */
+    private static float visualTop(BakedModel model) {
+        float top = 0.0F;
+        for (com.dwinovo.chiikawa.anim.baked.BakedCube cube : model.cubes) {
+            top = Math.max(top, cube.maxY);
+        }
+        return top * PIXEL_SCALE;
     }
 
     private void renderState(T entity, ChiikawaRenderState state, PoseStack poseStack,

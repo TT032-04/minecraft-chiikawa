@@ -37,8 +37,13 @@ public final class SpeechBubbleRenderer {
     /** How far above the name it sits when one is drawn, in blocks: four text pixels. */
     private static final float ABOVE_NAME = 4 * SCALE;
 
-    /** @param nameShown whether the game draws the pet's name tag, which the bubble hangs over */
-    public void render(AbstractPet pet, boolean nameShown, PoseStack poseStack, MultiBufferSource bufferSource, Font font,
+    /**
+     * @param nameShown whether the game draws the pet's name tag, which the bubble hangs over
+     * @param visualTop how high the highest part of the pet's model reaches, in blocks, its ears and tufts included: the
+     *                  bubble is kept above it, for a pet whose ears stand higher than its hitbox, so that the line
+     *                  is not drawn through them
+     */
+    public void render(AbstractPet pet, boolean nameShown, float visualTop, PoseStack poseStack, MultiBufferSource bufferSource, Font font,
                        Quaternionf cameraOrientation, float partialTick) {
         if (Minecraft.getInstance().options.hideGui || !ClientSettingsStore.current().speechBubbles()) {
             return;
@@ -50,7 +55,8 @@ public final class SpeechBubbleRenderer {
             // 1.20.1 puts a name tag at a height of its own rather than at an attachment point: the top of the hitbox, and the rise.
             float top = pet.getNameTagOffsetY() - NAME_TAG_RISE;
             poseStack.pushPose();
-            poseStack.translate(0.0F, top + (nameShown ? NAME_TAG_RISE + ABOVE_NAME : ABOVE_HEAD), 0.0F);
+            float rise = Math.max(nameShown ? NAME_TAG_RISE + ABOVE_NAME : ABOVE_HEAD, visualTop - top + ABOVE_HEAD);
+            poseStack.translate(0.0F, top + rise, 0.0F);
             poseStack.mulPose(cameraOrientation);
             // Text pixels from here on, with y running down as on a screen and z towards the
             // camera. Before 1.21 the camera's rotation is a half turn about y short of the later

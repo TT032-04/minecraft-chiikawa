@@ -63,15 +63,9 @@ public final class Swing implements Step {
             handle.swing();
             pet.doHurtTarget(target);
             pet.playAttackSound();
-            handle.cooldownAttack(PetCombat.swingCooldown(attackSpeedOf(pet)));
+            handle.cooldownAttack(PetCombat.swingCooldown(pet.weaponAttackSpeed()));
         });
         return StepStatus.DONE;
-    }
-
-    /** What the game says about the weapon in hand; 0 when the pet has no such attribute. */
-    private static double attackSpeedOf(AbstractPet pet) {
-        AttributeInstance speed = pet.getAttribute(Attributes.ATTACK_SPEED);
-        return speed == null ? 0.0 : speed.getValue();
     }
 
     private static boolean isHoldingUsableProjectileWeapon(AbstractPet pet) {
